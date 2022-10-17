@@ -6,12 +6,17 @@
 .auth-input {
     @apply border-2 p-1.5 mt-1 rounded
 }
+
+.auth-input-error {
+    @apply bg-red-50 focus:outline-none focus:border-red-600
+}
+
 .auth-input-label {
     @apply text-sm ml-1 text-gray-800 tracking-wide font-semibold
 }
 
 .auth-primary-button {
-    @apply text-white bg-indigo-700 hover:bg-indigo-900 p-3 rounded hover:scale-105 duration-200 tracking-wider font-semibold
+    @apply text-white bg-indigo-700 enabled:hover:bg-indigo-900 p-3 rounded enabled:hover:scale-105 duration-200 tracking-wider font-semibold disabled:opacity-50
 }
 
 .auth-secondary-button {
