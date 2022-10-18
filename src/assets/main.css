@@ -5,3 +5,43 @@
 @tailwind utilities;
 
 
+@layer components {
+
+    /*Authentication components*/
+    .auth-card {
+        min-width: 300px;
+        @apply flex flex-col w-full p-8 sm:p-12 border-gray-200 border shadow-2xl rounded bg-white
+    }
+
+    .auth-input {
+        @apply border-2 p-1.5 mt-1 rounded
+    }
+
+    .auth-input-error {
+        @apply bg-red-50 focus:outline-none focus:border-red-600
+    }
+
+    .auth-input-label {
+        @apply text-sm ml-1 text-gray-800 tracking-wide font-semibold
+    }
+
+    .auth-primary-button {
+        @apply text-white bg-indigo-700 enabled:hover:bg-indigo-900 p-3 rounded enabled:hover:scale-105 duration-200 tracking-wider font-semibold disabled:opacity-50
+    }
+
+    .auth-secondary-button {
+        @apply text-center text-sm text-indigo-700 border-indigo-700 rounded-xl p-2 hover:cursor-pointer hover:bg-indigo-100 hover:scale-105 duration-200 tracking-wide
+    }
+
+    .provider-button {
+        @apply w-full flex justify-center items-center py-2 rounded-lg border border-gray-300 hover:bg-gray-50 hover:cursor-pointer hover:scale-110 duration-200 hover:bg-indigo-50 hover:border-indigo-400
+    }
+
+    .provider-button > svg {
+        @apply h-4 w-full
+    }
+
+    .provider-button > svg:hover {
+        fill: #4338ca;
+    }
+}

@@ -1,5 +1,4 @@
 <script setup>
-import styles from './auth.css'
 import {computed, reactive } from 'vue'
 
 import { useAuthStore} from "@/stores/auth";
