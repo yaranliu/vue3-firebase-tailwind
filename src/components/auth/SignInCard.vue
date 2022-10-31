@@ -1,5 +1,5 @@
 <script setup>
-import {computed, reactive } from 'vue'
+import {computed, reactive, defineEmits } from 'vue'
 
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
@@ -22,9 +22,10 @@ const rules = computed (() => { return {
 
 const v$ = useVuelidate(rules, user, { $autoDirty: true })
 
-const emit = defineEmits(['gotoSignUp', 'signedIn'])
+const emit = defineEmits(['gotoSignUp', 'signedIn', 'started', 'ended'])
 
 const signIn = () => {
+  emit('started', 'Password')
   auth.signIn(user.email, user.password).then(user => {
     console.log(user)
     emit('signedIn')
@@ -33,7 +34,14 @@ const signIn = () => {
     if (error.code === AuthErrorCodes.USER_DELETED) {
       console.log('User not found')
     }
+  }).finally(() => {
+        emit('ended')
   });
+}
+
+const emitStarted = (event) => {
+  console.log(event)
+  emit('started', event)
 }
 
 </script>
@@ -54,7 +62,7 @@ const signIn = () => {
       <span class="flex-none text-xs mx-2">or continue with</span>
       <hr class="flex-auto">
     </div>
-    <SignInWithProviders class="mt-2" @signed-in="emit('signedIn')" />
+    <SignInWithProviders class="mt-2" @signed-in="emit('signedIn')"  @started="emitStarted($event)" @ended="emit('ended')"/>
     <div class="auth-secondary-button mt-8" @click="emit('gotoSignUp')">
       Sign up now!
     </div>

@@ -2,14 +2,17 @@
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
-const emit = defineEmits(['signedIn'])
+const emit = defineEmits(['signedIn', 'started', 'ended'])
 
 const signInWithGoogle = () => {
+  emit('started', 'Google')
   auth.signInWithGoogle().then(user => {
     console.log(user)
     emit('signedIn')
   }).catch(error => {
     console.log(error)
+  }).finally(() => {
+    emit('ended')
   });
 }
 
