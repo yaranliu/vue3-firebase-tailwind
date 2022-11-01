@@ -3,29 +3,39 @@ import {
     getAuth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword, signInWithPopup, signOut,
-    GoogleAuthProvider, TwitterAuthProvider, GithubAuthProvider,
+    GoogleAuthProvider, TwitterAuthProvider, GithubAuthProvider, FacebookAuthProvider,
     onAuthStateChanged
 } from "firebase/auth";
 
 import { inject } from "vue";
 
+import { AuthError } from "@/components/auth/AuthError"
+import { AuthenticationProvider } from "@/components/auth/AuthenticationProvider";
+import { AuthErrorSource } from "@/components/auth/AuthErrorSource";
+import { ApplicationAuthError, getApplicationAuthErrorMessage} from "@/components/auth/ApplicationAuthErrors";
+
 export const useAuthStore = defineStore({
     id: 'auth',
     state: () => ({
+        provider: AuthenticationProvider.None,
         inProgress: false,
         user: null,
-        error: null,
+        credential: null,
+        error: new AuthError(AuthErrorSource.None,'', '')
     }),
     actions: {
         register(email, password) {
             this.inProgress = true
+            this.error.clear()
             return new Promise((resolve, reject) => {
                 createUserWithEmailAndPassword(getAuth(), email, password)
                     .then((userCredential) => {
                         this.user = userCredential.user;
+                        this.provider = AuthenticationProvider.Password
                         resolve(this.user);
                     })
                     .catch((error) => {
+                        this.error = new AuthError(AuthErrorSource.Firebase, error.code, error.message)
                         reject(error)
                     })
                     .finally(() => {
@@ -36,13 +46,16 @@ export const useAuthStore = defineStore({
         },
         signIn(email, password) {
             this.inProgress = true
+            this.error.clear()
             return new Promise((resolve, reject) => {
                 signInWithEmailAndPassword(getAuth(), email, password)
                     .then((userCredential) => {
                         this.user = userCredential.user;
+                        this.provider = AuthenticationProvider.Password
                         resolve(this.user)
                     })
                     .catch((error) => {
+                        this.error = new AuthError(AuthErrorSource.Firebase, error.code, error.message)
                         reject(error);
                     })
                     .finally(() => {
@@ -50,25 +63,63 @@ export const useAuthStore = defineStore({
                     })
             })
         },
-        signInWithGoogle() {
+
+        getAuthProvider() {
+            switch (this.provider) {
+                case AuthenticationProvider.Google :return new GoogleAuthProvider();
+                case AuthenticationProvider.Twitter : return new TwitterAuthProvider();
+                default: return null;
+            }
+        },
+
+        // TODO: Implement Oauth2, Apple, LinkedIn
+
+        signInWithProvider(authenticationProvider) {
+            this.provider = authenticationProvider
             this.inProgress = true
+            this.error.clear()
             return new Promise((resolve, reject) => {
-                const provider = new GoogleAuthProvider();
-                signInWithPopup(getAuth(), provider)
-                    .then((result) => {
-                        this.user = result.user;
-                        resolve(this.user)
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    })
-                    .finally(() => {
-                        this.inProgress = false
-                    });
+                const provider = this.getAuthProvider()
+                if (provider) {
+                    console.log(provider)
+                    signInWithPopup(getAuth(), provider)
+                        .then((result) => {
+                            switch (authenticationProvider) {
+                                case AuthenticationProvider.Google : this.credential = GoogleAuthProvider.credentialFromResult(result); break;
+                                case AuthenticationProvider.Github : this.credential = GithubAuthProvider.credentialFromResult(result); break;
+                                case AuthenticationProvider.Twitter : this.credential = TwitterAuthProvider.credentialFromResult(result); break;
+                                case AuthenticationProvider.Facebook : this.credential = FacebookAuthProvider.credentialFromResult(result); break;
+                                default: this.credential = null
+                            }
+                            this.user = result.user
+                            resolve(this.user)
+                        })
+                        .catch((error) => {
+                            this.error = new AuthError(AuthErrorSource.Firebase, error.code, error.message)
+                            switch (authenticationProvider) {
+                                case AuthenticationProvider.Google : this.credential = GoogleAuthProvider.credentialFromError(error); break;
+                                case AuthenticationProvider.Github : this.credential = GithubAuthProvider.credentialFromError(error); break;
+                                case AuthenticationProvider.Twitter : this.credential = TwitterAuthProvider.credentialFromError(error); break;
+                                case AuthenticationProvider.Facebook : this.credential = FacebookAuthProvider.credentialFromError(error); break;
+                                default: this.credential = null
+                            }
+                            reject(error);
+                        })
+                        .finally(() => {
+                            this.inProgress = false
+                        });
+                }
+                else {
+                    this.error = new AuthError(AuthErrorSource.Application, ApplicationAuthError.ProviderNotImplemented, getApplicationAuthErrorMessage(ApplicationAuthError.ProviderNotImplemented))
+                    this.inProgress = false
+                    reject(ApplicationAuthError.ProviderNotImplemented)
+                }
             })
         },
+
         signOut() {
             this.inProgress = true
+            this.error.clear()
             return new Promise((resolve, reject) => {
                 signOut(getAuth())
                     .then(() => {
@@ -76,6 +127,7 @@ export const useAuthStore = defineStore({
                         resolve();
                     })
                     .catch((error) => {
+                        this.error = this.error = new AuthError(AuthErrorSource.Firebase, error.code, error.message)
                         reject(error);
                     })
                     .finally(() => {
@@ -83,6 +135,7 @@ export const useAuthStore = defineStore({
                     });
             })
         },
+
         setup () {
             const $axios = inject("$axios")
             this.inProgress = true
@@ -91,7 +144,7 @@ export const useAuthStore = defineStore({
                 delete $axios.defaults.headers.common["Authorization"]
                 if (user !== null) {
                     user.getIdToken().then(result => { $axios.defaults.headers.common['Authorization'] = `Bearer ${result}` })
-                        .catch(error => { console.log(error) })
+                        .catch(error => { this.error = new AuthError(AuthErrorSource.Firebase, error.code, error.message) })
                         .finally(() => {this.inProgress = false})
                 } else {
                     this.inProgress = false;
