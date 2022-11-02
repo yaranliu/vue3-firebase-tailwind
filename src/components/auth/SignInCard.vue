@@ -59,13 +59,13 @@ const emitError = (event) => {
 <template>
   <div class="auth-card">
     <label for="user-email" class="auth-input-label">{{ $t('components.signInCard.emailLabel') }}</label>
-    <input id="user-email" type="text" :placeholder="$t('components.signInCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input" :class="{ 'auth-input-error': $v.email.$error }" >
+    <input id="user-email" type="text" :placeholder="$t('components.signInCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input w-full" :class="{ 'auth-input-error': $v.email.$invalid && $v.email.$dirty }">
     <label for="user-password" class="auth-input-label mt-6">{{ $t('components.signInCard.passwordLabel') }}</label>
-    <input id="user-password" type="password" :placeholder="$t('components.signInCard.passwordPlaceholder') " v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': $v.password.$error }" >
+    <input id="user-password" type="password" :placeholder="$t('components.signInCard.passwordPlaceholder') " v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': $v.password.$invalid && $v.password.$dirty }" >
     <div class="flex justify-center mt-6 text-xs text-gray-500">
       <span class="text-indigo-700 hover:cursor-pointer hover:scale-105">{{ $t('components.signInCard.forgotPassword') }}</span>
     </div>
-    <button @click="signInWithPassword" class="auth-primary-button mt-6" :disabled="$v.$error">
+    <button @click="signInWithPassword" class="auth-primary-button mt-6" :disabled="$v.$invalid">
       {{ $t('components.signInCard.signInButton') }}
     </button>
     <div class="flex items-center mt-8 mb-4 text-gray-400">
@@ -75,7 +75,6 @@ const emitError = (event) => {
     </div>
     <SignInWithProviders
         class="mt-2"
-        vertical
         :providers="appAuthProviders"
         @signed-in="emitSignedIn($event)"
         @sign-in-started="emitStarted($event)"

@@ -39,12 +39,12 @@ const register = () => {
 <template>
   <div class="auth-card">
     <label for="user-email" class="auth-input-label">{{ $t('components.signUpCard.emailLabel')}}</label>
-    <input id="user-email" type="text" :placeholder="$t('components.signUpCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input" :class="{ 'auth-input-error': v$.email.$error }">
+    <input id="user-email" type="text" :placeholder="$t('components.signUpCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input" :class="{ 'auth-input-error': v$.email.$invalid && v$.email.$dirty }">
     <label for="user-password" class="auth-input-label mt-6">{{ $t('components.signUpCard.passwordLabel')}}</label>
-    <input id="user-password" type="password" :placeholder="$t('components.signUpCard.passwordLabel')" v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': v$.password.$error }">
+    <input id="user-password" type="password" :placeholder="$t('components.signUpCard.passwordLabel')" v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': v$.password.$invalid && v$.password.$dirty }">
     <label for="user-confirm" class="auth-input-label mt-6">{{ $t('components.signUpCard.confirmPasswordPlaceholder')}}</label>
-    <input id="user-confirm" type="password" :placeholder="$t('components.signUpCard.confirmPasswordPlaceholder')" v-model.trim="user.passwordConfirmation" class="auth-input" :class="{ 'auth-input-error': v$.passwordConfirmation.$error }">
-    <button @click="register" class="auth-primary-button mt-6" :disabled="v$.$error">
+    <input id="user-confirm" type="password" :placeholder="$t('components.signUpCard.confirmPasswordPlaceholder')" v-model.trim="user.passwordConfirmation" class="auth-input" :class="{ 'auth-input-error': v$.passwordConfirmation.$invalid && v$.passwordConfirmation.$dirty }">
+    <button @click="register" class="auth-primary-button mt-6" :disabled="v$.$invalid">
       {{ $t('components.signUpCard.signUpButton')}}
     </button>
     <div class="flex items-center mt-8 mb-4 text-gray-400">
