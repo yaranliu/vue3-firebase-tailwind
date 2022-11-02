@@ -41,15 +41,15 @@ const register = () => {
   <form class="auth-card">
     <label for="user-email" class="auth-input-label">{{ $t('components.signUpCard.emailLabel')}}</label>
     <input id="user-email" type="email" autocomplete="e-mail"   :placeholder="$t('components.signUpCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input" :class="{ 'auth-input-error': v$.email.$invalid && v$.email.$dirty }">
-    <div class="validation-error-message" :class="{ 'opacity-100' : v$.email.$invalid }">{{ $t(i18nErrorMessage(v$.email.$errors[0], 'signup')) }}</div>
+    <div class="validation-error-message" :class="{ 'opacity-100' : v$.email.$invalid }">{{ $t(i18nErrorMessage(v$.email.$errors[0], 'signUp')) }}</div>
 
     <label for="user-password" class="auth-input-label mt-6">{{ $t('components.signUpCard.passwordLabel')}}</label>
     <input id="user-password" type="password" autocomplete="new-password" :placeholder="$t('components.signUpCard.passwordLabel')" v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': v$.password.$invalid && v$.password.$dirty }">
-    <div class="validation-error-message" :class="{ 'opacity-100' : v$.password.$invalid }">{{ $t(i18nErrorMessage(v$.password.$errors[0], 'signup')) }}</div>
+    <div class="validation-error-message" :class="{ 'opacity-100' : v$.password.$invalid }">{{ $t(i18nErrorMessage(v$.password.$errors[0], 'signUp')) }}</div>
 
     <label for="user-confirm" class="auth-input-label mt-6">{{ $t('components.signUpCard.confirmPasswordPlaceholder')}}</label>
     <input id="user-confirm" type="password" autocomplete="new-password" :placeholder="$t('components.signUpCard.confirmPasswordPlaceholder')" v-model.trim="user.passwordConfirmation" class="auth-input" :class="{ 'auth-input-error': v$.passwordConfirmation.$invalid && v$.passwordConfirmation.$dirty }">
-    <div class="validation-error-message" :class="{ 'opacity-100' : v$.passwordConfirmation.$invalid }">{{ $t(i18nErrorMessage(v$.passwordConfirmation.$errors[0], 'signup')) }}</div>
+    <div class="validation-error-message" :class="{ 'opacity-100' : v$.passwordConfirmation.$invalid }">{{ $t(i18nErrorMessage(v$.passwordConfirmation.$errors[0], 'signUp')) }}</div>
 
     <button @click="register" class="auth-primary-button mt-6" :disabled="v$.$invalid">
       {{ $t('components.signUpCard.signUpButton')}}

@@ -32,7 +32,7 @@ const tr = {
     },
     validation: {
         noError: '',
-        signup: {
+        signUp: {
             email: {
                 required: 'Lütfen e-posta adresinizi yazın',
                 email: 'Lütfen geçerli bir e-posta adresi yazın',
@@ -44,6 +44,15 @@ const tr = {
             },
             passwordConfirmation: {
                 sameAsPassword: 'Parolanız uyuşmuyor'
+            }
+        },
+        signIn: {
+            email: {
+                required: 'Lütfen e-posta adresinizi yazın',
+                email: 'Lütfen e-posta adresinizi yazın',
+            },
+            password: {
+                required: 'Lütfen parolanızı yazın',
             }
         },
         common: {

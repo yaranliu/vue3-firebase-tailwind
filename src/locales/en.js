@@ -32,19 +32,28 @@ const en = {
     },
     validation: {
         noError: '',
-        signup: {
-          email: {
-              required: 'Please provide your e-mail address',
-              email: 'Please provide a valid email address',
-          },
-          password: {
-              required: 'Please provide a password',
-              minLength: 'You password must be minimum 6 characters',
+        signUp: {
+            email: {
+                required: 'Please provide your e-mail address',
+                email: 'Please provide a valid email address',
+            },
+            password: {
+                required: 'Please provide a password',
+                minLength: 'You password must be minimum 6 characters',
 
-          },
-          passwordConfirmation: {
-              sameAsPassword: 'Your passwords do not match'
-          }
+            },
+            passwordConfirmation: {
+                sameAsPassword: 'Your passwords do not match'
+            }
+        },
+        signIn: {
+            email: {
+                required: 'Please provide your e-mail address',
+                email: 'Please provide a valid email address',
+            },
+            password: {
+                required: 'Please provide your password',
+            }
         },
         common: {
             email: 'Please provide a valid email address',

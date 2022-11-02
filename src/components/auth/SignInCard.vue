@@ -17,14 +17,15 @@ const user = reactive({
 
 
 import { useVuelidate } from '@vuelidate/core'
-import {required, email, minLength } from '@vuelidate/validators'
+import {required, email } from '@vuelidate/validators'
+import { i18nErrorMessage } from '@/lib/validation-error'
 
 const rules = computed (() => { return {
   email: { required, email },
-  password: { required, minLength: minLength(6) },
+  password: { required },
 }})
 
-const $v = useVuelidate(rules, user, { $autoDirty: true })
+const v$ = useVuelidate(rules, user, { $autoDirty: true })
 
 const emit = defineEmits(['gotoSignUp', 'signedIn', 'signInStarted', 'signInEnded', 'errorEncountered'])
 
@@ -59,13 +60,17 @@ const emitError = (event) => {
 <template>
   <div class="auth-card">
     <label for="user-email" class="auth-input-label">{{ $t('components.signInCard.emailLabel') }}</label>
-    <input id="user-email" type="text" :placeholder="$t('components.signInCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input w-full" :class="{ 'auth-input-error': $v.email.$invalid && $v.email.$dirty }">
+    <input id="user-email" type="email" autocomplete="e-mail" :placeholder="$t('components.signInCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input w-full" :class="{ 'auth-input-error': v$.email.$invalid && v$.email.$dirty }">
+    <div class="validation-error-message" :class="{ 'opacity-100' : v$.email.$invalid }">{{ $t(i18nErrorMessage(v$.email.$errors[0], 'signIn')) }}</div>
+
     <label for="user-password" class="auth-input-label mt-6">{{ $t('components.signInCard.passwordLabel') }}</label>
-    <input id="user-password" type="password" :placeholder="$t('components.signInCard.passwordPlaceholder') " v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': $v.password.$invalid && $v.password.$dirty }" >
+    <input id="user-password" type="password" autocomplete="current-password" :placeholder="$t('components.signInCard.passwordPlaceholder') " v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': v$.password.$invalid && v$.password.$dirty }" >
+    <div class="validation-error-message" :class="{ 'opacity-100' : v$.password.$invalid }">{{ $t(i18nErrorMessage(v$.password.$errors[0], 'signIn')) }}</div>
+
     <div class="flex justify-center mt-6 text-xs text-gray-500">
       <span class="text-indigo-700 hover:cursor-pointer hover:scale-105">{{ $t('components.signInCard.forgotPassword') }}</span>
     </div>
-    <button @click="signInWithPassword" class="auth-primary-button mt-6" :disabled="$v.$invalid">
+    <button @click="signInWithPassword" class="auth-primary-button mt-6" :disabled="v$.$invalid">
       {{ $t('components.signInCard.signInButton') }}
     </button>
     <div class="flex items-center mt-8 mb-4 text-gray-400">
