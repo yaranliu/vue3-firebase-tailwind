@@ -29,6 +29,28 @@ const tr = {
             providersLabel: 'ya da sosyal medya hesabınızı kullanın',
             gotoSignIn: 'Zaten bir hesabım var!'
         }
+    },
+    validation: {
+        noError: '',
+        signup: {
+            email: {
+                required: 'Lütfen e-posta adresinizi yazın',
+                email: 'Lütfen geçerli bir e-posta adresi yazın',
+            },
+            password: {
+                required: 'Lütfen parolanızı yazın',
+                minLength: 'Parolanız en az 6 karakter uzunluğunda olmalıdır',
+
+            },
+            passwordConfirmation: {
+                sameAsPassword: 'Parolanız uyuşmuyor'
+            }
+        },
+        common: {
+            email: 'Please provide a valid email address',
+            required: 'This field cannot be empty',
+            minLength: 'Please '
+        }
     }
 }
 

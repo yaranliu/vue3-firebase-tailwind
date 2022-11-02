@@ -29,6 +29,28 @@ const en = {
             providersLabel: 'or continue with',
             gotoSignIn: 'Create your account now!'
         }
+    },
+    validation: {
+        noError: '',
+        signup: {
+          email: {
+              required: 'Please provide your e-mail address',
+              email: 'Please provide a valid email address',
+          },
+          password: {
+              required: 'Please provide a password',
+              minLength: 'You password must be minimum 6 characters',
+
+          },
+          passwordConfirmation: {
+              sameAsPassword: 'Your passwords do not match'
+          }
+        },
+        common: {
+            email: 'Please provide a valid email address',
+            required: 'This field cannot be empty',
+            minLength: 'Please '
+        }
     }
 }
 
