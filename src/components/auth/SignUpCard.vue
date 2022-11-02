@@ -34,36 +34,27 @@ const register = () => {
   });
 }
 
-const signInWithGoogle = () => {
-  auth.signInWithGoogle().then(user => {
-    console.log(user)
-    emit('signedUp')
-  }).catch(error => {
-    console.log(error)
-  });
-}
-
 </script>
 
 <template>
   <div class="auth-card">
-    <label for="user-email" class="auth-input-label">Email address</label>
-    <input id="user-email" type="text" placeholder="E-mail" v-focus v-model.trim="user.email" class="auth-input" :class="{ 'auth-input-error': v$.email.$error }">
-    <label for="user-password" class="auth-input-label mt-6">Password</label>
-    <input id="user-password" type="password" placeholder="Password" v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': v$.password.$error }">
-    <label for="user-confirm" class="auth-input-label mt-6">Confirm password</label>
-    <input id="user-confirm" type="password" placeholder="Password" v-model.trim="user.passwordConfirmation" class="auth-input" :class="{ 'auth-input-error': v$.passwordConfirmation.$error }">
+    <label for="user-email" class="auth-input-label">{{ $t('components.signUpCard.emailLabel')}}</label>
+    <input id="user-email" type="text" :placeholder="$t('components.signUpCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input" :class="{ 'auth-input-error': v$.email.$error }">
+    <label for="user-password" class="auth-input-label mt-6">{{ $t('components.signUpCard.passwordLabel')}}</label>
+    <input id="user-password" type="password" :placeholder="$t('components.signUpCard.passwordLabel')" v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': v$.password.$error }">
+    <label for="user-confirm" class="auth-input-label mt-6">{{ $t('components.signUpCard.confirmPasswordPlaceholder')}}</label>
+    <input id="user-confirm" type="password" :placeholder="$t('components.signUpCard.confirmPasswordPlaceholder')" v-model.trim="user.passwordConfirmation" class="auth-input" :class="{ 'auth-input-error': v$.passwordConfirmation.$error }">
     <button @click="register" class="auth-primary-button mt-6" :disabled="v$.$error">
-      Sign up
+      {{ $t('components.signUpCard.signUpButton')}}
     </button>
     <div class="flex items-center mt-8 mb-4 text-gray-400">
       <hr class="flex-auto">
-      <span class="flex-none text-xs mx-2">or continue with</span>
+      <span class="flex-none text-xs mx-2">{{ $t('components.signUpCard.providersLabel')}}</span>
       <hr class="flex-auto">
     </div>
     <SignInWithProviders class="mt-2" @signed-in="emit('signedIn')" />
     <div class="auth-secondary-button mt-8" @click="emit('gotoSignIn')">
-      I already have an account
+      {{ $t('components.signUpCard.gotoSignIn') }}
     </div>
   </div>
 </template>

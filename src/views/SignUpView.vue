@@ -20,7 +20,7 @@ const onSignedUp = () => {
 <template>
   <main class="flex flex-row min-h-screen justify-center items-center">
     <div class="p-4 sm:w-1/3">
-      <div class="text-center py-6 font-bold text-2xl">Sign Up</div>
+      <div class="text-center py-6 font-bold text-2xl">{{ $t('views.signUp.title') }}</div>
       <SignUpCard @goto-sign-in="onGotoSignIn" @signed-up="onSignedUp" />
     </div>
   </main>

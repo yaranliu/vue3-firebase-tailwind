@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { createI18n } from 'vue-i18n'
+
 
 import App from './App.vue'
 import router from './router'
@@ -19,10 +21,23 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
+import { en } from "@/locales/en";
+import { tr } from "@/locales/tr";
+
+const i18n = createI18n({
+    locale: 'tr',
+    fallbackLocale: 'en',
+    messages: {
+        'en': en,
+        'tr': tr,
+    }
+})
+
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.use(i18n)
 
 import vFocus from './directives/vFocus'
 app.directive('focus', vFocus)

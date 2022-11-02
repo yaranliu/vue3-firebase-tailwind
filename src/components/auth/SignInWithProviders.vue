@@ -87,11 +87,32 @@ const signIn = (provider) => {
 </script>
 
 <template>
-  <div class="flex justify-between space-x-1.5">
-    <div v-for="provider in providers" :key="provider.source" class="provider-button" @click="signIn(provider.source)">
-      <svg xmlns="http://www.w3.org/2000/svg" :viewBox="provider.svg.box" fill="gray">
-        <path :d="provider.svg.path"/>
-      </svg>
+  <div class="">
+    <div v-if="vertical" class="flex-col space-y-1.5 items-center">
+      <div
+          v-for="provider in providers"
+          :key="provider.source"
+          @click="signIn(provider.source)"
+          class="provider-button-vertical"
+      >
+        <div class="w-5/12 flex flex-row-reverse">
+          <div class="flex-initial">
+            <svg xmlns="http://www.w3.org/2000/svg" :viewBox="provider.svg.box" fill="gray" width="1rem" height="1rem">
+              <path :d="provider.svg.path"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flex-auto text-slate-600 text-sm">
+          {{ provider.title }}
+        </div>
+      </div>
+    </div>
+    <div v-else class="flex space-x-1.5 items-center">
+      <div v-for="provider in providers" :key="provider.source" class="provider-button-horizontal" @click="signIn(provider.source)">
+        <svg xmlns="http://www.w3.org/2000/svg" :viewBox="provider.svg.box" fill="gray">
+          <path :d="provider.svg.path"/>
+        </svg>
+      </div>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import {computed, reactive, defineEmits } from 'vue'
+import {computed, reactive } from 'vue'
 
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
@@ -13,6 +13,8 @@ const user = reactive({
   email: '',
   password: '',
 })
+
+
 
 import { useVuelidate } from '@vuelidate/core'
 import {required, email, minLength } from '@vuelidate/validators'
@@ -56,23 +58,24 @@ const emitError = (event) => {
 </script>
 <template>
   <div class="auth-card">
-    <label for="user-email" class="auth-input-label">Email address</label>
-    <input id="user-email" type="text" placeholder="E-mail" v-focus v-model.trim="user.email" class="auth-input" :class="{ 'auth-input-error': $v.email.$error }" >
-    <label for="user-password" class="auth-input-label mt-6">Password</label>
-    <input id="user-password" type="password" placeholder="Password" v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': $v.password.$error }" >
+    <label for="user-email" class="auth-input-label">{{ $t('components.signInCard.emailLabel') }}</label>
+    <input id="user-email" type="text" :placeholder="$t('components.signInCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input" :class="{ 'auth-input-error': $v.email.$error }" >
+    <label for="user-password" class="auth-input-label mt-6">{{ $t('components.signInCard.passwordLabel') }}</label>
+    <input id="user-password" type="password" :placeholder="$t('components.signInCard.passwordPlaceholder') " v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': $v.password.$error }" >
     <div class="flex justify-center mt-6 text-xs text-gray-500">
-      <span class="text-indigo-700 hover:cursor-pointer hover:scale-105">Forgot password?</span>
+      <span class="text-indigo-700 hover:cursor-pointer hover:scale-105">{{ $t('components.signInCard.forgotPassword') }}</span>
     </div>
     <button @click="signInWithPassword" class="auth-primary-button mt-6" :disabled="$v.$error">
-      Sign in
+      {{ $t('components.signInCard.signInButton') }}
     </button>
     <div class="flex items-center mt-8 mb-4 text-gray-400">
       <hr class="flex-auto">
-      <span class="flex-none text-xs mx-2">or continue with</span>
+      <span class="flex-none text-xs mx-2">{{ $t('components.signInCard.providersLabel') }}</span>
       <hr class="flex-auto">
     </div>
     <SignInWithProviders
         class="mt-2"
+        vertical
         :providers="appAuthProviders"
         @signed-in="emitSignedIn($event)"
         @sign-in-started="emitStarted($event)"
@@ -80,7 +83,7 @@ const emitError = (event) => {
         @error-encountered="emitError($event)"
     />
     <div class="auth-secondary-button mt-8" @click="emit('gotoSignUp')">
-      Sign up now!
+      {{ $t('components.signInCard.gotoRegistration') }}
     </div>
   </div>
 </template>

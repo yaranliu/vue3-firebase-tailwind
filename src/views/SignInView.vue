@@ -47,8 +47,11 @@ const onError = (authError) => {
   <main class="flex flex-row min-h-screen justify-center items-center">
     <Loader :show="showLoader" :title="'Signing in with ' + provider "/>
     <div class="p-4 sm:w-1/3">
-      <div class="text-center py-6 font-bold text-2xl">Sign In</div>
+      <div class="text-center py-6 font-bold text-2xl">
+        {{ $t('views.signIn.title') }}
+      </div>
       <SignInCard
+          vertical
           @goto-sign-up="onGotoSignUp"
           @signed-in="onSignedIn"
           @sign-in-started="onSignInStarted"
