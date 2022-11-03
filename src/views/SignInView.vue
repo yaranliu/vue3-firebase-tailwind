@@ -6,7 +6,7 @@ import SignInCard from "@/components/auth/SignInCard.vue";
 
 import { useRouter } from "vue-router";
 import Loader from "@/components/misc/Loader.vue";
-import AlertBox from "@/components/common/AlertBox.vue";
+import SimpleDialog from "@/components/common/SimpleDialog.vue";
 const router = useRouter()
 
 import { useAuthStore } from "@/stores/auth";
@@ -46,7 +46,7 @@ const onError = (authError) => {
 <template>
   <main class="flex flex-row min-h-screen justify-center items-center">
     <Loader :show="showLoader" :title="'Signing in with ' + provider "/>
-    <div class="p-4 sm:w-1/3">
+    <div class="xs:p-2 xs:w-1/3">
       <div class="text-center py-6 font-bold text-2xl">
         {{ $t('views.signIn.title') }}
       </div>
@@ -58,11 +58,11 @@ const onError = (authError) => {
           @sign-in-ended="onSignInEnded"
           @error-encountered="onError"
       />
-      <AlertBox
+      <SimpleDialog
           alert-type="danger"
-          :title="auth.error.Code"
-          :description="auth.error.Message"
-          button-label="Ok"
+          :title="$t('error.dialog.title')"
+          :description="$t(auth.error.toLocaleString())"
+          :button-label="$t('error.dialog.button')"
           :is-open="showErrorDialog"
           @ok-clicked="showErrorDialog = false"
       />

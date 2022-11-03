@@ -1,3 +1,5 @@
+import {AuthErrorSource} from "./AuthErrorSource";
+
 const enum ApplicationAuthError {
   ProviderNotImplemented = 'provider-not-implemented'
 }

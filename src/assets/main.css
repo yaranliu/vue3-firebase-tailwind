@@ -9,8 +9,8 @@
 
     /*Authentication components*/
     .auth-card {
-        min-width: 300px;
-        @apply flex flex-col w-full p-8 sm:p-12 border-gray-200 border shadow-2xl rounded bg-white
+        /*min-width: 300px;*/
+        @apply flex flex-col w-full m-1 p-8 sm:p-12 border-gray-200 border shadow-2xl rounded bg-white
     }
 
     .auth-input {

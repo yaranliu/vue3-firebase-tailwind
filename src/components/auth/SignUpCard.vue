@@ -56,7 +56,7 @@ const register = () => {
     </button>
     <div class="flex items-center mt-8 mb-4 text-gray-400">
       <hr class="flex-auto">
-      <span class="flex-none text-xs mx-2">{{ $t('components.signUpCard.providersLabel')}}</span>
+      <span class="lex-shrink text-xs text-center mx-2 whitespace-pre-wrap">{{ $t('components.signUpCard.providersLabel')}}</span>
       <hr class="flex-auto">
     </div>
     <SignInWithProviders class="mt-2" @signed-in="emit('signedIn')" />

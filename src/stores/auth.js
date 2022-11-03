@@ -81,7 +81,6 @@ export const useAuthStore = defineStore({
             return new Promise((resolve, reject) => {
                 const provider = this.getAuthProvider()
                 if (provider) {
-                    console.log(provider)
                     signInWithPopup(getAuth(), provider)
                         .then((result) => {
                             switch (authenticationProvider) {

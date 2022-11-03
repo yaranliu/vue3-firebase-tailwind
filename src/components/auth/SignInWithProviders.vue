@@ -77,7 +77,6 @@ const signIn = (provider) => {
   auth.signInWithProvider(provider).then(user => {
     emit('signedIn', user)
   }).catch(error => {
-    console.log(error)
     emit('errorEncountered', error)
   }).finally(() => {
     emit('signInEnded', provider)

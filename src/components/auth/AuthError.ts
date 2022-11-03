@@ -1,4 +1,5 @@
-import { AuthErrorSource } from "./AuthErrorSource";
+import * as _ from 'lodash/string'
+import {AuthErrorSource} from "./AuthErrorSource";
 
 export class AuthError {
   Source: AuthErrorSource;
@@ -13,5 +14,16 @@ export class AuthError {
     this.Source = AuthErrorSource.None
     this.Code = ''
     this.Message = ''
+  }
+  toLocaleString() {
+    const prefix = 'error.auth'
+    if (this.Source === AuthErrorSource.Application) {
+      let code = _.camelCase(this.Code)
+      return `${prefix}.application.${code}`
+    }
+    else {
+      let code = _.camelCase(this.Code.split("/")[1])
+      return `${prefix}.firebase.${code}`
+    }
   }
 }
