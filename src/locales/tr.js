@@ -1,4 +1,9 @@
 const tr = {
+    navigation: {
+        home: 'Ana Sayfa',
+        about: 'Hakkımızda',
+        dashboard: 'Panel'
+    },
     views: {
         signIn :{
             title: 'Giriş Yapın'

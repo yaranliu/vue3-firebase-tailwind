@@ -9,7 +9,7 @@
   "dependencies": {
     "@fortawesome/vue-fontawesome": "^3.0.1",
     "@headlessui/vue": "^1.7.3",
-    "@heroicons/vue": "^2.0.11",
+    "@heroicons/vue": "^2.0.13",
     "@vuelidate/core": "^2.0.0",
     "@vuelidate/validators": "^2.0.0",
     "axios": "^1.1.2",

@@ -1,4 +1,9 @@
 const en = {
+    navigation: {
+      home: 'Home',
+      about: 'About',
+      dashboard: 'Dashboard'
+    },
     views: {
         signIn :{
             title: 'Sign In'
