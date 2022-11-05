@@ -7,7 +7,7 @@ const router = useRouter()
 
 const onGotoSignIn = () => {
   console.log("Go to Sign In")
-  router.push({ name: 'sign-in'})
+  router.push({ name: 'signIn'})
 }
 
 const onSignedUp = () => {

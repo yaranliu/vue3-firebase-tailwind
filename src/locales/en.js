@@ -1,8 +1,15 @@
 const en = {
     navigation: {
-      home: 'Home',
-      about: 'About',
-      dashboard: 'Dashboard'
+        home: 'Home',
+        about: 'About',
+        dashboard: 'Dashboard',
+        userButton: {
+            notifications: 'Notifications',
+            messages: 'Messages',
+            profile: 'My profile',
+            settings: 'My settings',
+            signOut : 'Sign Out'
+        }
     },
     views: {
         signIn :{

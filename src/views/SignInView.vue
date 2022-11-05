@@ -14,7 +14,7 @@ const auth = useAuthStore()
 
 const onGotoSignUp = () => {
   console.log("Go to Sign Up")
-  router.push({ name: 'sign-up'})
+  router.push({ name: 'signUp'})
 }
 
 const onSignedIn = () => {

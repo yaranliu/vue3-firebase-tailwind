@@ -2,7 +2,14 @@ const tr = {
     navigation: {
         home: 'Ana Sayfa',
         about: 'Hakkımızda',
-        dashboard: 'Panel'
+        dashboard: 'Panel',
+        userButton: {
+            notifications: 'Bildirimler',
+            messages: 'Mesajlar',
+            profile: 'Profilim',
+            settings: 'Ayarlarım',
+            signOut : 'Çıkış yap'
+        }
     },
     views: {
         signIn :{

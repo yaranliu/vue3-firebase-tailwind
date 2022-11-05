@@ -1,11 +1,22 @@
 <script setup>
-import { useAuthStore} from "@/stores/auth";
+
+import {computed} from "vue";
+
+import { useAuthStore } from "@/stores/auth";
 const auth = useAuthStore();
 
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { ChevronDownIcon } from '@heroicons/vue/20/solid'
-import { AcademicCapIcon } from '@heroicons/vue/24/outline'
+import { useRouter} from "vue-router";
+const router = useRouter()
 
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
+
+const props = defineProps(['commands', 'routeAfterSignOut'])
+
+const showSignIn = computed(() => {
+  return router.currentRoute.value.name !== 'signIn'
+})
+
+const emit = defineEmits(['action'])
 
 </script>
 
@@ -14,15 +25,21 @@ import { AcademicCapIcon } from '@heroicons/vue/24/outline'
     <Menu as="div" class="relative inline-block text-left">
       <div>
         <MenuButton
-            class="inline-flex w-full justify-center items-center space-x-2 rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+            v-if="auth.isAuthenticated"
+            class="inline-flex w-full justify-center items-center space-x-2 rounded-md bg-black bg-opacity-0 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
         >
           <img v-if="auth.hasAvatar" alt="avatar" :src="auth.hasAvatar ? auth.user.photoURL : ''" class="w-8 h-8 rounded-full border border-indigo-200" />
           <div class="hidden md:block">{{ auth.displayName }}</div>
-          <ChevronDownIcon
-              class="hidden md:block ml-2 -mr-1 h-5 w-5 text-primary-200 hover:text-primary-100"
-              aria-hidden="true"
-          />
+          <span><i class="las la-angle-down hidden md:block mx-1 text-primary-200 hover:text-primary-100" /></span>
         </MenuButton>
+        <button
+            v-else
+            class="flex flex-row w-full h-12 justify-center items-center space-x-2 rounded-md pl-2 pr-4 py-2 text-sm font-medium text-white hover:text-secondary-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+            @click="router.push({ name: 'signIn' })"
+        >
+          <span v-show="showSignIn" class="hidden md:block ml-3">Sign In</span>
+          <i v-show="showSignIn" class="las la-sign-in-alt text-xl" />
+        </button>
       </div>
 
       <transition
@@ -36,85 +53,18 @@ import { AcademicCapIcon } from '@heroicons/vue/24/outline'
         <MenuItems
             class="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
-          <div class="px-1 py-1">
-            <MenuItem v-slot="{ active }">
+          <div class="px-1 py-1" v-for="group in commands">
+            <MenuItem v-for="command in group" v-slot="{ active }">
               <button
                   :class="[
-                  active ? 'bg-primary-500 text-white' : 'text-gray-900',
-                  'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                  active ? 'bg-primary-600 text-white' : 'text-gray-900',
+                  'group flex w-full items-center rounded-md px-2 py-1 text-sm',
                 ]"
+                  @click="emit('action', command.name)"
               >
-                <AcademicCapIcon
-                    :active="active"
-                    class="mr-2 h-5 w-5 text-primary-600"
-                    aria-hidden="true"
-                />
-                Edit
-              </button>
-            </MenuItem>
-            <MenuItem v-slot="{ active }">
-              <button
-                  :class="[
-                  active ? 'bg-primary-500 text-white' : 'text-gray-900',
-                  'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                ]"
-              >
-                <AcademicCapIcon
-                    :active="active"
-                    class="mr-2 h-5 w-5 text-primary-400"
-                    aria-hidden="true"
-                />
-                Duplicate
-              </button>
-            </MenuItem>
-          </div>
-          <div class="px-1 py-1">
-            <MenuItem v-slot="{ active }">
-              <button
-                  :class="[
-                  active ? 'bg-primary-500 text-white' : 'text-gray-900',
-                  'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                ]"
-              >
-                <AcademicCapIcon
-                    :active="active"
-                    class="mr-2 h-5 w-5 text-primary-400"
-                    aria-hidden="true"
-                />
-                Archive
-              </button>
-            </MenuItem>
-            <MenuItem v-slot="{ active }">
-              <button
-                  :class="[
-                  active ? 'bg-primary-500 text-white' : 'text-gray-900',
-                  'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                ]"
-              >
-                <AcademicCapIcon
-                    :active="active"
-                    class="mr-2 h-5 w-5 text-primary-400"
-                    aria-hidden="true"
-                />
-                Move
-              </button>
-            </MenuItem>
-          </div>
-
-          <div class="px-1 py-1">
-            <MenuItem v-slot="{ active }">
-              <button
-                  :class="[
-                  active ? 'bg-primary-500 text-white' : 'text-gray-900',
-                  'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                ]"
-              >
-                <AcademicCapIcon
-                    :active="active"
-                    class="mr-2 h-5 w-5 text-primary-400"
-                    aria-hidden="true"
-                />
-                Delete
+                <i :class="`${command.icon} text-lg mr-1 pr-1 pl-0.5 text-primary-600 group-hover:text-white`" />
+                <span>{{ $t( `navigation.userButton.${command.label}`) }}</span>
+                <span v-if="command.count" class="rounded-full bg-red-700 text-white text-xs px-2 justify-self-end ">{{ command.count }}</span>
               </button>
             </MenuItem>
           </div>
