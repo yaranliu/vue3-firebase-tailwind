@@ -1,9 +1,9 @@
 <template>
-  <header class="bg-primary-900 text-slate-100 shadow-gray-200 shadow-2xl z-10">
+  <header class="bg-primary-900 text-slate-100 shadow-gray-200 shadow-2xl z-10" @keyup.esc="isOpen = false">
     <nav class="flex justify-between items-center text-sm py-1">
       <div class="flex items-center">
-        <button class="p-2 ml-2 text-white hover:bg-primary-800 rounded-full transition-all duration-200 ease-in-out" @click="isOpen = !isOpen">
-          <Bars3Icon class="h-6 w-6" />
+        <button class="block md:hidden p-1.5 ml-2 text-white focus:outline-0 hover:bg-primary-800 rounded-full transition-all duration-200 ease-in-out" @click="isOpen = !isOpen">
+          <i class="las la-bars text-2xl w-8 h-8" />
         </button>
         <div class="hidden md:block flex items-center" v-for="routeGroup in routes" :key="`group-${routeGroup.group}`">
             <NavigationItem v-for="route in routeGroup.routes" :key="`route-${route.name}`" :route-name="route.name" class="w-full ml-1 px-6 py-1.5 rounded" :class="{ 'text-secondary-300' : isActive(route.name) }" />
@@ -41,11 +41,12 @@
       <aside
           class="transform top-0 left-0 w-64 bg-white fixed h-full overflow-auto ease-in-out transition-all duration-300 z-30"
           :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
+          @keyup.esc = "isOpen = false"
       >
-        <div class="h-full flex flex-col bg-primary-800 text-white space-y-6">
+        <div class="h-full flex flex-col bg-primary-800 text-white space-y-6" @keyup.esc = "isOpen = false">
           <div class="text-right">
             <button class="p-2 ml-2 text-white hover:bg-primary-800 rounded-full transition-all duration-200 ease-in-out" @click="isOpen = !isOpen">
-              <XMarkIcon class="h-6 w-6" />
+              <i class="las la-times text-2xl" />
             </button>
           </div>
           <div class="flex flex-col space-y-2" v-for="routeGroup in routes" :key="`group-${routeGroup.group}`">
@@ -76,7 +77,6 @@ const router = useRouter()
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
-import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 import NavigationItem from "@/layout/NavigationItem.vue";
 import UserDropDown from "@/layout/UserDropDown.vue";
 import DrawerItem from "@/layout/DrawerItem.vue";
