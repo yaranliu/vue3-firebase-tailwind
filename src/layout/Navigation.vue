@@ -1,5 +1,7 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+
+import * as _ from 'lodash/array'
 
 import { RouterLink, useRouter } from 'vue-router'
 const router = useRouter()
@@ -15,17 +17,19 @@ const isOpen = ref(false)
 const routes = ref([
   {
     group: 'Public',
+    auth: false,
     routes: [{ name: 'home', icon: ''},{ name: 'about' },]
   },
   {
     group: 'User',
+    auth: true,
     routes: [{ name: 'dashboard', icon: 'las la-briefcase'}]
   },
 ])
 
 const userCommands = ref([
-  [ { name:'notifications', label: 'notifications', icon: 'las la-bell' }, { name:'messages', label: 'messages', icon: 'las la-envelope', count: 5 } ],
-  [ { name:'profile', label: 'profile', icon: 'las la-user'}, { name:'settings', label: 'settings', icon: 'las la-cog' } ],
+  [ { name:'notifications', label: 'notifications', icon: 'las la-bell', count: 1 }, { name:'messages', label: 'messages', icon: 'las la-envelope', count: 0 } ],
+  [ { name:'profile', label: 'profile', icon: 'las la-user'}, { name:'settings', label: 'settings', icon: 'las la-cog'} ],
   [ { name:'signOut', label: 'signOut', icon: 'las la-sign-out-alt' } ],
 ])
 
@@ -34,8 +38,12 @@ watch(isOpen, (newVal, oldValue) => {
   if (newVal) document.body.style.setProperty("overflow", "hidden")
 })
 
-const isActive = (rName) => {
+const isActiveRoute = (rName) => {
   return router.currentRoute.value.name === rName
+}
+
+const isActiveGroup = (group) => {
+  return _.findIndex(group.routes, (r) => { return r.name === router.currentRoute.value.name }) !== -1
 }
 
 const userAction = (command) => {
@@ -49,6 +57,9 @@ const signOut = () => {
   });
 }
 
+onMounted(() => {
+})
+
 </script>
 <template>
   <header class="bg-primary-900 text-slate-100 shadow-gray-200 shadow-2xl z-10" @keyup.esc="isOpen = false">
@@ -58,7 +69,7 @@ const signOut = () => {
           <i class="las la-bars text-2xl w-8 h-8" />
         </button>
         <div class="hidden md:block flex items-center" v-for="routeGroup in routes" :key="`group-${routeGroup.group}`">
-          <NavigationItem v-for="route in routeGroup.routes" :key="`route-${route.name}`" :route-name="route.name" class="w-full ml-1 px-6 py-1.5 rounded text-base" :class="{ 'text-secondary-300' : isActive(route.name) }" />
+          <NavigationItem v-for="route in routeGroup.routes" :key="`route-${route.name}`" :route-name="route.name" class="w-full ml-1 px-6 py-1.5 rounded text-base" :class="{ 'text-secondary-300' : isActiveRoute(route.name) }" />
         </div>
       </div>
       <div>
@@ -104,14 +115,16 @@ const signOut = () => {
             </button>
           </div>
           <div class="flex flex-col space-y-2" v-for="routeGroup in routes" :key="`group-${routeGroup.group}`">
-            <div class="tracking-widest text-slate-400 pl-2 text-xs">{{ routeGroup.group }}</div>
-            <div class="flex flex-col" v-for="route in routeGroup.routes" :key="`route-${route.name}`">
-              <DrawerItem
-                  :route-name="route.name"
-                  :icon="route.icon"
-                  class="w-full pl-2 py-1 text-lg"
-                  :class="{ 'text-secondary-300 bg-primary-900 border-r-4 border-secondary-500' : isActive(route.name) }"
-                  @navigated="isOpen = false"/>
+            <div v-if="!routeGroup.auth || auth.isAuthenticated">
+              <div class="tracking-widest text-slate-400 pl-2 text-xs mb-1.5" :class="{'text-slate-50' : isActiveGroup(routeGroup) }">{{ routeGroup.group }}</div>
+              <div class="flex flex-col" v-for="route in routeGroup.routes" :key="`route-${route.name}`">
+                <DrawerItem
+                    :route-name="route.name"
+                    :icon="route.icon"
+                    class="w-full pl-2 py-1 text-lg"
+                    :class="{ 'text-secondary-300 bg-primary-900 border-r-4 border-secondary-500' : isActiveRoute(route.name) }"
+                    @navigated="isOpen = false"/>
+              </div>
             </div>
           </div>
         </div>

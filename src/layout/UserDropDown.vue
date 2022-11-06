@@ -1,6 +1,9 @@
 <script setup>
 
-import {computed} from "vue";
+import { computed } from "vue";
+
+import * as _array from 'lodash/array'
+import * as _math from 'lodash/math'
 
 import { useAuthStore } from "@/stores/auth";
 const auth = useAuthStore();
@@ -16,6 +19,8 @@ const showSignIn = computed(() => {
   return router.currentRoute.value.name !== 'signIn'
 })
 
+const totalCount = computed(() => { return _math.sumBy(_array.flatten(props.commands), 'count') })
+
 const emit = defineEmits(['action'])
 
 </script>
@@ -26,11 +31,15 @@ const emit = defineEmits(['action'])
       <div>
         <MenuButton
             v-if="auth.isAuthenticated"
-            class="inline-flex w-full justify-center items-center space-x-2 rounded-md bg-black bg-opacity-0 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+            class="relative inline-flex w-full justify-center items-center rounded-md bg-black bg-opacity-0 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus:bg-opacity-30"
         >
-          <img v-if="auth.hasAvatar" alt="avatar" :src="auth.hasAvatar ? auth.user.photoURL : ''" class="w-8 h-8 rounded-full border border-indigo-200" />
-          <div class="hidden md:block">{{ auth.displayName }}</div>
-          <span><i class="las la-angle-down hidden md:block mx-1 text-primary-200 hover:text-primary-100" /></span>
+          <img v-if="auth.hasAvatar" alt="avatar" :src="auth.hasAvatar ? auth.user.photoURL : ''" class="w-8 h-8 rounded-full border border-indigo-200"/>
+          <button v-else class="w-8 h-8 rounded-full text-white border-2 border-white bg-primary-700">
+            <i class="las la-user text-xl" />
+          </button>
+          <span v-if="totalCount > 0" class="w-2.5 h-2.5 rounded-full bg-red-700 absolute top-1.5 left-10"></span>
+          <div v-if="auth.displayName.length > 0" class="hidden md:block ml-2.5">{{ auth.displayName }}</div>
+          <span><i class="las la-angle-down hidden md:block ml-2.5 text-primary-200 hover:text-primary-100" /></span>
         </MenuButton>
         <button
             v-else
@@ -63,8 +72,8 @@ const emit = defineEmits(['action'])
                   @click="emit('action', command.name)"
               >
                 <i :class="`${command.icon} text-lg mr-1 pr-1 pl-0.5 text-primary-600 group-hover:text-white`" />
-                <span>{{ $t( `navigation.userButton.${command.label}`) }}</span>
-                <span v-if="command.count" class="rounded-full bg-red-700 text-white text-xs px-2 justify-self-end ">{{ command.count }}</span>
+                <span class="grow text-left">{{ $t( `navigation.userButton.${command.label}`) }}</span>
+                <button v-if="command.count" class="rounded-full bg-red-100 w-5 h-5 text-red-800 text-xs font-semibold text-ellipsis overflow-hidden">{{ command.count > 9 ? '~' : command.count }}</button>
               </button>
             </MenuItem>
           </div>
