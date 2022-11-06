@@ -3,6 +3,7 @@ const en = {
         home: 'Home',
         about: 'About',
         dashboard: 'Dashboard',
+        changeTheme: 'Change Theme',
         userButton: {
             notifications: 'Notifications',
             messages: 'Messages',

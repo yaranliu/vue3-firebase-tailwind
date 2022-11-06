@@ -1,9 +1,7 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 
-import * as _ from 'lodash/array'
-
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 const router = useRouter()
 
 import { useAuthStore} from "@/stores/auth";
@@ -11,7 +9,7 @@ const auth = useAuthStore();
 
 import NavigationItem from "@/layout/NavigationItem.vue";
 import UserDropDown from "@/layout/UserDropDown.vue";
-import DrawerItem from "@/layout/DrawerItem.vue";
+import Drawer from "@/layout/Drawer.vue";
 
 const isOpen = ref(false)
 const routes = ref([
@@ -25,6 +23,11 @@ const routes = ref([
     auth: true,
     routes: [{ name: 'dashboard', icon: 'las la-briefcase'}]
   },
+  {
+    group: 'Misc',
+    auth: false,
+    routes: [{ name: 'changeTheme', icon: 'las la-palette text-green-300', action: true}]
+  }
 ])
 
 const userCommands = ref([
@@ -42,10 +45,6 @@ const isActiveRoute = (rName) => {
   return router.currentRoute.value.name === rName
 }
 
-const isActiveGroup = (group) => {
-  return _.findIndex(group.routes, (r) => { return r.name === router.currentRoute.value.name }) !== -1
-}
-
 const userAction = (command) => {
   if (command === 'signOut') signOut()
 }
@@ -55,6 +54,15 @@ const signOut = () => {
     router.push({name: 'signIn' })
   }).catch(error => {
   });
+}
+
+const onDrawerAction = (action) => {
+  console.log('Action:', action)
+}
+
+const onDrawerNavigation = (route) => {
+  console.log('Navigated to:', route)
+  isOpen.value = false
 }
 
 onMounted(() => {
@@ -114,19 +122,14 @@ onMounted(() => {
               <i class="las la-times text-2xl" />
             </button>
           </div>
-          <div class="flex flex-col space-y-2" v-for="routeGroup in routes" :key="`group-${routeGroup.group}`">
-            <div v-if="!routeGroup.auth || auth.isAuthenticated">
-              <div class="tracking-widest text-slate-400 pl-2 text-xs mb-1.5" :class="{'text-slate-50' : isActiveGroup(routeGroup) }">{{ routeGroup.group }}</div>
-              <div class="flex flex-col" v-for="route in routeGroup.routes" :key="`route-${route.name}`">
-                <DrawerItem
-                    :route-name="route.name"
-                    :icon="route.icon"
-                    class="w-full pl-2 py-1 text-lg"
-                    :class="{ 'text-secondary-300 bg-primary-900 border-r-4 border-secondary-500' : isActiveRoute(route.name) }"
-                    @navigated="isOpen = false"/>
-              </div>
-            </div>
-          </div>
+          <Drawer
+              :routes="routes"
+              :is-open="isOpen"
+              show-dividers
+              show-groups
+              show-icons
+              @navigated="onDrawerNavigation"
+              @action="onDrawerAction" />
         </div>
       </aside>
     </nav>

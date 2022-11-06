@@ -3,6 +3,7 @@ const tr = {
         home: 'Ana Sayfa',
         about: 'Hakkımızda',
         dashboard: 'Panel',
+        changeTheme: 'Temayı değiştir',
         userButton: {
             notifications: 'Bildirimler',
             messages: 'Mesajlar',

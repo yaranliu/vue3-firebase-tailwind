@@ -25,15 +25,16 @@ const props = defineProps(
 )
 
 defineEmits(['navigated'])
-const showItem = computed(() => { return props.alwaysShow || auth.isAuthenticated || !router.resolve({ name: props.routeName }).meta.requiresAuth })
-const isActive = computed(() => { return router.currentRoute.value.name === props.routeName })
+const showItem = computed(() => { return router.hasRoute(props.routeName) && props.alwaysShow || auth.isAuthenticated || !router.resolve({ name: props.routeName }).meta.requiresAuth })
 
 </script>
 
 <template>
+  <span v-if="router.hasRoute(props.routeName)">
     <RouterLink v-if="showItem" :to="{ name: routeName }" @click="$emit('navigated')">
       {{ $t(`navigation.${routeName}`) }}
     </RouterLink>
+  </span>
 </template>
 
 

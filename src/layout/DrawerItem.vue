@@ -20,23 +20,42 @@ const props = defineProps(
       alwaysShow: {
         type: Boolean,
         default: false
+      },
+      isAction: {
+        type: Boolean,
+        default: false
+      },
+      showIcon: {
+        type: Boolean,
+        default: true
       }
     }
 )
 
-defineEmits(['navigated'])
-const showItem = computed(() => { return props.alwaysShow || auth.isAuthenticated || !router.resolve({ name: props.routeName }).meta.requiresAuth })
+const emit = defineEmits(['navigated', 'action'])
+const showNavItem = computed(() => { return props.alwaysShow || auth.isAuthenticated || !router.resolve({ name: props.routeName }).meta.requiresAuth })
+
+const onClick = () => {
+  if (props.isAction) emit('action')
+  else {
+    router.push( { name: props.routeName })
+    emit('navigated')
+  }
+}
 
 </script>
 
 <template>
-  <div v-if="showItem" class="flex flex-row items-center h-11">
-    <div class="p-2 text-xl">
+  <div class="flex flex-row items-center h-12 pl-4" @click="onClick">
+    <div v-if="showIcon" class="p-2 text-xl mx-1.5 w-8" >
       <i v-if="icon" :class="icon" />
     </div>
-    <RouterLink :to="{ name: routeName }" @click="$emit('navigated')" :class="{ 'ml-4' : !icon }">
+    <div v-if="isAction">
       {{ $t(`navigation.${routeName}`) }}
-    </RouterLink>
+    </div>
+    <div v-if="router.hasRoute(routeName)"><span v-if="showNavItem">{{ $t(`navigation.${routeName}`) }}</span>
+    </div>
+
   </div>
 
 </template>
