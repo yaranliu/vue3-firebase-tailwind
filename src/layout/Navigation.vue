@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, reactive } from 'vue'
 
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -12,29 +12,8 @@ import UserDropDown from "@/layout/UserDropDown.vue";
 import Drawer from "@/layout/Drawer.vue";
 
 const isOpen = ref(false)
-const routes = ref([
-  {
-    group: 'Public',
-    auth: false,
-    routes: [{ name: 'home', icon: ''},{ name: 'about' },]
-  },
-  {
-    group: 'User',
-    auth: true,
-    routes: [{ name: 'dashboard', icon: 'las la-briefcase'}]
-  },
-  {
-    group: 'Misc',
-    auth: false,
-    routes: [{ name: 'changeTheme', icon: 'las la-palette text-green-300', action: true}]
-  }
-])
 
-const userCommands = ref([
-  [ { name:'notifications', label: 'notifications', icon: 'las la-bell', count: 1 }, { name:'messages', label: 'messages', icon: 'las la-envelope', count: 0 } ],
-  [ { name:'profile', label: 'profile', icon: 'las la-user'}, { name:'settings', label: 'settings', icon: 'las la-cog'} ],
-  [ { name:'signOut', label: 'signOut', icon: 'las la-sign-out-alt' } ],
-])
+import { routes, commands } from './LayoutConfiguration'
 
 watch(isOpen, (newVal, oldValue) => {
   document.body.style.removeProperty("overflow")
@@ -83,7 +62,7 @@ onMounted(() => {
       <div>
         <UserDropDown
             route-after-sign-out="signIn"
-            :commands="userCommands"
+            :commands="commands"
             @action="userAction"
         />
       </div>
@@ -133,8 +112,6 @@ onMounted(() => {
         </div>
       </aside>
     </nav>
-    <div>
-    </div>
   </header>
 </template>
 

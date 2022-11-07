@@ -46,7 +46,7 @@ const onClick = () => {
 </script>
 
 <template>
-  <div class="flex flex-row items-center h-12 pl-4" @click="onClick">
+  <div class="flex flex-row items-center h-12 pl-4 whitespace-nowrap" @click="onClick">
     <div v-if="showIcon" class="p-2 text-xl mx-1.5 w-8" >
       <i v-if="icon" :class="icon" />
     </div>

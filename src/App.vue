@@ -1,16 +1,16 @@
 <template>
-  <Navigation />
-  <RouterView />
+<!--  <WebLayout />-->
+  <AppLayout />
 </template>
 <script setup>
 import { onMounted} from "vue";
-import { RouterView } from 'vue-router'
 
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
 import { inject } from "vue";
-import Navigation from "@/layout/Navigation.vue";
+import WebLayout from "@/layout/WebLayout.vue";
+import AppLayout from "@/layout/AppLayout.vue";
 const $axios = inject("$axios");
 
 
