@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref  } from 'vue'
+import { ref } from 'vue'
 
 import SignInCard from "@/components/auth/SignInCard.vue";
 
@@ -10,6 +10,7 @@ import SimpleDialog from "@/components/common/SimpleDialog.vue";
 const router = useRouter()
 
 import { useAuthStore } from "@/stores/auth";
+import {AuthErrorSource} from "@/components/auth/AuthErrorSource";
 const auth = useAuthStore()
 
 const onGotoSignUp = () => {
@@ -41,6 +42,7 @@ const onSignInEnded = (authProvider) => {
 const onError = (authError) => {
   showErrorDialog.value = true
 }
+
 </script>
 
 <template>

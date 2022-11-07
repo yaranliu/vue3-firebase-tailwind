@@ -17,7 +17,8 @@ export class AuthError {
   }
   toLocaleString() {
     const prefix = 'error.auth'
-    if (this.Source === AuthErrorSource.Application) {
+    if (this.Source === AuthErrorSource.None) return 'error.auth.none'
+    else if (this.Source === AuthErrorSource.Application) {
       let code = _.camelCase(this.Code)
       return `${prefix}.application.${code}`
     }

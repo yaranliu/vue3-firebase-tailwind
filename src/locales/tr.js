@@ -84,6 +84,7 @@ const tr = {
             button: 'Kapat'
         },
         auth: {
+            none: '',
             firebase: {
                 adminRestrictedOperation : 'adminRestrictedOperation',
                 argumentError : 'argumentError',

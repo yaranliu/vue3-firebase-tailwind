@@ -31,13 +31,13 @@ const isActiveGroup = (group) => {
 
 <template>
   <div class="flex flex-col w-full h-full overflow-hidden">
-    <div class="flex-none bg-green-500 h-24 text-black">
-      Header
+    <div class="flex-none">
+      <slot name="header"></slot>
     </div>
     <div class="grow bg-primary-900 overflow-y-auto">
       <div
           v-for="itemGroup in items" :key="`group-${itemGroup.group}`"
-          class="flex flex-col mt-1.5"
+          class="flex flex-col mt-4"
           :class="{ 'border-b border-primary-900' : showDividers }"
       >
         <div v-if="!itemGroup.auth || auth.isAuthenticated">
@@ -57,7 +57,9 @@ const isActiveGroup = (group) => {
         </div>
       </div>
     </div>
-    <div class="flex-none bg-red-500 h-24 text-black">Footer</div>
+    <div class="flex-none">
+      <slot name="footer"></slot>
+    </div>
   </div>
 
 </template>

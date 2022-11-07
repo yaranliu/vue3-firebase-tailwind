@@ -155,17 +155,23 @@ export const useAuthStore = defineStore({
         isAuthenticated() {
             return this.user !== null;
         },
+        email() {
+            return this.user !== null ? this.user.email : ''
+        },
         displayName() {
             if (this.user !== null) {
                 return this.user.displayName === null || this.user.displayName === '' ? this.user.email : this.user.displayName;
             }
             else return ''
         },
+        displayNameIsEmail() {
+            return this.user !== null && (this.user.displayName === null || this.user.displayName === '')
+        },
         hasAvatar() {
             return this.user !== null && this.user.photoURL !== null && this.user.photoURL !== '';
         },
         avatar() {
-          return this.hasAvatar() ? this.user.photoURL : '';
+            return this.hasAvatar ? this.user.photoURL : '';
         }
     }
 })

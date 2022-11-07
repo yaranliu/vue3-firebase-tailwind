@@ -84,6 +84,7 @@ const en = {
             button: 'Close'
         },
         auth: {
+            none: '',
             firebase: {
                 adminRestrictedOperation : 'adminRestrictedOperation',
                 argumentError : 'argumentError',

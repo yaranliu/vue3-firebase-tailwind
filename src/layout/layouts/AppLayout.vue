@@ -17,6 +17,7 @@ const isOpen = ref(true)
 
 import { DrawerItems, UserButtonActions } from '../configuration/LayoutConfiguration'
 import LayoutHeader from "@/layout/header/LayoutHeader.vue";
+import UserProfileForDrawer from "@/components/app/UserProfileForDrawer.vue";
 
 const isActiveRoute = (rName) => {
   return router.currentRoute.value.name === rName
@@ -59,7 +60,14 @@ onMounted(() => {
                 show-groups
                 show-icons
                 @navigated="onDrawerNavigation"
-                @action="onDrawerAction" />
+                @action="onDrawerAction" >
+              <template #header>
+                <UserProfileForDrawer />
+              </template>
+              <template #footer>
+
+              </template>
+            </Drawer>
           </div>
 
           <!-- TODO Correct max-h of RouterView taking Header and Footer heights into consideration -->
