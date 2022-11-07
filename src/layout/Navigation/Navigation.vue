@@ -7,13 +7,13 @@ const router = useRouter()
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
-import NavigationItem from "@/layout/NavigationItem.vue";
-import UserDropDown from "@/layout/UserDropDown.vue";
-import Drawer from "@/layout/Drawer.vue";
+import NavigationItem from "@/layout/Navigation/NavigationItem.vue";
+import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
+import Drawer from "@/layout/drawer/Drawer.vue";
 
 const isOpen = ref(false)
 
-import { routes, commands } from './LayoutConfiguration'
+import { DrawerItems, UserButtonActions } from '@/layout/configuration/LayoutConfiguration'
 
 watch(isOpen, (newVal, oldValue) => {
   document.body.style.removeProperty("overflow")
@@ -36,11 +36,9 @@ const signOut = () => {
 }
 
 const onDrawerAction = (action) => {
-  console.log('Action:', action)
 }
 
 const onDrawerNavigation = (route) => {
-  console.log('Navigated to:', route)
   isOpen.value = false
 }
 
@@ -55,14 +53,14 @@ onMounted(() => {
         <button class="block md:hidden p-1.5 ml-2 text-white focus:outline-0 hover:bg-primary-800 rounded-full transition-all duration-200 ease-in-out" @click="isOpen = !isOpen">
           <i class="las la-bars text-2xl w-8 h-8" />
         </button>
-        <div class="hidden md:block flex items-center" v-for="routeGroup in routes" :key="`group-${routeGroup.group}`">
+        <div class="hidden md:block flex items-center" v-for="routeGroup in DrawerItems" :key="`group-${routeGroup.group}`">
           <NavigationItem v-for="route in routeGroup.routes" :key="`route-${route.name}`" :route-name="route.name" class="w-full ml-1 px-6 py-1.5 rounded text-base" :class="{ 'text-secondary-300' : isActiveRoute(route.name) }" />
         </div>
       </div>
       <div>
         <UserDropDown
             route-after-sign-out="signIn"
-            :commands="commands"
+            :commands="UserButtonActions"
             @action="userAction"
         />
       </div>
@@ -102,7 +100,7 @@ onMounted(() => {
             </button>
           </div>
           <Drawer
-              :routes="routes"
+              :routes="DrawerItems"
               :is-open="isOpen"
               show-dividers
               show-groups

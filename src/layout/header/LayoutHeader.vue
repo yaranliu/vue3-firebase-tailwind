@@ -3,20 +3,13 @@
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
-import UserDropDown from "@/layout/UserDropDown.vue";
+import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
 
-const emit = defineEmits(['menuClicked'])
-const props = defineProps(['commands'])
+const emit = defineEmits(['userAction', 'menuClicked'])
+const props = defineProps(['userButtonActions'])
 
-const userAction = (command) => {
-  if (command === 'signOut') signOut()
-}
-
-const signOut = () => {
-  auth.signOut().then(() => {
-    router.push({name: 'signIn' })
-  }).catch(error => {
-  });
+const onUserAction = (action ) => {
+  emit('userAction', action)
 }
 
 </script>
@@ -30,9 +23,8 @@ const signOut = () => {
       </div>
       <div>
         <UserDropDown
-            route-after-sign-out="signIn"
-            :commands="commands"
-            @action="userAction"
+            :actions="userButtonActions"
+            @action="onUserAction"
         />
       </div>
     </nav>

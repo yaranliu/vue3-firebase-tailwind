@@ -1,42 +1,36 @@
 <script setup>
 import { ref, watch, onMounted, computed, reactive } from 'vue'
 
+const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
+
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
-import NavigationItem from "@/layout/NavigationItem.vue";
-import UserDropDown from "@/layout/UserDropDown.vue";
-import Drawer from "@/layout/Drawer.vue";
+import NavigationItem from "@/layout/Navigation/NavigationItem.vue";
+import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
+import Drawer from "@/layout/drawer/Drawer.vue";
 
 const isOpen = ref(true)
 
-import { routes, commands } from './LayoutConfiguration'
-import LayoutHeader from "@/layout/LayoutHeader.vue";
+import { DrawerItems, UserButtonActions } from '../configuration/LayoutConfiguration'
+import LayoutHeader from "@/layout/header/LayoutHeader.vue";
 
 const isActiveRoute = (rName) => {
   return router.currentRoute.value.name === rName
 }
 
-const userAction = (command) => {
-  if (command === 'signOut') signOut()
-}
-
-const signOut = () => {
-  auth.signOut().then(() => {
-    router.push({name: 'signIn' })
-  }).catch(error => {
-  });
-}
-
 const onDrawerAction = (action) => {
-  console.log('Action:', action)
+  emit('drawerAction', action)
 }
 
 const onDrawerNavigation = (route) => {
-  console.log('Navigated to:', route)
+}
+
+const onUserButtonAction = (action) => {
+  emit('userButtonAction', action)
 }
 
 onMounted(() => {
@@ -47,14 +41,19 @@ onMounted(() => {
   <main>
     <div class="flex flex-col w-full h-screen overflow-hidden bg-slate-50">
       <div class="flex-none">
-        <LayoutHeader class="bg-primary-900 text-slate-100 text-sm" :commands="commands" @menu-clicked="isOpen = !isOpen" />
+        <LayoutHeader
+            class="bg-primary-900 text-slate-100 text-sm"
+            :user-button-actions="UserButtonActions"
+            @menu-clicked="isOpen = !isOpen"
+            @user-action="onUserButtonAction"
+        />
       </div>
       <div class="grow overflow-y-auto">
         <div class="h-full flex flex-row">
           <div class="flex-none w-64 transition-all ease-in-out duration-300" :class="{'-translate-x-64 w-0' : !isOpen }">
             <Drawer
                 class="bg-primary-700 text-white"
-                :routes="routes"
+                :items="DrawerItems"
                 :is-open="isOpen"
                 show-dividers
                 show-groups
@@ -62,8 +61,14 @@ onMounted(() => {
                 @navigated="onDrawerNavigation"
                 @action="onDrawerAction" />
           </div>
+
+          <!-- TODO Correct max-h of RouterView taking Header and Footer heights into consideration -->
           <div class="grow max-h-screen overflow-y-auto">
-            <RouterView />
+            <RouterView v-slot="{ Component }">
+              <transition name="fade" mode="out-in">
+                <component :is="Component" />
+              </transition>
+            </RouterView>
           </div>
         </div>
       </div>
@@ -76,5 +81,13 @@ onMounted(() => {
 
 </template>
 <style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
 
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

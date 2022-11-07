@@ -2,8 +2,12 @@ const en = {
     navigation: {
         home: 'Home',
         about: 'About',
+        lorem: 'Lorem Ipsum',
         dashboard: 'Dashboard',
         changeTheme: 'Change Theme',
+        action1: 'Action 1',
+        action2: 'Action 2',
+        action3: 'Action 3',
         userButton: {
             notifications: 'Notifications',
             messages: 'Messages',

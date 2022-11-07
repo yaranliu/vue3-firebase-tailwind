@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 const router = useRouter()
 
 import { useAuthStore} from "@/stores/auth";
@@ -9,7 +9,7 @@ const auth = useAuthStore();
 
 const props = defineProps(
     {
-      routeName: {
+      itemName: {
         type: String,
         default: ''
       },
@@ -33,12 +33,12 @@ const props = defineProps(
 )
 
 const emit = defineEmits(['navigated', 'action'])
-const showNavItem = computed(() => { return props.alwaysShow || auth.isAuthenticated || !router.resolve({ name: props.routeName }).meta.requiresAuth })
+const showNavItem = computed(() => { return props.alwaysShow || auth.isAuthenticated || !router.resolve({ name: props.itemName }).meta.requiresAuth })
 
 const onClick = () => {
   if (props.isAction) emit('action')
   else {
-    router.push( { name: props.routeName })
+    router.push( { name: props.itemName })
     emit('navigated')
   }
 }
@@ -51,9 +51,9 @@ const onClick = () => {
       <i v-if="icon" :class="icon" />
     </div>
     <div v-if="isAction">
-      {{ $t(`navigation.${routeName}`) }}
+      {{ $t(`navigation.${itemName}`) }}
     </div>
-    <div v-if="router.hasRoute(routeName)"><span v-if="showNavItem">{{ $t(`navigation.${routeName}`) }}</span>
+    <div v-if="router.hasRoute(itemName)"><span v-if="showNavItem">{{ $t(`navigation.${itemName}`) }}</span>
     </div>
 
   </div>

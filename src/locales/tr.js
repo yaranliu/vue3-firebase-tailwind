@@ -2,8 +2,12 @@ const tr = {
     navigation: {
         home: 'Ana Sayfa',
         about: 'Hakkımızda',
+        lorem: 'Lorem Ipsum',
         dashboard: 'Panel',
         changeTheme: 'Temayı değiştir',
+        action1: 'Komut 1',
+        action2: 'Komut 2',
+        action3: 'Komut 3',
         userButton: {
             notifications: 'Bildirimler',
             messages: 'Mesajlar',

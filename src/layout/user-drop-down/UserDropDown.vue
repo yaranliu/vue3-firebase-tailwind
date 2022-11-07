@@ -8,18 +8,20 @@ import * as _math from 'lodash/math'
 import { useAuthStore } from "@/stores/auth";
 const auth = useAuthStore();
 
+import { RouteNames} from "@/configuration/app-configuration";
+
 import { useRouter} from "vue-router";
 const router = useRouter()
 
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 
-const props = defineProps(['commands', 'routeAfterSignOut'])
+const props = defineProps([ 'actions' ])
 
 const showSignIn = computed(() => {
-  return router.currentRoute.value.name !== 'signIn'
+  return router.currentRoute.value.name !== RouteNames.signIn
 })
 
-const totalCount = computed(() => { return _math.sumBy(_array.flatten(props.commands), 'count') })
+const totalCount = computed(() => { return _math.sumBy(_array.flatten(props.actions), 'count') })
 
 const emit = defineEmits(['action'])
 
@@ -62,18 +64,18 @@ const emit = defineEmits(['action'])
         <MenuItems
             class="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
-          <div class="px-1 py-1" v-for="group in commands">
-            <MenuItem v-for="command in group" v-slot="{ active }">
+          <div class="px-1 py-1" v-for="group in actions">
+            <MenuItem v-for="action in group" v-slot="{ active }">
               <button
                   :class="[
                   active ? 'bg-primary-600 text-white' : 'text-gray-900',
                   'group flex w-full items-center rounded-md px-2 py-1 text-sm',
                 ]"
-                  @click="emit('action', command.name)"
+                  @click="emit('action', action.name)"
               >
-                <i :class="`${command.icon} text-lg mr-1 pr-1 pl-0.5 text-primary-600 group-hover:text-white`" />
-                <span class="grow text-left">{{ $t( `navigation.userButton.${command.label}`) }}</span>
-                <button v-if="command.count" class="rounded-full bg-red-100 w-5 h-5 text-red-800 text-xs font-semibold text-ellipsis overflow-hidden">{{ command.count > 9 ? '~' : command.count }}</button>
+                <i :class="`${action.icon} text-lg mr-1 pr-1 pl-0.5 text-primary-600 group-hover:text-white`" />
+                <span class="grow text-left">{{ $t( `navigation.userButton.${action.label}`) }}</span>
+                <button v-if="action.count" class="rounded-full bg-red-100 w-5 h-5 text-red-800 text-xs font-semibold text-ellipsis overflow-hidden">{{ action.count > 9 ? '~' : action.count }}</button>
               </button>
             </MenuItem>
           </div>
