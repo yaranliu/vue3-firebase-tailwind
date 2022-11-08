@@ -19,8 +19,10 @@ module.exports = {
       colors: themeColors,
     },
     fontFamily: {
+      // sans: ['proxima-soft']
       sans: ['Poppins']
     }
   },
   plugins: [],
 }
+

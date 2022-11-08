@@ -1,7 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, computed, reactive } from 'vue'
-
-const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
+import { ref, onMounted } from 'vue'
 
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -9,21 +7,17 @@ const router = useRouter()
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
-import NavigationItem from "@/layout/Navigation/NavigationItem.vue";
-import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
-import Drawer from "@/layout/drawer/Drawer.vue";
-
-const isOpen = ref(true)
-
 import { DrawerItems, UserButtonActions } from '../configuration/LayoutConfiguration'
 import LayoutHeader from "@/layout/header/LayoutHeader.vue";
 import UserProfileForDrawer from "@/components/app/UserProfileForDrawer.vue";
 import ExampleDrawerFooter from "@/components/app/ExampleDrawerFooter.vue";
 import LayoutFooter from "@/layout/footer/LayoutFooter.vue";
+import DockedDrawer from "@/layout/drawer/DockedDrawer.vue";
 
-const isActiveRoute = (rName) => {
-  return router.currentRoute.value.name === rName
-}
+const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
+
+const isOpen = ref(true)
+const isDocked = ref(true)
 
 const onDrawerAction = (action) => {
   emit('drawerAction', action)
@@ -34,6 +28,11 @@ const onDrawerNavigation = (route) => {
 
 const onUserButtonAction = (action) => {
   emit('userButtonAction', action)
+}
+
+const onToggleDock = () => {
+  console.log('toggle')
+  isDocked.value = !isDocked.value
 }
 
 onMounted(() => {
@@ -53,23 +52,28 @@ onMounted(() => {
       </div>
       <div class="grow overflow-y-auto">
         <div class="h-full flex flex-row">
-          <div class="flex-none w-64 transition-all ease-in-out duration-300" :class="{'-translate-x-64 w-0' : !isOpen }">
-            <Drawer
+          <div
+              class="flex-none transition-all ease-in-out duration-300"
+              :class="{ '-translate-x-64 w-0' : !isOpen, 'w-64' : isOpen && !isDocked, 'w-12' : isOpen && isDocked }">
+            <DockedDrawer
                 class="bg-primary-700 text-white"
                 :items="DrawerItems"
                 :is-open="isOpen"
+                :is-docked="isDocked"
                 show-dividers
                 show-groups
                 show-icons
                 @navigated="onDrawerNavigation"
-                @action="onDrawerAction" >
+                @action="onDrawerAction"
+                @toggle-dock="onToggleDock"
+            >
               <template #header>
-                <UserProfileForDrawer />
+                <UserProfileForDrawer :is-docked="isDocked" />
               </template>
               <template #footer>
-                <ExampleDrawerFooter />
+                <ExampleDrawerFooter :is-docked="isDocked" />
               </template>
-            </Drawer>
+            </DockedDrawer>
           </div>
 
           <!-- TODO Correct max-h of RouterView taking Header and Footer heights into consideration -->

@@ -15,6 +15,7 @@ import AppLayout from "@/layout/layouts/AppLayout.vue";
 const $axios = inject("$axios");
 
 import { DefaultActions } from '@/layout/configuration/LayoutConfiguration'
+import DockedLayout from "@/layout/layouts/DockedLayout.vue";
 
 onMounted(() => {
   $axios.defaults.headers.common["Content-Type"] = "application/json";
@@ -50,7 +51,11 @@ const signOut = () => {
 </script>
 
 <template>
-  <AppLayout
+<!--  <AppLayout-->
+<!--      @drawer-action="drawerActionsHandler"-->
+<!--      @user-button-action="userButtonActionsHandler"-->
+<!--  />-->
+  <DockedLayout
       @drawer-action="drawerActionsHandler"
       @user-button-action="userButtonActionsHandler"
   />
