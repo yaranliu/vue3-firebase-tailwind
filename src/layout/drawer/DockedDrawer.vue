@@ -19,7 +19,7 @@ const props = defineProps({
   showDividers: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['navigated', 'action', 'toggleDock'])
+const emit = defineEmits(['navigated', 'action', 'widthChanged'])
 
 const isActiveRoute = (rName) => {
   return router.currentRoute.value.name === rName
@@ -33,10 +33,9 @@ const isActiveGroup = (group) => {
 
 <template>
   <div class="flex flex-col w-full h-full overflow-hidden">
-    <div class="flex-none grid place-content-center h-12">
-      <button class="rounded-full" @click="emit('toggleDock')">
-        <i :class="{'las la-chevron-right' : width === DrawerWidth.sm || width === DrawerWidth.md, 'las la-chevron-left': width === DrawerWidth.lg} "></i>
-      </button>
+    <div class="flex-none flex row w-full justify-between h-12">
+      <button v-if="width !== DrawerWidth.sm" class="grow p-2 bg-red-500" @click="emit('widthChanged', -1)"><i class="las la-chevron-left" /></button>
+      <button v-if="width !== DrawerWidth.lg" class="grow p-2 bg-red-500" @click="emit('widthChanged', 1)"><i class="las la-chevron-right" /></button>
     </div>
     <div class="flex-none">
       <slot name="header"></slot>

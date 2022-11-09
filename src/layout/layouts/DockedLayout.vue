@@ -32,14 +32,20 @@ const onUserButtonAction = (action) => {
   emit('userButtonAction', action)
 }
 
-const onToggleDock = () => {
-  isDocked.value = !isDocked.value
-  // isOpen.value = !isOpen.value
+const widthDown = () => {
+  if (drawerWidth.value === DrawerWidth.sm) drawerWidth.value = DrawerWidth.lg
+  else if (drawerWidth.value === DrawerWidth.md) drawerWidth.value = DrawerWidth.sm
+  else if (drawerWidth.value === DrawerWidth.lg) drawerWidth.value = DrawerWidth.md
+}
+
+const widthUp = () => {
   if (drawerWidth.value === DrawerWidth.sm) drawerWidth.value = DrawerWidth.md
   else if (drawerWidth.value === DrawerWidth.md) drawerWidth.value = DrawerWidth.lg
   else if (drawerWidth.value === DrawerWidth.lg) drawerWidth.value = DrawerWidth.sm
-  // setTimeout(() => { isOpen.value = !isOpen.value }, 150)
+}
 
+const changeWidth = (direction) => {
+  if (direction > 0) widthUp(); else widthDown()
 }
 
 const containerClass = computed(() => ({
@@ -70,11 +76,11 @@ onMounted(() => {
             show-icons
             @navigated="onDrawerNavigation"
             @action="onDrawerAction"
-            @toggle-dock="onToggleDock"
+            @width-changed="changeWidth"
         >
-<!--          <template #header>-->
-<!--            <UserProfileForDrawer :is-docked="isDocked" />-->
-<!--          </template>-->
+          <template #header>
+            <UserProfileForDrawer :is-docked="isDocked" :width="drawerWidth" />
+          </template>
           <template #footer>
             <ExampleDrawerFooter :width="drawerWidth" />
           </template>
