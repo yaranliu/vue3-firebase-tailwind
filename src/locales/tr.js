@@ -1,13 +1,13 @@
 const tr = {
     navigation: {
-        home: 'Ana Sayfa',
-        about: 'Hakkımızda',
-        lorem: 'Lorem Ipsum',
-        dashboard: 'Panel',
-        changeTheme: 'Temayı değiştir',
-        action1: 'Komut 1',
-        action2: 'Komut 2',
-        action3: 'Komut 3',
+        home: { md: 'Ana Sayfa', lg: 'Ana Sayfa', hint: 'Uygulama Ana Sayfası'},
+        about: { md: 'Biz', lg: 'Hakkımızda', hint: 'Biz kimiz'},
+        lorem: { md: 'Lorem', lg: 'Lorem Ipsum', hint: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'},
+        dashboard: { md: 'Panel', lg: 'Kullanıcı paneli', hint: 'Kullanıcı paneli'},
+        changeTheme: { md: 'Tema', lg: 'Temayı değiştir', hint: 'Uygulama arka plan görünümünü değiştir'},
+        action1: { md: '', lg: 'Komut 1', hint: ''},
+        action2: { md: '', lg: 'Komut 2', hint: 'Ana'},
+        action3: { md: '', lg: 'Komut 3', hint: ''},
         userButton: {
             notifications: 'Bildirimler',
             messages: 'Mesajlar',

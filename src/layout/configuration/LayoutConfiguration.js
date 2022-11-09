@@ -25,7 +25,7 @@ const DrawerItems = [
     {
         group: 'Public',
         auth: false,
-        items: [{ name: 'home', icon: ''}, { name: 'about' }, { name: 'lorem' }]
+        items: [{ name: 'home', icon: 'las la-home'}, { name: 'about', icon: 'las la-building' }, { name: 'lorem', icon: 'las la-font' }]
     },
     {
         group: 'User',

@@ -8,11 +8,12 @@ import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
 import DockedDrawerItem from "@/layout/drawer/DockedDrawerItem.vue"
+import {DrawerWidth} from "@/layout/drawer/DrawerWidth.ts";
 
 const props = defineProps({
   items: { type: Array },
   isOpen: { type: Boolean},
-  isDocked: { type: Boolean},
+  width: { type: String, default: DrawerWidth.md },
   showGroups : { type: Boolean, default: false },
   showIcons: { type: Boolean, default: true },
   showDividers: { type: Boolean, default: false }
@@ -32,13 +33,13 @@ const isActiveGroup = (group) => {
 
 <template>
   <div class="flex flex-col w-full h-full overflow-hidden">
+    <div class="flex-none grid place-content-center h-12">
+      <button class="rounded-full" @click="emit('toggleDock')">
+        <i :class="{'las la-chevron-right' : width === DrawerWidth.sm || width === DrawerWidth.md, 'las la-chevron-left': width === DrawerWidth.lg} "></i>
+      </button>
+    </div>
     <div class="flex-none">
       <slot name="header"></slot>
-    </div>
-    <div class="flex-none text-center p-2">
-      <button class="w-6 h-6 rounded-full" @click="emit('toggleDock')">
-        <i :class="{'las la-chevron-right' : isDocked, 'las la-chevron-left': !isDocked} "></i>
-      </button>
     </div>
     <div class="grow bg-primary-900 overflow-y-auto">
       <div
@@ -47,19 +48,21 @@ const isActiveGroup = (group) => {
           :class="{ 'border-b border-primary-900' : showDividers }"
       >
         <div v-if="!itemGroup.auth || auth.isAuthenticated">
-          <div v-if="showGroups && !props.isDocked" class="tracking-[.3em] text-slate-400 pl-2 text-xs mb-1.5" :class="{'text-slate-50' : isActiveGroup(itemGroup) }">{{ itemGroup.group }}</div>
+          <div v-if="showGroups && props.width === DrawerWidth.lg"
+               class="tracking-[.3em] text-slate-400 pl-2 text-xs mb-1.5"
+               :class="{'text-slate-50' : isActiveGroup(itemGroup) }">{{ itemGroup.group }}
+          </div>
           <div class="flex flex-col" v-for="item in itemGroup.items" :key="`route-${item.name}`">
             <DockedDrawerItem
-                :is-docked="props.isDocked"
+                :width="width"
                 :item-name="item.name"
                 :is-action="item.action"
                 :icon="item.icon"
                 :show-icon="showIcons"
-                class="py-1 text-base opacity-80 hover:scale-105 hover:opacity-100 hover:cursor-pointer  transition-all ease-in-out duration-300"
+                class="text-base opacity-80 border-x-8 border-x-primary-900"
                 :class="{
-                  'hover:scale-110' : isDocked,
                   'bg-primary-900' : isActiveRoute(item.name),
-                  'pl-2 border-r-8 border-secondary-300 shadow-inner' : !props.isDocked && isActiveRoute(item.name)
+                  'border-r-secondary-300 shadow-inner' : width === DrawerWidth.lg && isActiveRoute(item.name)
                 }"
                 @navigated="emit('navigated', item.name)"
                 @action="emit('action', item.name)"

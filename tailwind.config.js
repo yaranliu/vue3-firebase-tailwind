@@ -17,6 +17,9 @@ module.exports = {
   theme: {
     extend: {
       colors: themeColors,
+      transitionProperty: {
+        'width' : 'width'
+      }
     },
     fontFamily: {
       // sans: ['proxima-soft']
