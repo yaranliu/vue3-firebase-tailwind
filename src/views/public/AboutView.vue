@@ -1,7 +1,10 @@
 <template>
-  <main class="flex flex-row min-h-screen justify-center items-center">
-    <div class="p-4 sm:w-1/3">
-      <div class="text-center py-6 font-bold text-2xl">About</div>
+  <main class="h-full p-4">
+    <div class="overflow-y-auto h-full">
+
+<!--      Page starts here-->
+      <div class="h-full grid place-content-center text-white text-6xl font-bold tracking-widest">About</div>
+<!--      Page ends here-->
     </div>
   </main>
 </template>

@@ -34,7 +34,7 @@ const isActiveGroup = (group) => {
     <div class="flex-none">
       <slot name="header"></slot>
     </div>
-    <div class="grow bg-primary-900 overflow-y-auto">
+    <div class="grow overflow-y-auto">
       <div
           v-for="itemGroup in items" :key="`group-${itemGroup.group}`"
           class="flex flex-col mt-4"

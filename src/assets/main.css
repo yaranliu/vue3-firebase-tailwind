@@ -7,6 +7,12 @@
 
 @layer components {
 
+    /*Common*/
+    .container-bg {
+        @apply bg-blue-100 bg-opacity-20 shadow-2xl
+    }
+
+
     /*Authentication components*/
     .auth-card {
         /*min-width: 300px;*/
@@ -60,3 +66,8 @@
     }
 
 }
+
+body {
+    background-image: url("/public/img/bg.png");
+}
+

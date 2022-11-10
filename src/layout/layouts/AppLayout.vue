@@ -42,10 +42,10 @@ onMounted(() => {
 </script>
 <template>
   <main>
-    <div class="flex flex-col w-full h-screen overflow-hidden bg-slate-50">
+    <div class="flex flex-col w-full h-screen overflow-hidden">
       <div class="flex-none">
         <LayoutHeader
-            class="bg-primary-900 text-slate-100 text-sm"
+            class="text-slate-100 text-sm"
             :user-button-actions="UserButtonActions"
             @menu-clicked="isOpen = !isOpen"
             @user-action="onUserButtonAction"

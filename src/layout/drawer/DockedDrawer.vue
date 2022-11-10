@@ -1,4 +1,6 @@
 <script setup>
+import { computed} from "vue";
+
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
@@ -29,18 +31,26 @@ const isActiveGroup = (group) => {
   return _.findIndex(group.routes, (r) => { return r.name === router.currentRoute.value.name }) !== -1
 }
 
+const itemClass = ((item) => (
+    {
+      // 'border-x-8 border-x-primary-900' : true,
+      // 'bg-primary-400' : isActiveRoute(item.name),
+      // 'border-r-secondary-300 shadow-inner' : props.width === DrawerWidth.lg && isActiveRoute(item.name)
+    }
+))
+
 </script>
 
 <template>
   <div class="flex flex-col w-full h-full overflow-hidden">
     <div class="flex-none flex row w-full justify-between h-12">
-      <button v-if="width !== DrawerWidth.sm" class="grow p-2 bg-red-500" @click="emit('widthChanged', -1)"><i class="las la-chevron-left" /></button>
-      <button v-if="width !== DrawerWidth.lg" class="grow p-2 bg-red-500" @click="emit('widthChanged', 1)"><i class="las la-chevron-right" /></button>
+      <button v-if="width !== DrawerWidth.sm" class="grow p-3 text-left"  @click="emit('widthChanged', width === DrawerWidth.lg ? DrawerWidth.md : DrawerWidth.sm)"><i class="las la-angle-left text-sm" /></button>
+      <button v-if="width !== DrawerWidth.lg" class="grow p-3" :class="{'text-center' : width === DrawerWidth.sm }" @click="emit('widthChanged', width === DrawerWidth.sm ? DrawerWidth.md : DrawerWidth.lg)"><i class="las la-angle-right text-sm" /></button>
     </div>
     <div class="flex-none">
       <slot name="header"></slot>
     </div>
-    <div class="grow bg-primary-900 overflow-y-auto">
+    <div class="grow overflow-y-auto">
       <div
           v-for="itemGroup in items" :key="`group-${itemGroup.group}`"
           class="flex flex-col mt-4"
@@ -48,7 +58,7 @@ const isActiveGroup = (group) => {
       >
         <div v-if="!itemGroup.auth || auth.isAuthenticated">
           <div v-if="showGroups && props.width === DrawerWidth.lg"
-               class="tracking-[.3em] text-slate-400 pl-2 text-xs mb-1.5"
+               class="tracking-[.3em] text-slate-400 pl-2.5 text-xs mb-1.5"
                :class="{'text-slate-50' : isActiveGroup(itemGroup) }">{{ itemGroup.group }}
           </div>
           <div class="flex flex-col" v-for="item in itemGroup.items" :key="`route-${item.name}`">
@@ -58,11 +68,8 @@ const isActiveGroup = (group) => {
                 :is-action="item.action"
                 :icon="item.icon"
                 :show-icon="showIcons"
-                class="text-base opacity-80 border-x-8 border-x-primary-900"
-                :class="{
-                  'bg-primary-900' : isActiveRoute(item.name),
-                  'border-r-secondary-300 shadow-inner' : width === DrawerWidth.lg && isActiveRoute(item.name)
-                }"
+                class="text-base opacity-80"
+                :class="itemClass(item)"
                 @navigated="emit('navigated', item.name)"
                 @action="emit('action', item.name)"
             />

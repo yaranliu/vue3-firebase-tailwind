@@ -58,6 +58,7 @@ const signOut = () => {
   <DockedLayout
       @drawer-action="drawerActionsHandler"
       @user-button-action="userButtonActionsHandler"
+      class="bg-transparent overscroll-contain"
   />
 </template>
 

@@ -59,6 +59,7 @@ const onClick = () => {
     <div
         @click="onClick"
         class="flex px-1 py-1 max-w-xs group hover:opacity-100 hover:cursor-pointer"
+        :class="{'mx-auto' : width !== DrawerWidth.lg} "
     >
       <div v-if="width === DrawerWidth.sm" class="group-hover:scale-110 ">
         <i class="text-center" :class="`${displayIcon} ${iconSize}`" />
@@ -67,7 +68,7 @@ const onClick = () => {
           v-else
           class="transition-all ease-in-out duration-300"
           :class="{
-            'flex flex-row items-center w-full pl-2 pr-8 py-1 text-left space-x-2 group-hover:scale-105' : width === DrawerWidth.lg,
+            'flex flex-row items-center w-full pl-3 pr-8 py-1 text-left space-x-2 group-hover:scale-105' : width === DrawerWidth.lg,
             'flex flex-col items-center w-full px-4 space-y-1 mb-3 text-center max-w-[3.5rem] text-xs group-hover:scale-105' : width === DrawerWidth.md,
       }"
       >

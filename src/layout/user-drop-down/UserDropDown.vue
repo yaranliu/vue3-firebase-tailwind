@@ -28,12 +28,12 @@ const emit = defineEmits(['action'])
 </script>
 
 <template>
-  <div class="flex items-center space-x-1.5">
+  <div class="flex items-center space-x-1.5 mt-1 mr-1">
     <Menu as="div" class="relative inline-block text-left">
       <div>
         <MenuButton
             v-if="auth.isAuthenticated"
-            class="relative inline-flex w-full justify-center items-center rounded-md bg-black bg-opacity-0 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus:bg-opacity-30"
+            class="relative inline-flex w-full justify-center items-center rounded-md bg-white bg-opacity-0 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-20 focus:outline-none focus:bg-opacity-20"
         >
           <img v-if="auth.hasAvatar" alt="avatar" :src="auth.hasAvatar ? auth.user.photoURL : ''" class="w-8 h-8 rounded-full border border-indigo-200" onerror="this.src='/img/user.png'" referrerpolicy="no-referrer"/>
           <button v-else class="w-8 h-8 rounded-full text-white border-2 border-white bg-primary-700">

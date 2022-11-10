@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
 
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -9,16 +9,12 @@ const auth = useAuthStore();
 
 import { DrawerItems, UserButtonActions } from '../configuration/LayoutConfiguration'
 import LayoutHeader from "@/layout/header/LayoutHeader.vue";
-import UserProfileForDrawer from "@/components/app/UserProfileForDrawer.vue";
-import ExampleDrawerFooter from "@/components/app/ExampleDrawerFooter.vue";
-import LayoutFooter from "@/layout/footer/LayoutFooter.vue";
 import DockedDrawer from "@/layout/drawer/DockedDrawer.vue";
-import {DrawerWidth} from "@/layout/drawer/DrawerWidth.ts";
+import { DrawerWidth } from "@/layout/drawer/DrawerWidth.ts";
 
 const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
 
 const isOpen = ref(true)
-const isDocked = ref(true)
 const drawerWidth = ref(DrawerWidth.sm) // sm, md,
 
 const onDrawerAction = (action) => {
@@ -32,20 +28,8 @@ const onUserButtonAction = (action) => {
   emit('userButtonAction', action)
 }
 
-const widthDown = () => {
-  if (drawerWidth.value === DrawerWidth.sm) drawerWidth.value = DrawerWidth.lg
-  else if (drawerWidth.value === DrawerWidth.md) drawerWidth.value = DrawerWidth.sm
-  else if (drawerWidth.value === DrawerWidth.lg) drawerWidth.value = DrawerWidth.md
-}
-
-const widthUp = () => {
-  if (drawerWidth.value === DrawerWidth.sm) drawerWidth.value = DrawerWidth.md
-  else if (drawerWidth.value === DrawerWidth.md) drawerWidth.value = DrawerWidth.lg
-  else if (drawerWidth.value === DrawerWidth.lg) drawerWidth.value = DrawerWidth.sm
-}
-
-const changeWidth = (direction) => {
-  if (direction > 0) widthUp(); else widthDown()
+const changeWidth = (w) => {
+  drawerWidth.value = w
 }
 
 const containerClass = computed(() => ({
@@ -55,11 +39,6 @@ const containerClass = computed(() => ({
   'w-64' : isOpen.value && drawerWidth.value === DrawerWidth.lg,
 }))
 
-
-onMounted(() => {
-  console.log(containerClass.value)
-})
-
 </script>
 <template>
   <main>
@@ -67,7 +46,7 @@ onMounted(() => {
       <div class="flex-none h-screen overflow-hidden transition-width ease-in-out duration-150 max-w-64"
            :class="containerClass">
         <DockedDrawer
-            class="bg-primary-700 text-white"
+            class="text-white bg-blue-100 bg-opacity-20 shadow-2xl overscroll-contain"
             :items="DrawerItems"
             :is-open="isOpen"
             :width="drawerWidth"
@@ -79,37 +58,39 @@ onMounted(() => {
             @width-changed="changeWidth"
         >
           <template #header>
-            <UserProfileForDrawer :is-docked="isDocked" :width="drawerWidth" />
+            <!--            <UserProfileForDrawer :is-docked="isDocked" :width="drawerWidth" />-->
           </template>
           <template #footer>
-            <ExampleDrawerFooter :width="drawerWidth" />
+            <!--            <ExampleDrawerFooter :width="drawerWidth" />-->
           </template>
         </DockedDrawer>
       </div>
-      <div class="flex flex-col w-full h-screen overflow-hidden bg-slate-50">
-        <div class="flex-none">
-          <LayoutHeader
-              class="bg-primary-900 text-slate-100 text-sm"
-              :user-button-actions="UserButtonActions"
-              @menu-clicked="isOpen = !isOpen"
-              @user-action="onUserButtonAction"
-          />
+      <div class="flex flex-col w-full h-screen overscroll-contain">
+<!--        Header-->
+        <LayoutHeader
+            ref="layoutHeader"
+            class="flex-none text-slate-100 text-sm"
+            :user-button-actions="UserButtonActions"
+            @menu-clicked="isOpen = !isOpen"
+            @user-action="onUserButtonAction"
+        />
+        <div class="grow bg-transparent p-4 overflow-y-auto overscroll-contain" >
+          <RouterView
+              v-slot="{ Component }"
+              class="overflow-y-auto overscroll-contain"
+          >
+            <transition name="fade" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </RouterView>
         </div>
-        <div class="grow overflow-y-auto">
-          <div class="h-full flex flex-row">
-            <!-- TODO Correct max-h of RouterView taking Header and Footer heights into consideration -->
-            <div class="grow max-h-screen overflow-y-auto">
-              <RouterView v-slot="{ Component }">
-                <transition name="fade" mode="out-in">
-                  <component :is="Component" />
-                </transition>
-              </RouterView>
-            </div>
-          </div>
-        </div>
-        <div class="flex-none">
-          <LayoutFooter @click="onToggleDock"/>
-        </div>
+<!--        Footer-->
+<!--        <div class="flex-none" ref="layoutFooter">-->
+<!--          <LayoutFooter />-->
+<!--        </div>-->
+
+
+
       </div>
     </div>
   </main>
@@ -119,7 +100,7 @@ onMounted(() => {
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 200ms ease;
 }
 
 .fade-enter-from,
