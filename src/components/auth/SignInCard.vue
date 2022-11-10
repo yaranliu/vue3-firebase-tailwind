@@ -1,8 +1,11 @@
 <script setup>
-import {computed, reactive } from 'vue'
+import {computed, reactive, onMounted } from 'vue'
 
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
+
+import { useRouter } from "vue-router";
+const router = useRouter()
 
 import { AuthErrorCodes } from "firebase/auth";
 import SignInWithProviders from "@/components/auth/SignInWithProviders.vue";
@@ -32,7 +35,7 @@ const emit = defineEmits(['gotoSignUp', 'signedIn', 'signInStarted', 'signInEnde
 const signInWithPassword = () => {
   emitStarted('password')
   auth.signIn(user.email, user.password).then(user => {
-    emitSignedIn(user)
+    emitSignedIn(router.currentRoute.value.query.redirect)
   }).catch(error => {
     emitError(error)
     if (error.code === AuthErrorCodes.USER_DELETED) {
@@ -68,7 +71,7 @@ const emitError = (event) => {
     <div class="validation-error-message" :class="{ 'opacity-100' : v$.password.$invalid }">{{ $t(i18nErrorMessage(v$.password.$errors[0], 'signIn')) }}</div>
 
     <div class="flex justify-center mt-6 text-xs text-gray-500">
-      <span class="text-indigo-700 hover:cursor-pointer hover:scale-105">{{ $t('components.signInCard.forgotPassword') }}</span>
+      <span class="text-primary-700 hover:cursor-pointer hover:scale-105 transition-all ease-in-out duration-300">{{ $t('components.signInCard.forgotPassword') }}</span>
     </div>
     <button @click="signInWithPassword" class="auth-primary-button mt-6" :disabled="v$.$invalid">
       {{ $t('components.signInCard.signInButton') }}
@@ -81,7 +84,7 @@ const emitError = (event) => {
     <SignInWithProviders
         class="mt-2"
         :providers="appAuthProviders"
-        @signed-in="emitSignedIn($event)"
+        @signed-in="emitSignedIn(router.currentRoute.value.query.redirect)"
         @sign-in-started="emitStarted($event)"
         @sign-in-ended="emitEnded($event)"
         @error-encountered="emitError($event)"

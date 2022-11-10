@@ -18,10 +18,12 @@ const onSignedUp = () => {
 </script>
 
 <template>
-  <main class="flex flex-row min-h-screen justify-center items-center">
-    <div class="xs:p-2 xs:w-1/3">
-      <div class="text-center py-6 font-bold text-2xl">{{ $t('views.signUp.title') }}</div>
-      <SignUpCard @goto-sign-in="onGotoSignIn" @signed-up="onSignedUp" />
+  <main class="h-full p-4">
+    <div class="overflow-y-auto h-full grid place-content-center">
+      <div>
+        <div class="text-center py-6 font-bold text-2xl text-white">{{ $t('views.signUp.title') }}</div>
+        <SignUpCard @goto-sign-in="onGotoSignIn" @signed-up="onSignedUp" />
+      </div>
     </div>
   </main>
 

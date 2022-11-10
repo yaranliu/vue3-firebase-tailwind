@@ -17,20 +17,27 @@
 //   }
 // ]
 
+import { RouteNames} from "@/configuration/app-configuration";
+
 const DefaultActions = {
     signOut: 'signOut'
 }
 
 const DrawerItems = [
     {
-        group: 'Public',
-        auth: false,
-        items: [{ name: 'home', icon: 'las la-home'}, { name: 'about', icon: 'las la-building' }, { name: 'lorem', icon: 'las la-font' }]
-    },
-    {
         group: 'User',
         auth: true,
-        items: [{ name: 'dashboard', icon: 'las la-briefcase'}]
+        items: [{ name: RouteNames.home.user , icon: 'las la-home'}, { name: 'dashboard', icon: 'las la-briefcase'}]
+    },
+    {
+        group: 'Public',
+        auth: false,
+        items: [
+            { name: RouteNames.home.public, icon: 'las la-globe'},
+            { name: 'about', icon: 'las la-building' },
+            { name: 'lorem', icon: 'las la-font' },
+            { name: 'notFound', icon: 'las la-exclamation-circle text-alert-300' }
+        ]
     },
     {
         group: 'Misc',

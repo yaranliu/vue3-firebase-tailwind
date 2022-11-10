@@ -4,6 +4,8 @@ import { onMounted} from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter()
 
+console.log(router.currentRoute.value)
+
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 

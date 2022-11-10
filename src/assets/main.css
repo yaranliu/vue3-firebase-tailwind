@@ -20,7 +20,7 @@
     }
 
     .auth-input {
-        @apply border-2 p-1.5 mt-1 rounded
+        @apply border-2 p-1.5 mt-1 rounded focus:outline-primary-700
     }
 
     .auth-input-error {
@@ -32,15 +32,15 @@
     }
 
     .auth-primary-button {
-        @apply text-white bg-indigo-700 enabled:hover:bg-indigo-900 p-3 rounded enabled:hover:scale-105 duration-200 tracking-wider font-semibold disabled:opacity-50
+        @apply text-white bg-primary-700 enabled:hover:bg-primary-900 p-2 rounded enabled:hover:scale-102 duration-200 tracking-wide disabled:opacity-50
     }
 
     .auth-secondary-button {
-        @apply text-center text-sm text-indigo-700 border-indigo-700 rounded-xl p-2 hover:cursor-pointer hover:bg-indigo-100 hover:scale-105 duration-200 tracking-wide
+        @apply text-center text-sm text-primary-700 border-primary-700 rounded-xl p-2 hover:cursor-pointer hover:bg-primary-50 hover:scale-102 duration-200 tracking-wide
     }
 
     .provider-button-horizontal {
-        @apply w-full flex justify-center items-center py-2 rounded-lg border border-gray-300  hover:cursor-pointer hover:scale-110 duration-200 hover:bg-indigo-50 hover:border-indigo-400
+        @apply w-full flex justify-center items-center py-2 rounded-lg border border-gray-300  hover:cursor-pointer hover:scale-110 duration-200 hover:bg-primary-50 hover:border-primary-700
     }
 
     .provider-button-horizontal > svg {
@@ -48,17 +48,17 @@
     }
 
     .provider-button-horizontal:hover * {
-        fill: #4338ca;
-        color: #4338ca;
+        fill: #0c4a6e;
+        color: #0c4a6e;
     }
 
     .provider-button-vertical {
-        @apply flex flex-row space-x-2 items-center py-2 rounded-lg border border-gray-300 hover:cursor-pointer hover:scale-105 duration-200 hover:bg-indigo-50 hover:border-indigo-400
+        @apply flex flex-row space-x-2 items-center py-2 rounded-lg border border-gray-300 hover:cursor-pointer hover:scale-105 duration-200 hover:bg-primary-50 hover:border-primary-700
     }
 
     .provider-button-vertical:hover * {
-        fill: #4338ca;
-        color: #4338ca;
+        fill: #0c4a6e;
+        color: #0c4a6e;
     }
 
     .validation-error-message {

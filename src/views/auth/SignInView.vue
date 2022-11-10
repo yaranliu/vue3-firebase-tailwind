@@ -13,14 +13,17 @@ import { useAuthStore } from "@/stores/auth";
 import {AuthErrorSource} from "@/components/auth/AuthErrorSource";
 const auth = useAuthStore()
 
+import { RouteNames} from "@/configuration/app-configuration";
+
 const onGotoSignUp = () => {
   console.log("Go to Sign Up")
   router.push({ name: 'signUp'})
 }
 
-const onSignedIn = () => {
+const onSignedIn = (redirect) => {
   console.log("Signed In")
-  router.push({ name: 'dashboard'})
+  if (redirect) router.push({ name: redirect})
+  else router.push({ name: RouteNames.home.user })
 }
 
 const showLoader = ref(false)
@@ -46,31 +49,35 @@ const onError = (authError) => {
 </script>
 
 <template>
-  <main class="flex flex-row min-h-screen justify-center items-center">
-    <Loader :show="showLoader" :title="'Signing in with ' + provider "/>
-    <div class="xs:p-2 xs:w-1/3">
-      <div class="text-center py-6 font-bold text-2xl">
-        {{ $t('views.signIn.title') }}
+  <main class="h-full p-4">
+    <div class="overflow-y-auto h-full grid place-content-center">
+      <div v-if="!auth.inProgress">
+        <Loader :show="showLoader" :title="'Signing in with ' + provider "/>
+        <div class="">
+          <div class="text-center py-6 font-bold text-2xl text-white">
+            {{ $t('views.signIn.title') }}
+          </div>
+          <SignInCard
+              vertical
+              @goto-sign-up="onGotoSignUp"
+              @signed-in="onSignedIn"
+              @sign-in-started="onSignInStarted"
+              @sign-in-ended="onSignInEnded"
+              @error-encountered="onError"
+          />
+          <SimpleDialog
+              alert-type="danger"
+              :title="$t('error.dialog.title')"
+              :description="$t(auth.error.toLocaleString())"
+              :button-label="$t('error.dialog.button')"
+              :is-open="showErrorDialog"
+              @ok-clicked="showErrorDialog = false"
+          />
+        </div>
       </div>
-      <SignInCard
-          vertical
-          @goto-sign-up="onGotoSignUp"
-          @signed-in="onSignedIn"
-          @sign-in-started="onSignInStarted"
-          @sign-in-ended="onSignInEnded"
-          @error-encountered="onError"
-      />
-      <SimpleDialog
-          alert-type="danger"
-          :title="$t('error.dialog.title')"
-          :description="$t(auth.error.toLocaleString())"
-          :button-label="$t('error.dialog.button')"
-          :is-open="showErrorDialog"
-          @ok-clicked="showErrorDialog = false"
-      />
+      <div v-else class="text-white">Please wait</div>
     </div>
   </main>
-
 </template>
 
 <style scoped>

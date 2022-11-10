@@ -4,8 +4,12 @@ const { colors: defaultColors } = require('tailwindcss/colors')
 const colors = require("tailwindcss/colors");
 const themeColors = {
   primary: colors.sky,
-  secondary: colors.orange,
-  accent: colors.cyan
+  secondary: colors.teal,
+  accent: colors.fuchsia,
+  alert: colors.red,
+  warning: colors.yellow,
+  success: colors.emerald,
+  info: colors.blue
 }
 
 
@@ -19,6 +23,10 @@ module.exports = {
       colors: themeColors,
       transitionProperty: {
         'width' : 'width'
+      },
+      scale: {
+        '102': '1.02',
+        '103': '1.03',
       }
     },
     fontFamily: {

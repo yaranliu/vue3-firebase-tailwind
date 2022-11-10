@@ -1,6 +1,10 @@
 const RouteNames = {
     signIn: 'signIn',
-    signUp: 'signUp'
+    signUp: 'signUp',
+    home: {
+        public: 'home',
+        user: 'user'
+    }
 }
 
 export { RouteNames }
