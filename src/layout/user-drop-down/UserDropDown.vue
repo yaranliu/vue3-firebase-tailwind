@@ -18,7 +18,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 const props = defineProps([ 'actions' ])
 
 const showSignIn = computed(() => {
-  return router.currentRoute.value.name !== RouteNames.signIn
+  return router.currentRoute.value.name !== RouteNames.signIn && router.currentRoute.value.name !== RouteNames.signUp
 })
 
 const totalCount = computed(() => { return _math.sumBy(_array.flatten(props.actions), 'count') })

@@ -19,7 +19,14 @@ const tr = {
     },
     views: {
         signIn :{
-            title: 'Giriş Yapın'
+            title: 'Giriş Yapın',
+            loader: {
+                state: 'Kullanım bilgileri kontrol ediliyor',
+                title: '{method} ile giriş yapılıyor',
+                message: 'Lütfen bekleyiniz',
+                account: '{provider} hesabınız',
+                credentials: 'E-posta adresiniz ve parolanız'
+            }
         },
         signUp :{
             title: 'Kayıt Olun'

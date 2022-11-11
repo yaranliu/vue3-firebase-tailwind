@@ -25,6 +25,7 @@ import { en } from "@/locales/en";
 import { tr } from "@/locales/tr";
 
 const i18n = createI18n({
+    legacy: true,
     locale: 'tr',
     fallbackLocale: 'en',
     messages: {

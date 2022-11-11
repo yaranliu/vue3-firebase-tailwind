@@ -39,7 +39,7 @@ const v$ = useVuelidate(rules, user, { $autoDirty: true })
 const emit = defineEmits(['gotoSignUp', 'signedIn', 'signInStarted', 'signInEnded', 'errorEncountered'])
 
 const signInWithPassword = () => {
-  emitStarted('password')
+  emitStarted({ method: 'password' })
   auth.signIn(user.email, user.password).then(user => {
     console.log('[SignInCard] signed in with password, Redirect:', redirect.value)
     console.log('[SignInCard] signed in with password, User:', user.uid)
@@ -65,8 +65,9 @@ const emitSignedIn = (event) => {
   if (event)  emit('signedIn', event)
   else emit('signedIn', '')
 }
-const emitStarted = (event) => {
-  emit('signInStarted', event)
+const emitStarted = (args) => {
+  console.log(('[SignInCard] emitting sign in start:', args))
+  emit('signInStarted', args)
 }
 const emitEnded = (event) => {
   emit('signInEnded', event)
@@ -101,7 +102,7 @@ const emitError = (event) => {
         class="mt-2"
         :providers="appAuthProviders"
         @signed-in="signedInWithProvider"
-        @sign-in-started="emitStarted($event)"
+        @sign-in-started="emitStarted({ method: 'provider', provider: $event })"
         @sign-in-ended="emitEnded($event)"
         @error-encountered="emitError($event)"
     />

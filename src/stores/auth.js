@@ -21,7 +21,7 @@ export const useAuthStore = defineStore({
     id: 'auth',
     state: () => ({
         provider: AuthenticationProvider.None,
-        // stateChecked: false,
+        stateChecked: false,
         inProgress: false,
         user: null,
         credential: null,
@@ -43,7 +43,7 @@ export const useAuthStore = defineStore({
                         reject(error)
                     })
                     .finally(() => {
-                        this.inProgress = false
+                        setTimeout(() => { this.inProgress = false }, 100)
                     })
                 ;
             })
@@ -63,7 +63,7 @@ export const useAuthStore = defineStore({
                         reject(error);
                     })
                     .finally(() => {
-                        this.inProgress = false
+                        setTimeout(() => { this.inProgress = false }, 100)
                     })
             })
         },
@@ -109,7 +109,7 @@ export const useAuthStore = defineStore({
                             reject(error);
                         })
                         .finally(() => {
-                            this.inProgress = false
+                            setTimeout(() => { this.inProgress = false }, 100)
                         });
                 }
                 else {
@@ -161,8 +161,8 @@ export const useAuthStore = defineStore({
                             this.error = new AuthError(AuthErrorSource.Firebase, error.code, error.message)
                         })
                         .finally(() => {
-                            setTimeout(() => { this.inProgress = false }, 100)
-                            // this.inProgress = false
+                            this.stateChecked = true
+                            setTimeout(() => { this.inProgress = false }, 500)
                         })
                 } else {
                     this.inProgress = false;

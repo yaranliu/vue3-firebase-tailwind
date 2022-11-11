@@ -19,7 +19,14 @@ const en = {
     },
     views: {
         signIn :{
-            title: 'Sign In'
+            title: 'Sign In',
+            loader: {
+                state: 'Authenticating',
+                title: 'Signing in with {method}',
+                message: 'Please wait',
+                account: 'your {provider} account',
+                credentials: 'email and password'
+            }
         },
         signUp :{
             title: 'Sign Up'

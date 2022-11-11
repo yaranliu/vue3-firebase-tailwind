@@ -1,6 +1,8 @@
 <script setup>
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+
+import * as _ from 'lodash/string'
 
 import SignInCard from "@/components/auth/SignInCard.vue";
 
@@ -27,20 +29,27 @@ const onSignedIn = (args) => {
   else router.push({ name: RouteNames.home.user })
 }
 
-const showLoader = ref(false)
+const loading = ref(false)
 const showErrorDialog = ref(false)
 
-const onSignInStarted = (authProvider) => {
-  console.log("[SignInVıew] Load Started:", authProvider)
-  showLoader.value = true
-  provider.value = authProvider
+const showLoader = computed(() => { return showLoader.value || !auth.stateChecked})
+
+const authMethod = ref('')
+const authProvider = ref('')
+
+const onSignInStarted = (args) => {
+  console.log("[SignInVıew] Load Started:", args)
+  authMethod.value = args.method
+  authProvider.value = args.provider
+  loading.value = true
+  provider.value = authProvider.value
 }
 
 const provider = ref('')
 
 const onSignInEnded = (authProvider) => {
   console.log("[SignInVıew] Load Ended:", authProvider)
-  showLoader.value = false
+  loading.value = false
 }
 
 const onError = (authError) => {
@@ -58,7 +67,6 @@ onMounted(() => {
   <main class="h-full p-4">
     <div class="overflow-y-auto h-full grid place-content-center">
       <div v-show="!auth.inProgress">
-        <Loader :show="showLoader" :title="'Signing in with ' + provider "/>
         <div class="">
           <div class="text-center py-6 font-bold text-2xl text-white">
             {{ $t('views.signIn.title') }}
@@ -77,11 +85,17 @@ onMounted(() => {
               :description="$t(auth.error.toLocaleString())"
               :button-label="$t('error.dialog.button')"
               :is-open="showErrorDialog"
-              @ok-clicked="showErrorDialog = false"
+              @ok-clicked="showErrorDialog.value = false"
           />
         </div>
       </div>
-      <div v-show="auth.inProgress" class="text-white">Please wait</div>
+      <div v-show="auth.inProgress" class="text-white">
+        <Loader
+            :show="loading"
+            :title="$t('views.signIn.loader.message')"
+            :desc="$t('views.signIn.loader.title', { method: authMethod === 'password' ? $t('views.signIn.loader.credentials') : $t('views.signIn.loader.account', { provider: _.upperFirst(authProvider)}) })"
+        />
+      </div>
     </div>
   </main>
 </template>
