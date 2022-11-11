@@ -18,7 +18,7 @@ const props = defineProps({
   width: { type: String, default: DrawerWidth.md },
   showGroups : { type: Boolean, default: false },
   showIcons: { type: Boolean, default: true },
-  showDividers: { type: Boolean, default: false }
+  spaceGroups: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['navigated', 'action', 'widthChanged'])
@@ -50,11 +50,10 @@ const itemClass = ((item) => (
     <div class="flex-none">
       <slot name="header"></slot>
     </div>
-    <div class="grow overflow-y-auto">
+    <div class="grow overflow-y-auto mt-2 " :class="{'space-y-8' : spaceGroups }">
       <div
           v-for="itemGroup in items" :key="`group-${itemGroup.group}`"
-          class="flex flex-col mt-4"
-          :class="{ 'border-b border-primary-900' : showDividers }"
+          class="flex flex-col"
       >
         <div v-if="!itemGroup.auth || auth.isAuthenticated">
           <div v-if="showGroups && props.width === DrawerWidth.lg"

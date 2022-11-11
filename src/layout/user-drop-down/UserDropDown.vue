@@ -39,7 +39,7 @@ const emit = defineEmits(['action'])
           <button v-else class="w-8 h-8 rounded-full text-white border-2 border-white bg-primary-700">
             <i class="las la-user text-xl" />
           </button>
-          <span v-if="totalCount > 0" class="w-2.5 h-2.5 rounded-full bg-red-700 absolute top-1.5 left-10"></span>
+          <span v-if="totalCount > 0" class="w-2.5 h-2.5 rounded-full bg-red-700 absolute top-1.5 left-10 animate-ping"></span>
           <div v-if="auth.displayName.length > 0" class="hidden md:block ml-2.5">{{ auth.displayName }}</div>
           <span><i class="las la-angle-down hidden md:block ml-2.5 text-primary-200 hover:text-primary-100" /></span>
         </MenuButton>

@@ -50,8 +50,8 @@ const containerClass = computed(() => ({
             :items="DrawerItems"
             :is-open="isOpen"
             :width="drawerWidth"
-            show-dividers
             show-groups
+            space-groups
             show-icons
             @navigated="onDrawerNavigation"
             @action="onDrawerAction"
