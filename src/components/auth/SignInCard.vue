@@ -17,7 +17,9 @@ const user = reactive({
   password: '',
 })
 
-
+onMounted(() => {
+  console.log('[SignInCard] Auth is:', auth.isAuthenticated)
+})
 
 import { useVuelidate } from '@vuelidate/core'
 import {required, email } from '@vuelidate/validators'
@@ -28,6 +30,10 @@ const rules = computed (() => { return {
   password: { required },
 }})
 
+const redirect = computed(() => {
+  return router.currentRoute.value.query.redirect ? router.currentRoute.value.query.redirect : ''
+})
+
 const v$ = useVuelidate(rules, user, { $autoDirty: true })
 
 const emit = defineEmits(['gotoSignUp', 'signedIn', 'signInStarted', 'signInEnded', 'errorEncountered'])
@@ -35,19 +41,29 @@ const emit = defineEmits(['gotoSignUp', 'signedIn', 'signInStarted', 'signInEnde
 const signInWithPassword = () => {
   emitStarted('password')
   auth.signIn(user.email, user.password).then(user => {
-    emitSignedIn(router.currentRoute.value.query.redirect)
+    console.log('[SignInCard] signed in with password, Redirect:', redirect.value)
+    console.log('[SignInCard] signed in with password, User:', user.uid)
+    // emitSignedIn({ redirect : redirect.value })
+    emit('signedIn', { redirect: redirect.value, user: user })
   }).catch(error => {
     emitError(error)
     if (error.code === AuthErrorCodes.USER_DELETED) {
-      console.log('User not found')
+      console.log('[SignInCard] User not found')
     }
   }).finally(() => {
     emitEnded('password')
   });
 }
 
+const signedInWithProvider = (event) => {
+  console.log('[SignInCard] Signed In with provider', auth.user.uid)
+  emitSignedIn({ redirect: redirect.value } )
+}
+
 const emitSignedIn = (event) => {
-  emit('signedIn', event)
+  console.log(('[SignInCard] emitting signed in:', event))
+  if (event)  emit('signedIn', event)
+  else emit('signedIn', '')
 }
 const emitStarted = (event) => {
   emit('signInStarted', event)
@@ -84,7 +100,7 @@ const emitError = (event) => {
     <SignInWithProviders
         class="mt-2"
         :providers="appAuthProviders"
-        @signed-in="emitSignedIn(router.currentRoute.value.query.redirect)"
+        @signed-in="signedInWithProvider"
         @sign-in-started="emitStarted($event)"
         @sign-in-ended="emitEnded($event)"
         @error-encountered="emitError($event)"

@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 import SignInCard from "@/components/auth/SignInCard.vue";
 
@@ -16,13 +16,14 @@ const auth = useAuthStore()
 import { RouteNames} from "@/configuration/app-configuration";
 
 const onGotoSignUp = () => {
-  console.log("Go to Sign Up")
+  console.log("[SignInVıew] Go to Sign Up")
   router.push({ name: 'signUp'})
 }
 
-const onSignedIn = (redirect) => {
-  console.log("Signed In")
-  if (redirect) router.push({ name: redirect})
+const onSignedIn = (args) => {
+  console.log("[SignInVıew] Signed In")
+  console.log("[SignInVıew] Redirect is:", args)
+  if (args.redirect) router.push({ name: args.redirect})
   else router.push({ name: RouteNames.home.user })
 }
 
@@ -30,7 +31,7 @@ const showLoader = ref(false)
 const showErrorDialog = ref(false)
 
 const onSignInStarted = (authProvider) => {
-  console.log("Load Started:", authProvider)
+  console.log("[SignInVıew] Load Started:", authProvider)
   showLoader.value = true
   provider.value = authProvider
 }
@@ -38,7 +39,7 @@ const onSignInStarted = (authProvider) => {
 const provider = ref('')
 
 const onSignInEnded = (authProvider) => {
-  console.log("Load Ended:", authProvider)
+  console.log("[SignInVıew] Load Ended:", authProvider)
   showLoader.value = false
 }
 
@@ -46,12 +47,17 @@ const onError = (authError) => {
   showErrorDialog.value = true
 }
 
+
+onMounted(() => {
+  console.log('[SignInVıew] Auth is:', auth.isAuthenticated)
+})
+
 </script>
 
 <template>
   <main class="h-full p-4">
     <div class="overflow-y-auto h-full grid place-content-center">
-      <div v-if="!auth.inProgress">
+      <div v-show="!auth.inProgress">
         <Loader :show="showLoader" :title="'Signing in with ' + provider "/>
         <div class="">
           <div class="text-center py-6 font-bold text-2xl text-white">
@@ -75,7 +81,7 @@ const onError = (authError) => {
           />
         </div>
       </div>
-      <div v-else class="text-white">Please wait</div>
+      <div v-show="auth.inProgress" class="text-white">Please wait</div>
     </div>
   </main>
 </template>

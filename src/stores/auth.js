@@ -14,14 +14,18 @@ import { AuthenticationProvider } from "@/components/auth/AuthenticationProvider
 import { AuthErrorSource } from "@/components/auth/AuthErrorSource";
 import { ApplicationAuthError, getApplicationAuthErrorMessage} from "@/components/auth/ApplicationAuthErrors";
 
+import { useRouter } from "vue-router";
+
+
 export const useAuthStore = defineStore({
     id: 'auth',
     state: () => ({
         provider: AuthenticationProvider.None,
+        // stateChecked: false,
         inProgress: false,
         user: null,
         credential: null,
-        error: new AuthError(AuthErrorSource.None,'', '')
+        error: new AuthError(AuthErrorSource.None,'', ''),
     }),
     actions: {
         register(email, password) {
@@ -136,15 +140,30 @@ export const useAuthStore = defineStore({
         },
 
         setup () {
+
+            const router = useRouter()
             const $axios = inject("$axios")
             this.inProgress = true
             onAuthStateChanged(getAuth(), (user) => {
+                const urlSearchParams = new URLSearchParams(window.location.search);
+                const params = Object.fromEntries(urlSearchParams.entries());
                 this.user = user;
                 delete $axios.defaults.headers.common["Authorization"]
                 if (user !== null) {
-                    user.getIdToken().then(result => { $axios.defaults.headers.common['Authorization'] = `Bearer ${result}` })
-                        .catch(error => { this.error = new AuthError(AuthErrorSource.Firebase, error.code, error.message) })
-                        .finally(() => {this.inProgress = false})
+                    user.getIdToken().then(
+                        result => {
+                            $axios.defaults.headers.common['Authorization'] = `Bearer ${result}`
+                            if (router && params.redirect) {
+                                router.push({ name: params.redirect})
+                            }
+                        })
+                        .catch(error => {
+                            this.error = new AuthError(AuthErrorSource.Firebase, error.code, error.message)
+                        })
+                        .finally(() => {
+                            setTimeout(() => { this.inProgress = false }, 100)
+                            // this.inProgress = false
+                        })
                 } else {
                     this.inProgress = false;
                 }
