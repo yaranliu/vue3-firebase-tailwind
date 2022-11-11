@@ -4,6 +4,7 @@ const tr = {
         about: { md: 'Biz', lg: 'Hakkımızda', hint: 'Biz kimiz'},
         lorem: { md: 'Lorem', lg: 'Lorem Ipsum', hint: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'},
         user: { md: 'Sayfam', lg: 'Benim sayfam', hint: '' },
+        inbox: { md: 'Mesajlar', lg: 'Mesajlarım', hint: '' },
         dashboard: { md: 'Panel', lg: 'Kullanıcı paneli', hint: 'Kullanıcı paneli'},
         changeTheme: { md: 'Tema', lg: 'Temayı değiştir', hint: 'Uygulama arka plan görünümünü değiştir'},
         action1: { md: '', lg: 'Komut 1', hint: ''},

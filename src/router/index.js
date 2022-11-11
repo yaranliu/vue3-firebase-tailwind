@@ -15,6 +15,7 @@ const router = createRouter({
 
         // Routes requiring authentication
         { path: '/user', name: RouteNames.home.user, component: () => import('../views/app/UserHomeView.vue'), meta: { requiresAuth: true } },
+        { path: '/inbox', name: 'inbox', component: () => import('../views/app/InboxView.vue'), meta: { requiresAuth: true } },
         { path: '/dashboard', name: 'dashboard', component: () => import('../views/app/DashboardView.vue'), meta: { requiresAuth: true } },
 
         // Not found

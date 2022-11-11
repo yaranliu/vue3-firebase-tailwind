@@ -27,7 +27,11 @@ const DrawerItems = [
     {
         group: 'User',
         auth: true,
-        items: [{ name: RouteNames.home.user , icon: 'las la-home'}, { name: 'dashboard', icon: 'las la-briefcase'}]
+        items: [
+            { name: RouteNames.home.user , icon: 'las la-home'},
+            { name: 'inbox' , icon: 'las la-envelope'},
+            { name: 'dashboard', icon: 'las la-briefcase'}
+        ]
     },
     {
         group: 'Public',
