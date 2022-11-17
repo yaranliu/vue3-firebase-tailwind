@@ -152,7 +152,8 @@ export const useAuthStore = defineStore({
                 if (user !== null) {
                     user.getIdToken().then(
                         result => {
-                            $axios.defaults.headers.common['Authorization'] = `Bearer ${result}`
+                            // TODO Add Token for Protected API Calls
+                            // $axios.defaults.headers.common['Authorization'] = `Bearer ${result}`
                             if (router && params.redirect) {
                                 router.push({ name: params.redirect})
                             }

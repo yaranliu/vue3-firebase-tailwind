@@ -50,12 +50,12 @@ const itemClass = ((item) => (
     <div class="flex-none">
       <slot name="header"></slot>
     </div>
-    <div class="grow overflow-y-auto mt-2 " :class="{'space-y-8' : spaceGroups }">
+    <div class="grow overflow-y-auto mt-2 " >
       <div
           v-for="itemGroup in items" :key="`group-${itemGroup.group}`"
           class="flex flex-col"
       >
-        <div v-if="!itemGroup.auth || auth.isAuthenticated">
+        <div v-if="!itemGroup.auth || auth.isAuthenticated" :class="{'mb-8' : spaceGroups }">
           <div v-if="showGroups && props.width === DrawerWidth.lg"
                class="tracking-[.3em] text-slate-400 pl-2.5 text-xs mb-1.5"
                :class="{'text-slate-50' : isActiveGroup(itemGroup) }">{{ itemGroup.group }}

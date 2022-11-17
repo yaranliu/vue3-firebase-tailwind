@@ -74,10 +74,10 @@ const containerClass = computed(() => ({
             @menu-clicked="isOpen = !isOpen"
             @user-action="onUserButtonAction"
         />
-        <div class="grow bg-transparent p-4 overflow-y-auto overscroll-contain" >
+        <div class="grow bg-transparent overflow-y-auto overscroll-contain" >
           <RouterView
               v-slot="{ Component }"
-              class="overflow-y-auto overscroll-contain"
+              class="overflow-y-auto"
           >
             <transition name="fade" mode="out-in">
               <component :is="Component" />

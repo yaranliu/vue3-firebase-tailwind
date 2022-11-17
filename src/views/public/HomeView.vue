@@ -3,8 +3,8 @@
 </script>
 
 <template>
-  <main class="h-full p-4 bg-blue-100 bg-opacity-20 shadow-2xl rounded-md border border-slate-500">
-    <div class=" overflow-y-auto h-full">
+  <main class="h-full p-4">
+    <div class="overflow-y-auto h-full bg-blue-100 bg-opacity-20 rounded-md border border-slate-500">
       <div class="grid grid-cols-4 gap-12 p-8">
         <div class="sample-grid-card">Card Header</div>
         <div class="sample-grid-card">Card Header</div>
