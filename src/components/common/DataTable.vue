@@ -1,9 +1,13 @@
-<script setup>
+<script setup lang="ts">
 
 import {onMounted, ref} from "vue";
 import axios from "axios";
+import { ApiResource } from "@/lib/api/ApiResource";
 
-const props = defineProps(['endPoint'])
+const props = defineProps(
+    {
+      resource: { type: ApiResource },
+    })
 const emit = defineEmits(['loaded', 'error'])
 
 const result = ref(null)
@@ -11,23 +15,24 @@ const loaded = ref(false)
 const loading = ref(false)
 const error = ref(false)
 
-const fetch = () => new Promise((resolve, reject) => {
+const fetch = () => new Promise<object>((resolve, reject) => {
   loaded.value = false
   error.value = false
   loading.value = true
-  axios.get(props.endPoint).then(result => {
+  props.resource.Execute().then(r => {
     loaded.value = true
-    resolve(result)
-  }).catch(error => {
+    resolve(r)
+  }).catch(e => {
     error.value = true
-    reject(error)
+    reject(e)
   }).finally(() => {
     loading.value = false
   })
+
 })
 
 onMounted(() => {
-  setTimeout(() => fetch().then(r => emit('loaded', r.data)).catch(e => emit('error', e)), 1000)
+  fetch().then(r => emit('loaded', r.data)).catch(e => emit('error', e))
 })
 
 </script>

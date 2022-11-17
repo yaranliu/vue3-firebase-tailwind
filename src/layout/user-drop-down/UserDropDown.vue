@@ -8,7 +8,7 @@ import * as _math from 'lodash/math'
 import { useAuthStore } from "@/stores/auth";
 const auth = useAuthStore();
 
-import { RouteNames} from "@/configuration/app-configuration";
+import { DefaultRouteNames} from "@/configuration/AppConfiguration";
 
 import { useRouter} from "vue-router";
 const router = useRouter()
@@ -18,7 +18,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 const props = defineProps([ 'actions' ])
 
 const showSignIn = computed(() => {
-  return router.currentRoute.value.name !== RouteNames.signIn && router.currentRoute.value.name !== RouteNames.signUp
+  return router.currentRoute.value.name !== DefaultRouteNames.signIn && router.currentRoute.value.name !== DefaultRouteNames.signUp
 })
 
 const totalCount = computed(() => { return _math.sumBy(_array.flatten(props.actions), 'count') })

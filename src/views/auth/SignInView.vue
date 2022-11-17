@@ -15,18 +15,18 @@ import { useAuthStore } from "@/stores/auth";
 import {AuthErrorSource} from "@/components/auth/AuthErrorSource";
 const auth = useAuthStore()
 
-import { RouteNames} from "@/configuration/app-configuration";
+import { DefaultRouteNames} from "@/configuration/AppConfiguration";
 
 const onGotoSignUp = () => {
-  console.log("[SignInVıew] Go to Sign Up")
+  // console.log("[SignInVıew] Go to Sign Up")
   router.push({ name: 'signUp'})
 }
 
 const onSignedIn = (args) => {
-  console.log("[SignInVıew] Signed In")
-  console.log("[SignInVıew] Redirect is:", args)
+  // console.log("[SignInVıew] Signed In")
+  // console.log("[SignInVıew] Redirect is:", args)
   if (args.redirect) router.push({ name: args.redirect})
-  else router.push({ name: RouteNames.home.user })
+  else router.push({ name: DefaultRouteNames.home.user })
 }
 
 const loading = ref(false)
@@ -38,7 +38,7 @@ const authMethod = ref('')
 const authProvider = ref('')
 
 const onSignInStarted = (args) => {
-  console.log("[SignInVıew] Load Started:", args)
+  // console.log("[SignInVıew] Load Started:", args)
   authMethod.value = args.method
   authProvider.value = args.provider
   loading.value = true
@@ -48,7 +48,7 @@ const onSignInStarted = (args) => {
 const provider = ref('')
 
 const onSignInEnded = (authProvider) => {
-  console.log("[SignInVıew] Load Ended:", authProvider)
+  // console.log("[SignInVıew] Load Ended:", authProvider)
   loading.value = false
 }
 
@@ -58,7 +58,7 @@ const onError = (authError) => {
 
 
 onMounted(() => {
-  console.log('[SignInVıew] Auth is:', auth.isAuthenticated)
+  // console.log('[SignInVıew] Auth is:', auth.isAuthenticated)
 })
 
 </script>

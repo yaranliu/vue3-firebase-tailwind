@@ -1,23 +1,4 @@
-// Routes array config
-// [
-//   {
-//     group: 'Public',
-//     auth: false,
-//     routes: [{ name: 'home', icon: ''},{ name: 'about' },]
-//   },
-//   {
-//     group: 'User',
-//     auth: true,
-//     routes: [{ name: 'dashboard', icon: 'las la-briefcase'}]
-//   },
-//   {
-//     group: 'Misc',
-//     auth: false,
-//     routes: [{ name: 'changeTheme', icon: 'las la-palette text-green-300', action: true}]
-//   }
-// ]
-
-import { RouteNames} from "@/configuration/app-configuration";
+import { DefaultRouteNames} from "@/configuration/AppConfiguration";
 
 const DefaultActions = {
     signOut: 'signOut'
@@ -28,7 +9,7 @@ const DrawerItems = [
         group: 'User',
         auth: true,
         items: [
-            { name: RouteNames.home.user , icon: 'las la-home'},
+            { name: DefaultRouteNames.home.user , icon: 'las la-home'},
             { name: 'inbox' , icon: 'las la-envelope'},
             { name: 'dashboard', icon: 'las la-briefcase'}
         ]
@@ -37,7 +18,8 @@ const DrawerItems = [
         group: 'Public',
         auth: false,
         items: [
-            { name: RouteNames.home.public, icon: 'las la-globe'},
+            { name: DefaultRouteNames.home.public, icon: 'las la-globe'},
+            { name: 'dogs', icon: 'las la-paw'},
             { name: 'about', icon: 'las la-building' },
             { name: 'lorem', icon: 'las la-font' },
             { name: 'notFound', icon: 'las la-exclamation-circle text-alert-300' }

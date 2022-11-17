@@ -1,3 +1,12 @@
+const DefaultRouteNames = {
+    signIn: 'signIn',
+    signUp: 'signUp',
+    home: {
+        public: 'home',
+        user: 'user'
+    }
+}
+
 // Line Awesome
 let DefaultIcons = {
     clear: 'las la-times',
@@ -16,4 +25,4 @@ let DefaultIcons = {
     }
 }
 
-export { DefaultIcons }
+export { DefaultRouteNames, DefaultIcons }

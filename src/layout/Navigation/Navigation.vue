@@ -13,7 +13,7 @@ import Drawer from "@/layout/drawer/Drawer.vue";
 
 const isOpen = ref(false)
 
-import { DrawerItems, UserButtonActions } from '@/layout/configuration/LayoutConfiguration'
+import { DrawerItems, UserButtonActions } from '@/configuration/LayoutConfiguration'
 
 watch(isOpen, (newVal, oldValue) => {
   document.body.style.removeProperty("overflow")

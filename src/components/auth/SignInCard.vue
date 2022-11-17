@@ -18,7 +18,7 @@ const user = reactive({
 })
 
 onMounted(() => {
-  console.log('[SignInCard] Auth is:', auth.isAuthenticated)
+  // console.log('[SignInCard] Auth is:', auth.isAuthenticated)
 })
 
 import { useVuelidate } from '@vuelidate/core'
@@ -41,14 +41,14 @@ const emit = defineEmits(['gotoSignUp', 'signedIn', 'signInStarted', 'signInEnde
 const signInWithPassword = () => {
   emitStarted({ method: 'password' })
   auth.signIn(user.email, user.password).then(user => {
-    console.log('[SignInCard] signed in with password, Redirect:', redirect.value)
-    console.log('[SignInCard] signed in with password, User:', user.uid)
+    // console.log('[SignInCard] signed in with password, Redirect:', redirect.value)
+    // console.log('[SignInCard] signed in with password, User:', user.uid)
     // emitSignedIn({ redirect : redirect.value })
     emit('signedIn', { redirect: redirect.value, user: user })
   }).catch(error => {
     emitError(error)
     if (error.code === AuthErrorCodes.USER_DELETED) {
-      console.log('[SignInCard] User not found')
+      // console.log('[SignInCard] User not found')
     }
   }).finally(() => {
     emitEnded('password')
@@ -56,17 +56,17 @@ const signInWithPassword = () => {
 }
 
 const signedInWithProvider = (event) => {
-  console.log('[SignInCard] Signed In with provider', auth.user.uid)
+  // console.log('[SignInCard] Signed In with provider', auth.user.uid)
   emitSignedIn({ redirect: redirect.value } )
 }
 
 const emitSignedIn = (event) => {
-  console.log(('[SignInCard] emitting signed in:', event))
+  // console.log(('[SignInCard] emitting signed in:', event))
   if (event)  emit('signedIn', event)
   else emit('signedIn', '')
 }
 const emitStarted = (args) => {
-  console.log(('[SignInCard] emitting sign in start:', args))
+  // console.log(('[SignInCard] emitting sign in start:', args))
   emit('signInStarted', args)
 }
 const emitEnded = (event) => {

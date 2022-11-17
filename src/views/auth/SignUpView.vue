@@ -6,12 +6,12 @@ import {useRouter} from "vue-router";
 const router = useRouter()
 
 const onGotoSignIn = () => {
-  console.log("Go to Sign In")
+  // console.log("Go to Sign In")
   router.push({ name: 'signIn'})
 }
 
 const onSignedUp = () => {
-  console.log("Signed Up")
+  // console.log("Signed Up")
   router.push({ name: 'dashboard'})
 }
 

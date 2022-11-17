@@ -28,7 +28,7 @@ const emit = defineEmits(['gotoSignIn', 'signedUp'])
 
 const register = () => {
   auth.register(user.email, user.password).then(user => {
-    console.log(user)
+    // console.log(user)
     emit('signedUp')
   }).catch(error => {
     console.log(error)

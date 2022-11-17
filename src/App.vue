@@ -4,19 +4,17 @@ import { onMounted} from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter()
 
-console.log(router.currentRoute.value)
-
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
-import { RouteNames } from "@/configuration/app-configuration";
+import { DefaultRouteNames } from "@/configuration/AppConfiguration";
 
 import { inject } from "vue";
 import WebLayout from "@/layout/layouts/WebLayout.vue";
 import AppLayout from "@/layout/layouts/AppLayout.vue";
 const $axios = inject("$axios");
 
-import { DefaultActions } from '@/layout/configuration/LayoutConfiguration'
+import { DefaultActions } from '@/configuration/LayoutConfiguration'
 import DockedLayout from "@/layout/layouts/DockedLayout.vue";
 
 onMounted(() => {
@@ -44,7 +42,7 @@ const actionHandler = (source, action) => {
 
 const signOut = () => {
   auth.signOut().then(() => {
-    router.push({name: RouteNames.signIn })
+    router.push({name: DefaultRouteNames.signIn })
   }).catch(error => {
     //
   });

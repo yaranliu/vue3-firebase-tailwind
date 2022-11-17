@@ -7,7 +7,7 @@ const router = useRouter()
 import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
-import { DrawerItems, UserButtonActions } from '../configuration/LayoutConfiguration'
+import { DrawerItems, UserButtonActions } from '../../configuration/LayoutConfiguration'
 import LayoutHeader from "@/layout/header/LayoutHeader.vue";
 import DockedDrawer from "@/layout/drawer/DockedDrawer.vue";
 import { DrawerWidth } from "@/layout/drawer/DrawerWidth.ts";
