@@ -1,5 +1,5 @@
-import * as _ from 'lodash/string'
-import {AuthErrorSource} from "./AuthErrorSource";
+import * as _ from 'lodash'
+import { AuthErrorSource } from "./AuthErrorSource";
 
 export class AuthError {
   Source: AuthErrorSource;

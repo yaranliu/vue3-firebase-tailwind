@@ -20,6 +20,11 @@ onMounted(() => {
 
 const breeds = ref(new ApiResource(ApiMethod.GET, 'https://dog.ceo/api', '/breeds/list/all', true))
 
+// const randomImage = ref(new ApiResource(ApiMethod.GET, 'https://dog.ceo/api', '/breed/{breed}/images/random', true))
+// let routeParams = new Map()
+// routeParams.set('breed', 'African')
+// console.log(randomImage.value.ToAxiosConfig(routeParams, {}))
+
 const isLoaded = ref(false)
 
 const onDataLoaded = (d) => {

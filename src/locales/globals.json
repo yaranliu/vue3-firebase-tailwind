@@ -1,0 +1,20 @@
+{
+  "tr" : {
+    "ok": "Tamam",
+    "cancel": "İptal",
+    "yes": "Evet",
+    "no": "Hayır",
+    "continue": "Devam",
+    "close": "Kapat",
+    "test" : "Global dil desteği test ediliyor"
+  },
+  "en" : {
+    "ok": "Ok",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No",
+    "continue": "Continue",
+    "close": "Close",
+    "test" : "Testing global language support"
+  }
+}

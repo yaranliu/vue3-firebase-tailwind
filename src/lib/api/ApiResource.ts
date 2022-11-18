@@ -1,11 +1,24 @@
-import * as _l from "lodash/lang"
-import * as _s from "lodash/string"
-
+import * as _ from "lodash"
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
-import { ApiMethod } from "./ApiMethod";
+import type { ApiMethod } from "./ApiMethod";
 
 const auth = useAuthStore();
+
+class AxiosConfig {
+    baseURL: string
+    url: string
+    method: ApiMethod
+    headers: any = undefined
+    params: any = undefined
+    constructor(baseUrl: string, url: string, method: ApiMethod) {
+        this.baseURL = baseUrl
+        this.url = url
+        this.method = method
+    }
+}
+
+let fMap = new Map<string, string> ()
 
 export class ApiResource {
     Method: ApiMethod
@@ -18,25 +31,22 @@ export class ApiResource {
         this.Url = url
         this.IsPublic = isPublic
     }
-    ToAxiosConfig (fragments: object, params: object) : object {
-        let u = _l.clone(this.Url).toLowerCase()
-        if (fragments) {
-            for (const [key, value] of Object.entries(fragments)) {
-                u = _s.replace(u, '{'  + key.toLowerCase() + '}', value)
+    ToAxiosConfig (routeParams: Map<string, string>, queryParams: object) : AxiosConfig {
+        let u = _.clone(this.Url).toLowerCase()
+        if (routeParams) {
+            for (const [key, value] of routeParams.entries()) {
+                u = _.replace(u, '{'  + key.toLowerCase() + '}', value)
             }
+
         }
-        let config = {
-            baseURL: this.BaseUrl,
-            url: u,
-            method: this.Method,
-        }
-        if (params) config['params'] = params
-        if (!this.IsPublic) config['headers'] = { 'Authorization' : auth.header }
+        let config = new AxiosConfig(this.BaseUrl, u, this.Method)
+        if (queryParams) config.params = queryParams
+        if (!this.IsPublic) config.headers = { 'Authorization' : auth.header }
         return config
     }
-    Execute (fragments: object, params: object) {
+    Execute (routeParams: Map<string, string>, params: object) {
         return new Promise((resolve, reject) => {
-            axios(this.ToAxiosConfig(fragments, params)).then(r => {
+            axios(this.ToAxiosConfig(routeParams, params)).then(r => {
                 resolve(r)
             }).catch(e => {
                 reject(e)

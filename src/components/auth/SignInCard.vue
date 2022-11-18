@@ -12,6 +12,9 @@ import SignInWithProviders from "@/components/auth/SignInWithProviders.vue";
 
 import { appAuthProviders } from "/src/components/auth/app-auth-providers.ts"
 
+import { useI18n } from "vue-i18n";
+const { t } = useI18n()
+
 const user = reactive({
   email: '',
   password: '',
@@ -79,23 +82,23 @@ const emitError = (event) => {
 </script>
 <template>
   <div class="auth-card">
-    <label for="user-email" class="auth-input-label">{{ $t('components.signInCard.emailLabel') }}</label>
-    <input id="user-email" type="email" autocomplete="e-mail" :placeholder="$t('components.signInCard.emailPlaceholder')" v-focus v-model.trim="user.email" class="auth-input w-full" :class="{ 'auth-input-error': v$.email.$invalid && v$.email.$dirty }">
-    <div class="validation-error-message" :class="{ 'opacity-100' : v$.email.$invalid }">{{ $t(i18nErrorMessage(v$.email.$errors[0], 'signIn')) }}</div>
+    <label for="user-email" class="auth-input-label">{{ t('emailLabel') }}</label>
+    <input id="user-email" type="email" autocomplete="e-mail" :placeholder="t('emailPlaceholder')" v-model.trim="user.email" class="auth-input w-full" :class="{ 'auth-input-error': v$.email.$invalid && v$.email.$dirty }">
+    <div class="validation-error-message" :class="{ 'opacity-100' : v$.email.$invalid }">{{ t(i18nErrorMessage(v$.email.$errors[0])) }}</div>
 
-    <label for="user-password" class="auth-input-label mt-6">{{ $t('components.signInCard.passwordLabel') }}</label>
-    <input id="user-password" type="password" autocomplete="current-password" :placeholder="$t('components.signInCard.passwordPlaceholder') " v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': v$.password.$invalid && v$.password.$dirty }" >
-    <div class="validation-error-message" :class="{ 'opacity-100' : v$.password.$invalid }">{{ $t(i18nErrorMessage(v$.password.$errors[0], 'signIn')) }}</div>
+    <label for="user-password" class="auth-input-label mt-6">{{ t('passwordLabel') }}</label>
+    <input id="user-password" type="password" autocomplete="current-password" :placeholder="t('passwordPlaceholder') " v-model.trim="user.password" class="auth-input" :class="{ 'auth-input-error': v$.password.$invalid && v$.password.$dirty }" >
+    <div class="validation-error-message" :class="{ 'opacity-100' : v$.password.$invalid }">{{ t(i18nErrorMessage(v$.password.$errors[0])) }}</div>
 
     <div class="flex justify-center mt-6 text-xs text-gray-500">
-      <span class="text-primary-700 hover:cursor-pointer hover:scale-105 transition-all ease-in-out duration-300">{{ $t('components.signInCard.forgotPassword') }}</span>
+      <span class="text-primary-700 hover:cursor-pointer hover:scale-105 transition-all ease-in-out duration-300">{{ t('forgotPassword') }}</span>
     </div>
     <button @click="signInWithPassword" class="auth-primary-button mt-6" :disabled="v$.$invalid">
-      {{ $t('components.signInCard.signInButton') }}
+      {{ t('signInButton') }}
     </button>
     <div class="flex items-center mt-8 mb-4 text-gray-400">
       <hr class="flex-auto">
-      <span class="flex-shrink text-xs text-center mx-2 whitespace-pre-wrap">{{ $t('components.signInCard.providersLabel') }}</span>
+      <span class="flex-shrink text-xs text-center mx-2 whitespace-pre-wrap">{{ t('providersLabel') }}</span>
       <hr class="flex-auto">
     </div>
     <SignInWithProviders
@@ -107,12 +110,55 @@ const emitError = (event) => {
         @error-encountered="emitError($event)"
     />
     <div class="auth-secondary-button mt-8" @click="emit('gotoSignUp')">
-      {{ $t('components.signInCard.gotoRegistration') }}
+      {{ t('gotoRegistration') }}
     </div>
   </div>
 </template>
 <style scoped>
 </style>
+<i18n locale="tr">
+{
+  "emailLabel": "E posta adresi",
+  "emailPlaceholder": "E-posta",
+  "passwordLabel": "Parola",
+  "passwordPlaceholder": "Parola",
+  "forgotPassword": "Parolamı unuttum",
+  "signInButton": "Giriş yapın",
+  "providersLabel": "ya da sosyal medya hesabınızı kullanın",
+  "gotoRegistration": "Hemen bir hesap oluşturun!",
+  "validation" : {
+    "noError": "",
+    "email": {
+      "required": "Lütfen e-posta adresinizi yazın",
+      "email": "Lütfen e-posta adresinizi yazın"
+    },
+    "password": {
+      "required": "Lütfen parolanızı yazın"
+    }
+  }
+}
+</i18n>
+<i18n locale="en">
+{
+  "emailLabel": "Email address",
+  "emailPlaceholder": "E-mail",
+  "passwordLabel": "Password",
+  "passwordPlaceholder": "Password",
+  "forgotPassword": "Forgot password?",
+  "signInButton": "Sign In",
+  "providersLabel": "or continue with",
+  "gotoRegistration": "Create your account now!",
+  "validation" : {
+    "email": {
+      "required": "Please provide your e-mail address",
+      "email": "Please provide a valid email address"
+    },
+    "password": {
+      "required": "Please provide your password"
+    }
+  }
+}
+</i18n>
 
 
 

@@ -21,18 +21,13 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
-import { en } from "@/locales/en";
-import { tr } from "@/locales/tr";
-
 const i18n = createI18n({
-    legacy: true,
+    legacy: false,
     locale: 'tr',
     fallbackLocale: 'en',
-    messages: {
-        'en': en,
-        'tr': tr,
-    }
+    useScope: 'global',
 })
+
 
 const app = createApp(App)
 
@@ -40,8 +35,6 @@ app.use(createPinia())
 app.use(router)
 app.use(i18n)
 
-import vFocus from './directives/vFocus'
-app.directive('focus', vFocus)
 
 import axios from 'axios'
 app.provide('$axios', axios)

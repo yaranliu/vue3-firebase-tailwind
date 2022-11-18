@@ -30,7 +30,7 @@ const DrawerItems = [
         auth: true,
         items: [
             { name: 'changeTheme', icon: 'las la-palette text-green-300', action: true},
-            { name: 'action1', icon: 'las la-palette text-red-300', action: true},
+            { name: 'changeLanguage', icon: 'las la-language text-red-300', action: true},
             { name: 'action2', action: true},
             { name: 'action3', icon: 'la la-cc-visa text-yellow-400', action: true},
         ]

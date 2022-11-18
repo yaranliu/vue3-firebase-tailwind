@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 
 import { DefaultRouteNames} from "@/configuration/AppConfiguration";
 
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -24,16 +25,23 @@ const router = createRouter({
     ]
 })
 
-router.beforeEach((to, from, next) => {
+// TODO Implement auto-redirect to 'user-home' for signed in users at browser (startup/refresh/typed route)
+const authNoGo = [
+    DefaultRouteNames.signIn,
+    DefaultRouteNames.signUp
+]
+
+router.beforeEach((to, from) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
     if (requiresAuth && !getAuth().currentUser) {
-        next({ name: DefaultRouteNames.signIn, query: { redirect: to.name }})
+        return { name: DefaultRouteNames.signIn, query: { redirect: to.name as string} }
     } else {
-        if (to.name === DefaultRouteNames.signIn && getAuth().currentUser) { next({ name: DefaultRouteNames.home.user }) }
+        if (to.name === DefaultRouteNames.signIn && getAuth().currentUser) { return { name: DefaultRouteNames.home.user } }
         else {
-            next()
+            return true
         }
     }
+
 })
 
 export default router

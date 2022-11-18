@@ -13,6 +13,9 @@ import { DefaultRouteNames} from "@/configuration/AppConfiguration";
 import { useRouter} from "vue-router";
 const router = useRouter()
 
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
+
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 
 const props = defineProps([ 'actions' ])
@@ -74,7 +77,7 @@ const emit = defineEmits(['action'])
                   @click="emit('action', action.name)"
               >
                 <i :class="`${action.icon} text-lg mr-1 pr-1 pl-0.5 text-primary-600 group-hover:text-white`" />
-                <span class="grow text-left">{{ $t( `navigation.userButton.${action.label}`) }}</span>
+                <span class="grow text-left">{{ t( `${action.label}`) }}</span>
                 <button v-if="action.count" class="rounded-full bg-red-100 w-5 h-5 text-red-800 text-xs font-semibold text-ellipsis overflow-hidden">{{ action.count > 9 ? '~' : action.count }}</button>
               </button>
             </MenuItem>
@@ -92,3 +95,23 @@ const emit = defineEmits(['action'])
 <style scoped>
 
 </style>
+
+<i18n>
+{
+  "en": {
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "profile": "My profile",
+    "settings": "My settings",
+    "signOut": "Sign Out"
+  },
+  "tr": {
+    "notifications": "Bildirimler",
+    "messages": "Mesajlar",
+    "profile": "Profilim",
+    "settings": "Ayarlarım",
+    "signOut" :"Çıkış yap"
+  }
+}
+</i18n>
+

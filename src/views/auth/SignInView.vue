@@ -15,6 +15,9 @@ import { useAuthStore } from "@/stores/auth";
 import {AuthErrorSource} from "@/components/auth/AuthErrorSource";
 const auth = useAuthStore()
 
+import { useI18n } from "vue-i18n";
+const { t } = useI18n()
+
 import { DefaultRouteNames} from "@/configuration/AppConfiguration";
 
 const onGotoSignUp = () => {
@@ -69,7 +72,7 @@ onMounted(() => {
       <div v-show="!auth.inProgress">
         <div class="">
           <div class="text-center py-6 font-bold text-2xl text-white">
-            {{ $t('views.signIn.title') }}
+            {{ t('title') }}
           </div>
           <SignInCard
               vertical
@@ -81,9 +84,9 @@ onMounted(() => {
           />
           <SimpleDialog
               alert-type="danger"
-              :title="$t('error.dialog.title')"
-              :description="$t(auth.error.toLocaleString())"
-              :button-label="$t('error.dialog.button')"
+              :title="t('error.dialog.title')"
+              :description="t(auth.error.toLocaleString())"
+              :button-label="t('error.dialog.button')"
               :is-open="showErrorDialog"
               @ok-clicked="showErrorDialog.value = false"
           />
@@ -92,8 +95,8 @@ onMounted(() => {
       <div v-show="auth.inProgress" class="text-white">
         <Loader
             :show="loading"
-            :title="$t('views.signIn.loader.message')"
-            :desc="$t('views.signIn.loader.title', { method: authMethod === 'password' ? $t('views.signIn.loader.credentials') : $t('views.signIn.loader.account', { provider: _.upperFirst(authProvider)}) })"
+            :title="t('loader.message')"
+            :desc="t('loader.title', { method: authMethod === 'password' ? t('loader.credentials') : t('loader.account', { provider: _.upperFirst(authProvider)}) })"
         />
       </div>
     </div>
@@ -103,3 +106,30 @@ onMounted(() => {
 <style scoped>
 
 </style>
+<i18n src="@/locales/error-messages.json"></i18n>
+<i18n locale="tr">
+{
+  "title": "Giriş Yapın",
+  "loader": {
+    "state": "Kullanım bilgileri kontrol ediliyor",
+    "title": "{method} ile giriş yapılıyor",
+    "message": "Lütfen bekleyiniz",
+    "account": "{provider} hesabınız",
+    "credentials": "E-posta adresiniz ve parolanız"
+  }
+}
+
+</i18n>
+<i18n locale="en">
+{
+  "title": "Sign In",
+  "loader": {
+    "state": "Authenticating",
+    "title": "Signing in with {method}",
+    "message": "Please wait",
+    "account": "your {provider} account",
+    "credentials": "email and password"
+  }
+}
+
+</i18n>

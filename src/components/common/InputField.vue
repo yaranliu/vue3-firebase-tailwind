@@ -1,6 +1,6 @@
 <script setup>
 
-import { DefaultIcons } from "@/configuration/AppConfiguration.js";
+import { DefaultIcons } from "@/configuration/AppConfiguration.ts";
 
 import { ref, computed, useSlots, onMounted } from "vue";
 import { uniqueGen } from "@/lib/uuid-generator";

@@ -27,3 +27,7 @@ coverage
 *.sw?
 
 /misc/
+
+.prettierrc.json
+env.d.ts
+.env.local
