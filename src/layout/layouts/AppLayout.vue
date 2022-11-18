@@ -72,7 +72,6 @@ onMounted(() => {
             </Drawer>
           </div>
 
-          <!-- TODO Correct max-h of RouterView taking Header and Footer heights into consideration -->
           <div class="grow max-h-screen overflow-y-auto">
             <RouterView v-slot="{ Component }">
               <transition name="fade" mode="out-in">
