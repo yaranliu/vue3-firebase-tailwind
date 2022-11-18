@@ -16,7 +16,6 @@ import { ApplicationAuthError, getApplicationAuthErrorMessage} from "@/component
 
 import { useRouter } from "vue-router";
 
-
 export const useAuthStore = defineStore({
     id: 'auth',
     state: () => ({

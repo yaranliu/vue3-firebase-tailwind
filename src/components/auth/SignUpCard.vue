@@ -17,7 +17,7 @@ const user = reactive({
 
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, sameAs, minLength } from '@vuelidate/validators'
-import { i18nErrorMessage } from '@/lib/validation-error'
+import { i18nErrorMessage} from "@/lib/i18nErrorMessage"
 
 const rules = computed (() => { return {
   email: { required, email },

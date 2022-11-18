@@ -3,7 +3,8 @@
 import { DefaultIcons } from "@/configuration/AppConfiguration.ts";
 
 import { ref, computed, useSlots, onMounted } from "vue";
-import { uniqueGen } from "@/lib/uuid-generator";
+// import { uniqueGen } from "@/lib/uuid-generator";
+import { UniqueNameAndId, uniqueNameAndIdGenerator } from "@/lib/uniqueNameAndIdGenerator";
 
 const slots = useSlots()
 
@@ -42,9 +43,14 @@ const value = computed({
 })
 
 onMounted(() => {
-  let { id, name } = uniqueGen(container.value, 'input')
-  inputId.value = (container.value.getAttribute('id') === null) ? id : `${container.value.getAttribute('id')}-input`
-  inputName.value = (container.value.getAttribute('name') === null) ? id : `${container.value.getAttribute('name')}-input`
+  let val = container.value
+  let unique = uniqueNameAndIdGenerator(container.value, 'input')
+  inputId.value = (val.getAttribute('id') === null) ? unique.Id : `${val.getAttribute('id')}-input`
+  inputName.value = (val.getAttribute('name') === null) ? unique.Name : `${val.getAttribute('name')}-input`
+
+  // let { id, name } = uniqueGen(container.value, 'input')
+  // inputId.value = (container.value.getAttribute('id') === null) ? id : `${container.value.getAttribute('id')}-input`
+  // inputName.value = (container.value.getAttribute('name') === null) ? id : `${container.value.getAttribute('name')}-input`
 })
 
 </script>

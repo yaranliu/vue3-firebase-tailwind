@@ -15,7 +15,7 @@ import Drawer from "@/layout/drawer/Drawer.vue";
 
 const isOpen = ref(true)
 
-import { DrawerItems, UserButtonActions } from '../../configuration/LayoutConfiguration'
+import { DrawerItems, UserButtonActions } from '@/configuration/LayoutConfiguration'
 import LayoutHeader from "@/layout/header/LayoutHeader.vue";
 import UserProfileForDrawer from "@/components/app/UserProfileForDrawer.vue";
 import ExampleDrawerFooter from "@/components/app/ExampleDrawerFooter.vue";
