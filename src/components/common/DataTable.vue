@@ -19,7 +19,7 @@ const fetch = () => new Promise<ApiResponse>((resolve, reject) => {
   error.value = false
   loading.value = true
   if (props.resource) {
-    props.resource.Execute().then(r => {
+    props.resource.Execute(undefined, {test: 'testing'}, undefined, { Page: 2, PerPage:20 }).then(r => {
       loaded.value = true
       loading.value = false
       resolve(r.Data)

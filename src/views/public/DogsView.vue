@@ -1,11 +1,9 @@
 <script setup>
-import * as _ from "lodash/string"
-import {onMounted, ref} from "vue";
+import { ref} from "vue";
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
 import DataTable from "@/components/common/DataTable.vue";
-import { ApiResource } from "@/lib/api/ApiResource.ts";
-import { ApiMethod } from "@/lib/api/ApiMethod.ts";
+import {DogsApi} from "@/api/DogsApi";
 
 const search = ref('')
 
@@ -14,21 +12,13 @@ const leftPanel = ref(false)
 
 const data = ref([])
 
-onMounted(() => {
-
-})
-
-const breeds = ref(new ApiResource(ApiMethod.GET, 'https://dog.ceo/api', '/breeds/list/all', true))
-
-// const randomImage = ref(new ApiResource(ApiMethod.GET, 'https://dog.ceo/api', '/breed/{breed}/images/random', true))
-// let routeParams = new Map()
-// routeParams.set('breed', 'African')
-// console.log(randomImage.value.ToAxiosConfig(routeParams, {}))
+// const breeds = ref(DogsApi.GetResource('getAllBreeds'))
+const breeds = ref(DogsApi.Resources.get('getAllBreeds'))
 
 const isLoaded = ref(false)
 
 const onDataLoaded = (d) => {
-  for (const [key, value] of Object.entries(d.message)) {
+  for (const [key, value] of Object.entries(d)) {
     let breed = key
     let subBreeds = value.join(' ')
     let image = ''
