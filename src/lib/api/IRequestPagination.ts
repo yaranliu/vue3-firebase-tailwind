@@ -1,4 +1,6 @@
 export interface IRequestPagination {
-    Page: number,
     PerPage: number
+    Page: number | undefined,
+    LastId: string | undefined,
+    After: string | undefined
 }

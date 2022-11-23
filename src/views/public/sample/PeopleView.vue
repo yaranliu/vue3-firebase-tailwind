@@ -1,29 +1,56 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
 import DataTable from "@/components/common/DataTable.vue";
-import {DogsApi} from "@/api/DogsApi";
+import {RegularRequestPagination, SampleApi, ScrollingRequestPagination} from "@/api/SampleApi";
+import {Paged} from "@/lib/api/Paged";
+import {Scrolling} from "@/lib/api/Scrolling";
 
 const search = ref('')
 
 const filterPanel = ref(false)
 const leftPanel = ref(false)
 
+
+const dataTable = ref(null)
+
+
+// data
 const data = ref([])
+const resourceName = ref('infinite')
+// const requestPagination = ref(new RegularRequestPagination(1, 10))
+const requestPagination = ref(new ScrollingRequestPagination (50, '0029', true))
+// const serverPagination = ref( new Paged(1, 1, 1, 1))
+const serverPagination = ref(new Scrolling())
+
+const abortController = ref(new AbortController())
+const routeParams = ref(new Map([['id', '001'], ['item', '002340432']]))
+const queryParams = ref({color: 'red', size: ['medium', 'small'] })
 
 const isLoaded = ref(false)
+const isFailed = ref(false)
+const isLoading = ref(false)
 
 const onDataLoaded = (d) => {
-  for (const [key, value] of Object.entries(d)) {
-    let breed = key
-    let subBreeds = value.join(' ')
-    let image = ''
-    data.value.push({ breed: breed, subBreeds: subBreeds, image: image })
-  }
+  data.value = d
   isLoaded.value = true
 }
 
+const onFailed = (e) => {
+  isFailed.value = true
+}
+
+const onLoading  = (l) => {
+  isLoading.value = l
+}
+
+onMounted(() => {
+
+  dataTable.value.fetchData()
+
+
+})
 </script>
 
 <template>
@@ -69,28 +96,43 @@ const onDataLoaded = (d) => {
           <div class="bg-white bg-opacity-5 text-white rounded-md transition-all ease-in-out duration-300" :class="{'h-24 mb-2': filterPanel, 'h-0': !filterPanel}"></div>
           <!--          Table View-->
           <DataTable
-              class="rounded-md overflow-y-auto border border-slate-700"
-              :api="DogsApi"
-              resource-name="getAllBreeds"
+              ref="dataTable"
+              class="rounded-md overflow-y-auto border border-slate-700 h-full"
+              :api="SampleApi"
+              :resource-name="resourceName"
+              :route-params="routeParams"
+              :query-params="queryParams"
+              :abort-controller="abortController"
               @loaded="onDataLoaded"
+              @failed="onFailed"
+              @loading="onLoading"
+              :timeout="2000"
+              :request-pagination="requestPagination"
+              v-model:server-pagination = "serverPagination"
           >
             <template #header>
               <div class="table-row bg-violet-900 text-white sticky top-0">
                 <div class="table-cell text-center p-2">#</div>
-                <div class="table-cell text-left p-2">Breed</div>
-                <div class="table-cell text-left p-2">Sub breeds</div>
+                <div class="table-cell text-left p-2">First Name</div>
+                <div class="table-cell text-left p-2">Last Name</div>
+                <div class="table-cell text-left p-2">Posts</div>
               </div>
             </template>
             <template #data>
-              <div v-if="isLoaded" v-for="(v, i) in data" class="table-row text-slate-400 text-sm odd:bg-white odd:bg-opacity-5 hover:text-slate-100 transition-all ease-in-out duration-100">
-                <div class="table-cell text-center p-2">{{ i }}</div>
-                <div class="table-cell p-2">{{ v.breed }}</div>
-                <div class="table-cell p-2">{{ v.subBreeds }}</div>
+              <div v-if="isLoading" v-for="index in 100" class="table-row animate-pulse text-slate-400 text-sm">
+                <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
+                <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
+                <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
+                <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
               </div>
-              <div v-else v-for="index in 100" class="table-row animate-pulse text-slate-400 text-sm">
-                <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
-                <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
-                <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
+              <div v-if="isLoaded" v-for="(v, i) in data" class="table-row text-slate-400 text-sm odd:bg-white odd:bg-opacity-5 hover:text-slate-100 transition-all ease-in-out duration-100">
+                <div class="table-cell text-center p-2">{{ v.id }}</div>
+                <div class="table-cell p-2">{{ v.firstName }}</div>
+                <div class="table-cell p-2">{{ v.lastName }}</div>
+                <div class="table-cell p-2">{{ v.posts }}</div>
+              </div>
+              <div v-if="isFailed" class="table-row text-white bg-orange-500">
+                <div>Error</div>
               </div>
             </template>
             <template #footer>

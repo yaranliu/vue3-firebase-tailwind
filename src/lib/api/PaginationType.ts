@@ -1,5 +1,5 @@
 export enum PaginationType {
     None = 'none',
-    Paged = 'paged',
-    Flowing = 'flowing'
+    Regular = 'regular',
+    Scrolling = 'scrolling'
 }

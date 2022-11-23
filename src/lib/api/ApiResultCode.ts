@@ -1,3 +1,5 @@
+import { AxiosError } from "axios";
+
 enum ApiResultCode {
     Unknown = 'Unknown',
     Cancelled = 'Cancelled',
@@ -64,4 +66,12 @@ const errorFromHttpStatusCode = (code: number | undefined) : ApiResultCode => {
     return status
 }
 
-export { ApiResultCode, errorFromHttpStatusCode }
+const errorFromAxiosErrorCode = (code: string) : ApiResultCode => {
+    let status = ApiResultCode.Unknown
+    switch (code) {
+        case AxiosError.ECONNABORTED: status = ApiResultCode.Timeout; break;
+    }
+    return status
+}
+
+export { ApiResultCode, errorFromHttpStatusCode, errorFromAxiosErrorCode }

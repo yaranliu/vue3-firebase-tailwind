@@ -1,42 +1,70 @@
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
-import { ApiResource } from "@/lib/api/ApiResource";
-import { ApiResponse } from "@/lib/api/ApiResponse";
+import { ref } from "vue";
+import {ApiResponse} from "@/lib/api/ApiResponse";
+import { Api } from "@/lib/api/Api";
+import { Paged } from "@/lib/api/Paged";
+import {Scrolling} from "@/lib/api/Scrolling";
 
 const props = defineProps(
     {
-      resource: { type: ApiResource },
+      api: { required:true },
+      resourceName: { type: String, required: true },
+      routeParams: { type: Map<string, string> },
+      queryParams: { type: Object },
+      timeout: { type: Number, default: 0 },
+      abortController: { type: AbortController },
+      serverPagination: { type: Object },
+      requestPagination : { default: undefined }
     })
-const emit = defineEmits(['loaded', 'error'])
+
+const emit = defineEmits(['loaded', 'failed', 'loading', 'update:serverPagination'])
 
 const loaded = ref(false)
 const loading = ref(false)
-const error = ref(false)
+const failed = ref(false)
+
 
 const fetch = () => new Promise<ApiResponse>((resolve, reject) => {
-  loaded.value = false
-  error.value = false
-  loading.value = true
-  if (props.resource) {
-    props.resource.Execute(undefined, {test: 'testing'}, undefined, { Page: 2, PerPage:20 }).then(r => {
-      loaded.value = true
-      loading.value = false
-      resolve(r.Data)
-    }).catch(e => {
-      error.value = true
-      loading.value = false
-      reject(e)
-    })
+  let api = props.api ?  props.api as Api : null
+  if (api && props.resourceName) {
+    loaded.value = false
+    failed.value = false
+    loading.value = true
+    emit('loading', true)
+    let config = api.GetConfig(props.resourceName, props.timeout, props.abortController?.signal)
+
+    if (config) {
+      config = config
+          .SetRouteParams(props.routeParams)
+          .SetQueryParams(props.queryParams)
+          .SetPagination( props.requestPagination?.ToServerDefinition())
+      config.Execute(api.GetResource(props.resourceName), api.TransformResponse)?.then(r => {
+        loaded.value = true
+        loading.value = false
+        emit('loading', false)
+        emit('update:serverPagination', r.Pagination)
+        resolve(r.Data)
+      }).catch(
+          e => {
+            failed.value = true
+            loading.value = false
+            console.log(e)
+            emit('loading', false)
+            reject(e)
+          }
+      )
+    }
+  } else {
+    console.log ('DataTable configuration error. Api or Resource is not defined')
   }
 })
 
-onMounted(() => {
-  fetch().then(r => emit('loaded', r)).catch(e =>
-  {
-    emit('error', e)
-  })
-})
+const fetchData = () => {
+  fetch().then(r => emit('loaded', r)).catch(e => { emit('failed', e) })
+}
+
+defineExpose({ fetchData })
 
 </script>
 
