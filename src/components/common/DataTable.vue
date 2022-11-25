@@ -31,6 +31,7 @@ const fetch = () => new Promise<ApiResponse>((resolve, reject) => {
     loaded.value = false
     failed.value = false
     loading.value = true
+    // setTimeout(() => { emit('loading', !loaded.value && !failed.value) }, 50)
     emit('loading', true)
     let config = api.GetConfig(props.resourceName, props.timeout, props.abortController?.signal)
 
@@ -49,7 +50,6 @@ const fetch = () => new Promise<ApiResponse>((resolve, reject) => {
           e => {
             failed.value = true
             loading.value = false
-            console.log(e)
             emit('loading', false)
             reject(e)
           }
@@ -69,17 +69,23 @@ defineExpose({ fetchData })
 </script>
 
 <template>
-  <div class="rounded-md overflow-y-auto border border-slate-700">
+  <div class="rounded-md  border border-slate-700 flex flex-col justify-between ">
     <!--            Table-->
-    <div class="table w-full">
+    <div>
       <!--              Table Header Row-->
-      <div class="table-header-group">
-        <slot name="header"></slot>
+      <div class="grow table w-full">
+        <div class="table-header-group">
+          <slot name="header"></slot>
+        </div>
+        <!--              Table Data Rows-->
+        <div class="table-row-group overflow-y-auto">
+          <slot name="data"></slot>
+        </div>
       </div>
-      <!--              Table Data Rows-->
-      <div class="table-row-group">
-        <slot name="data"></slot>
-      </div>
+
+    </div>
+    <div class="grow">
+      <slot name="error"></slot>
     </div>
     <!--            Table Footer-->
     <slot name="footer"></slot>

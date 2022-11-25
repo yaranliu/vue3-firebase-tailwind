@@ -9,7 +9,8 @@ import { UniqueNameAndId, uniqueNameAndIdGenerator } from "@/lib/uniqueNameAndId
 const slots = useSlots()
 
 const props = defineProps({
-  modelValue: {type: String, default: ''},
+  modelValue: {},
+  // modelValue: {type: String, default: ''},
   clearable: {type: Boolean, default: false},
   clearButtonClass: { type: String, default: ''},
   error: { type: Boolean, default: false},
@@ -18,6 +19,7 @@ const props = defineProps({
   placeholder: {type: String, default: ''},
   type: {type: String, default: 'text'},
   inputClass: {type: String},
+  inputStyle: {type: Object},
   autoComplete: { type: Boolean, default: false },
   min: { type:String },
   max: { type:String },
@@ -82,6 +84,7 @@ onMounted(() => {
             inputClass : true,
             'text-alert-600' : error
           }"
+          :style="inputStyle"
           :placeholder="props.placeholder"
           :type="props.type"
           :autocomplete="props.autoComplete"
@@ -109,6 +112,15 @@ onMounted(() => {
 <style scoped>
 input::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 </style>

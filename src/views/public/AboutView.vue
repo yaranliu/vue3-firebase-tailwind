@@ -23,7 +23,7 @@ const { t } = useI18n()
 
 <!--      Page starts here-->
       <div class="h-full grid place-content-center text-white text-center space-y-4">
-        <div class="text-6xl font-bold tracking-widest" >{{ t('about') }}</div>
+        <div class="text-6xl font-bold " >{{ t('about') }}</div>
         <div>{{ t('test')}}</div>
       </div>
 <!--      Page ends here-->
@@ -31,6 +31,7 @@ const { t } = useI18n()
   </main>
 </template>
 
-<style>
+<style scoped>
+
 </style>
 

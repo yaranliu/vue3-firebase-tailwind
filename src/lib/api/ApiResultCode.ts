@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 
 enum ApiResultCode {
     Unknown = 'Unknown',
-    Cancelled = 'Cancelled',
     Success = 'Success',
     BadRequest = 'BadRequest',
     NotAuthenticated = 'NotAuthenticated',
@@ -30,7 +29,16 @@ enum ApiResultCode {
     LoopDetected = 'LoopDetected',
     NotExtended = 'NotExtended',
     NetworkAuthRequired = 'NetworkAuthRequired',
-
+    // XHR
+    Network = 'Network',
+    Cancelled = 'Cancelled',
+    TooManyRedirects = 'TooManyRedirects',
+    BadOptionValue = 'BadOptionValue',
+    BadOption = 'BadOption',
+    Deprecated = 'Deprecated',
+    BadResponse = 'BadResponse',
+    NotSupported = 'NotSupported',
+    InvalidUrl = 'InvalidUrl',
 }
 
 const errorFromHttpStatusCode = (code: number | undefined) : ApiResultCode => {
@@ -70,8 +78,20 @@ const errorFromAxiosErrorCode = (code: string) : ApiResultCode => {
     let status = ApiResultCode.Unknown
     switch (code) {
         case AxiosError.ECONNABORTED: status = ApiResultCode.Timeout; break;
+        case AxiosError.ERR_NETWORK: status = ApiResultCode.Network; break;
+        case AxiosError.ERR_FR_TOO_MANY_REDIRECTS: status = ApiResultCode.TooManyRedirects ; break;
+        case AxiosError.ERR_BAD_OPTION_VALUE: status = ApiResultCode.BadOptionValue ; break;
+        case AxiosError.ERR_BAD_OPTION: status = ApiResultCode.BadOption ; break;
+        case AxiosError.ERR_DEPRECATED: status = ApiResultCode.Deprecated ; break;
+        case AxiosError.ERR_BAD_RESPONSE: status = ApiResultCode.BadResponse ; break;
+        case AxiosError.ERR_BAD_REQUEST: status = ApiResultCode.BadRequest ; break;
+        case AxiosError.ERR_NOT_SUPPORT: status = ApiResultCode.NotSupported ; break;
+        case AxiosError.ERR_INVALID_URL: status = ApiResultCode.InvalidUrl ; break;
+        case AxiosError.ERR_CANCELED: status = ApiResultCode.Cancelled ; break;
+        case AxiosError.ETIMEDOUT: status = ApiResultCode.Timeout ; break;
     }
     return status
 }
 
 export { ApiResultCode, errorFromHttpStatusCode, errorFromAxiosErrorCode }
+

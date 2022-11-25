@@ -46,6 +46,12 @@ let DefaultIcons = {
         down: 'las la-caret-down',
         left: 'las la-caret-left',
         right: 'las la-caret-right',
+    },
+    pagination: {
+        first: 'las la-step-backward',
+        previous: 'las la-caret-left',
+        next: 'las la-caret-right',
+        last: 'las la-step-forward'
     }
 }
 

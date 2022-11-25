@@ -31,7 +31,8 @@ module.exports = {
     },
     fontFamily: {
       // sans: ['proxima-soft']
-      sans: ['Poppins']
+      sans: ['Poppins'],
+      mono: ['Inconsolata']
     }
   },
   plugins: [],

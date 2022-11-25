@@ -64,12 +64,13 @@ export class AxiosConfig {
                         response.Transform(r.data ? r.data : null, responseHandler, resource.PaginationType)
                         resolve(response)
                     }).catch((e: AxiosError) => {
-                    console.log(e)
                     let error = new ApiResponse()
-                    if (e.code === AxiosError.ECONNABORTED) {
+                    if (e.response) {
+                        error.GenerateError(e.response.status, e.response?.data)
+                    } else if (e.code) {
                         error.GenerateAxiosError(e.code, e.message)
                     } else {
-                        error.GenerateError(e.response?.status, e.response?.data)
+                        error.Status = ApiResultCode.Unknown
                     }
                     if (axios.isCancel(e)) { error.Status = ApiResultCode.Cancelled }
                     reject(error)
