@@ -51,7 +51,9 @@ let DefaultIcons = {
         first: 'las la-step-backward',
         previous: 'las la-caret-left',
         next: 'las la-caret-right',
-        last: 'las la-step-forward'
+        last: 'las la-step-forward',
+        page: 'las la-file-alt',
+        pages: 'las la-book',
     }
 }
 

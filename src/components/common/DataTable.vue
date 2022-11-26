@@ -13,7 +13,6 @@ const props = defineProps(
       routeParams: { type: Map<string, string> },
       queryParams: { type: Object },
       timeout: { type: Number, default: 0 },
-      abortController: { type: AbortController },
       serverPagination: { type: Object },
       requestPagination : { default: undefined }
     })
@@ -25,7 +24,7 @@ const loading = ref(false)
 const failed = ref(false)
 
 
-const fetch = () => new Promise<ApiResponse>((resolve, reject) => {
+const fetch = (controller: AbortController) => new Promise<ApiResponse>((resolve, reject) => {
   let api = props.api ?  props.api as Api : null
   if (api && props.resourceName) {
     loaded.value = false
@@ -33,7 +32,7 @@ const fetch = () => new Promise<ApiResponse>((resolve, reject) => {
     loading.value = true
     // setTimeout(() => { emit('loading', !loaded.value && !failed.value) }, 50)
     emit('loading', true)
-    let config = api.GetConfig(props.resourceName, props.timeout, props.abortController?.signal)
+    let config = api.GetConfig(props.resourceName, props.timeout, controller)
 
     if (config) {
       config = config
@@ -60,8 +59,8 @@ const fetch = () => new Promise<ApiResponse>((resolve, reject) => {
   }
 })
 
-const fetchData = () => {
-  fetch().then(r => emit('loaded', r)).catch(e => { emit('failed', e) })
+const fetchData = (controller: AbortController) => {
+  fetch(controller).then(r => emit('loaded', r)).catch(e => { emit('failed', e) })
 }
 
 defineExpose({ fetchData })

@@ -30,7 +30,7 @@ const requestPagination = ref(new RegularRequestPagination(1, 10))
 const serverPagination = ref( new Paged(1, 1, 1, 1))
 // const serverPagination = ref(new Scrolling())
 
-const abortController = ref(new AbortController())
+const abortController = ref(null)
 const routeParams = ref(new Map([['id', '001'], ['item', '002340432']]))
 const queryParams = ref({color: 'red', size: ['medium', 'small'] })
 
@@ -52,27 +52,38 @@ const onLoading  = (l) => {
   isLoading.value = l
 }
 
+const fetch = () => {
+  isLoaded.value = false
+  isFailed.value = false
+  abortController.value = new AbortController()
+  dataTable.value.fetchData(abortController.value)
+}
+
 const showPage = (page) => {
   if (page !== requestPagination.value.Page) {
     requestPagination.value.Page = page
-    dataTable.value.fetchData()
+    fetch()
   }
 }
 
 const updatePerPage = (perPage) => {
   requestPagination.value.Page = 1
   requestPagination.value.PerPage = perPage
-  dataTable.value.fetchData()
+  fetch()
 }
 
 const perPageOptions = ref([10, 50, 100])
 
+
+const cancelRequest = () => {
+  abortController.value.abort()
+}
+
 onMounted(() => {
-
-  dataTable.value.fetchData()
-
-
+  fetch()
 })
+
+
 </script>
 
 <template>
@@ -124,16 +135,15 @@ onMounted(() => {
               :resource-name="resourceName"
               :route-params="routeParams"
               :query-params="queryParams"
-              :abort-controller="abortController"
               @loaded="onDataLoaded"
               @failed="onFailed"
               @loading="onLoading"
-              :timeout="5000"
+              :timeout="0"
               :request-pagination="requestPagination"
               v-model:server-pagination = "serverPagination"
           >
             <template #header>
-              <div class="table-row bg-violet-900 text-white sticky top-0 bg-opacity-100 z-10">
+              <div class="table-row opaque-bg text-yellow-500 sticky top-0 bg-opacity-100 z-10">
                 <div class="table-cell text-center p-2">#</div>
                 <div class="table-cell text-left p-2">First Name</div>
                 <div class="table-cell text-left p-2">Last Name</div>
@@ -158,17 +168,17 @@ onMounted(() => {
               <div v-if="!isLoading && isFailed" class="w-full h-full text-white grid place-content-center">
                 <span class="text-alert-300 text-2xl">{{ t(`error.xhr.${error.Status}`) }}</span>
                 <button
-                    v-if="error.Status === ApiResultCode.Timeout"
+                    v-if="error.Status === ApiResultCode.Timeout || error.Status === ApiResultCode.Cancelled"
                     class="border rounded-md px-12 py-1.5  mt-12 hover:bg-white hover:bg-opacity-10 text-base"
-                    @click="dataTable.fetchData()">
+                    @click="fetch()">
                   {{ t(`retry`) }}
                 </button>
               </div>
             </template>
             <template #footer>
-              <div class="w-full p-2 bg-violet-900/100 text-white sticky bottom-0">
+              <div class="h-10 flex flex-row justify-between items-center w-full px-2 py-1 text-white sticky bottom-0 px-4 opaque-bg border-t border-slate-700">
                 <RegularPagination
-                    class="bg-violet-900"
+                    v-if = "isLoaded || isLoading"
                     v-model="serverPagination"
                     :is-loading="isLoading"
                     :is-loaded="isLoaded"
@@ -177,6 +187,7 @@ onMounted(() => {
                     @to="showPage"
                     @per-page="updatePerPage"
                 />
+                <button v-if="isLoading" @click="cancelRequest" class="text-yellow-400"><i class="las la-circle-notch animate-spin" /><span class="hidden md:inline-block ml-2">{{  t('abort') }}</span></button>
               </div>
             </template>
           </DataTable>
@@ -189,15 +200,21 @@ onMounted(() => {
 <i18n>
 {
   "tr": {
+    "abort" : "İptal et",
     "retry" : "Yeniden dene"
   },
 
   "en": {
+    "abort" : "Abort",
     "retry" : "Retry"
   }
 }
 </i18n>
 <style scoped>
+.opaque-bg {
+  background-color: #22243FFF;
+  opacity: 100%;
+}
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.05s ease;

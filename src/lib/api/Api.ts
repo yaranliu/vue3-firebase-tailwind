@@ -25,16 +25,17 @@ abstract class Api {
         return this
     }
 
-    GetConfig(resourceName: string, timeout?: number, signal?: AbortSignal) {
+    GetConfig(resourceName: string, timeout?: number, controller?: AbortController) {
         let resource = this.Resources.get(resourceName)
         if (resource) {
-            let abortSignal = signal ? signal : this.Controller.signal
+            let abortSignal = controller ? controller.signal : this.Controller.signal
             let config = new AxiosConfig(abortSignal, this.BaseUrl)
             config.url = resource.Url
             config.method = resource.Method
             if (timeout) config.timeout = timeout
             if (this.Auth === ApiAuth.Jwt) config.headers = { 'Authorization' : this.Jwt() }
             else if (this.Auth === ApiAuth.Basic) config.auth = this.BasicAuth
+
             return config
         }
     }

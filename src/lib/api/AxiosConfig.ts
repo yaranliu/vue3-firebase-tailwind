@@ -16,12 +16,14 @@ export class AxiosConfig {
     params: any = undefined
     timeout: number = 0
     auth: IBasicAuth | undefined
+    signal: AbortSignal | undefined
     data: any
 
     constructor(signal: AbortSignal, baseUrl: string, url?: string, method?: ApiMethod) {
         this.baseURL = baseUrl
         if (url) this.url = url
         if (method) this.method = method
+        this.signal = signal
     }
 
     SetRouteParams(routeParams?: Map<string, string> | null) {
@@ -79,3 +81,4 @@ export class AxiosConfig {
         }
     }
 }
+
