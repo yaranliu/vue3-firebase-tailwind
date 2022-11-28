@@ -1,13 +1,12 @@
 <script setup>
 import { computed } from "vue";
-
 import { useRouter } from 'vue-router'
+import { useI18n } from "vue-i18n"
+import { useAuthStore} from "@/stores/auth";
+
 const router = useRouter()
 
-import { useI18n } from "vue-i18n"
 const { t } = useI18n()
-
-import { useAuthStore} from "@/stores/auth";
 const auth = useAuthStore();
 
 const props = defineProps(

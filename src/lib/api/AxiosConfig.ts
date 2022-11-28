@@ -1,4 +1,5 @@
-import * as _ from "lodash"
+import clone from "lodash/clone"
+import replace from "lodash/replace"
 import type {ApiMethod} from "@/lib/api/ApiMethod";
 import type {IBasicAuth} from "@/lib/api/IBasicAuth";
 import type {ApiResource} from "@/lib/api/ApiResource";
@@ -7,6 +8,8 @@ import axios, {AxiosError } from "axios";
 import type { AxiosResponse  } from "axios";
 import {ApiResponse} from "@/lib/api/ApiResponse";
 import {ApiResultCode} from "@/lib/api/ApiResultCode";
+import type {IRequestPagination} from "@/lib/api/Pagination";
+import type {AbstractRegularRequestPagination, AbstractScrollingRequestPagination} from "@/lib/api/Pagination";
 
 export class AxiosConfig {
     baseURL: string
@@ -28,9 +31,9 @@ export class AxiosConfig {
 
     SetRouteParams(routeParams?: Map<string, string> | null) {
         if (this.url && routeParams) {
-            let u = _.clone(this.url).toLowerCase()
+            let u = clone(this.url).toLowerCase()
             for (const [key, value] of routeParams.entries()) {
-                u = _.replace(u, '{'  + key.toLowerCase() + '}', value)
+                u = replace(u, '{'  + key.toLowerCase() + '}', value)
             }
             this.url = u
         }
@@ -44,7 +47,7 @@ export class AxiosConfig {
         return this
     }
 
-    SetPagination(pagination?: object) {
+    SetPagination(pagination: object) {
         if (pagination) {
             this.params = {...this.params, ...pagination}
         }

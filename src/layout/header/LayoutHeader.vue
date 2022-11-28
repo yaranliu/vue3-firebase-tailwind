@@ -1,9 +1,8 @@
 <script setup>
-
-import { useRouter } from 'vue-router'
-const router = useRouter()
-
 import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const emit = defineEmits(['userAction', 'menuClicked'])
 const props = defineProps(['userButtonActions'])

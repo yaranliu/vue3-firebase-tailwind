@@ -3,10 +3,10 @@
 import SignUpCard from "@/components/auth/SignUpCard.vue";
 
 import {useRouter} from "vue-router";
-const router = useRouter()
-
 import { useI18n } from "vue-i18n";
+
 const { t } = useI18n()
+const router = useRouter()
 
 const onGotoSignIn = () => {
   // console.log("Go to Sign In")

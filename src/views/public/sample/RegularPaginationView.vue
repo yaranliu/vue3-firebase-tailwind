@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-const { t } = useI18n()
+
 
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
@@ -12,6 +12,8 @@ import {Scrolling} from "@/lib/api/Scrolling";
 import RegularPagination from "@/components/common/RegularPagination.vue";
 import {ApiResponse} from "@/lib/api/ApiResponse";
 import { ApiResultCode } from "@/lib/api/ApiResultCode";
+
+const { t } = useI18n()
 
 const search = ref('')
 
@@ -143,7 +145,7 @@ onMounted(() => {
               v-model:server-pagination = "serverPagination"
           >
             <template #header>
-              <div class="table-row opaque-bg text-yellow-500 sticky top-0 bg-opacity-100 z-10">
+              <div v-if="!isLoading && isLoaded" class="table-row opaque-bg text-yellow-500 sticky top-0 bg-opacity-100 z-10">
                 <div class="table-cell text-center p-2">#</div>
                 <div class="table-cell text-left p-2">First Name</div>
                 <div class="table-cell text-left p-2">Last Name</div>
@@ -151,12 +153,6 @@ onMounted(() => {
               </div>
             </template>
             <template #data>
-              <div v-if="isLoading" v-for="index in 100" class="table-row text-slate-400 text-sm animate-pulse" :key="`fake-row-${index}`">
-                  <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
-                  <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
-                  <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
-                  <div class="table-cell p-2"><div class="h-2 bg-slate-700 rounded"></div></div>
-              </div>
               <div v-if="!isLoading && isLoaded" v-for="(v, i) in data" class="table-row text-slate-400 text-sm odd:bg-white odd:bg-opacity-5 hover:text-slate-100 transition-all ease-in-out duration-100">
                 <div class="table-cell text-center p-2">{{ v.id }}</div>
                 <div class="table-cell p-2">{{ v.firstName }}</div>
@@ -211,17 +207,5 @@ onMounted(() => {
 }
 </i18n>
 <style scoped>
-.opaque-bg {
-  background-color: #22243FFF;
-  opacity: 100%;
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.05s ease;
-}
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 </style>

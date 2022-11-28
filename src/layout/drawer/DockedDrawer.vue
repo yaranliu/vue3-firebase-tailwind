@@ -1,16 +1,18 @@
 <script setup>
-import { computed} from "vue";
 
 import { useRouter } from 'vue-router'
-const router = useRouter()
 
-import * as _ from "lodash/array";
 
-import { useAuthStore} from "@/stores/auth";
-const auth = useAuthStore();
-
+import findIndex from "lodash/findIndex";
 import DockedDrawerItem from "@/layout/drawer/DockedDrawerItem.vue"
 import {DrawerWidth} from "@/layout/drawer/DrawerWidth.ts";
+
+import { useAuthStore} from "@/stores/auth";
+
+const auth = useAuthStore();
+const router = useRouter()
+
+
 
 const props = defineProps({
   items: { type: Array },
@@ -28,7 +30,7 @@ const isActiveRoute = (rName) => {
 }
 
 const isActiveGroup = (group) => {
-  return _.findIndex(group.routes, (r) => { return r.name === router.currentRoute.value.name }) !== -1
+  return findIndex(group.routes, (r) => { return r.name === router.currentRoute.value.name }) !== -1
 }
 
 const itemClass = ((item) => (

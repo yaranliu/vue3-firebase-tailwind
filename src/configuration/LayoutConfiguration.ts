@@ -19,8 +19,8 @@ const DrawerItems = [
         auth: false,
         items: [
             { name: DefaultRouteNames.home.public, icon: 'las la-globe'},
-            { name: 'dogs', icon: 'las la-paw'},
-            { name: 'people', icon: 'las la-users'},
+            { name: 'scrollingPagination', icon: 'las la-stream'},
+            { name: 'regularPagination', icon: 'las la-file-alt'},
             { name: 'about', icon: 'las la-building' },
             { name: 'lorem', icon: 'las la-font' },
             { name: 'notFound', icon: 'las la-exclamation-circle text-alert-300' }

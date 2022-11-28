@@ -2,18 +2,16 @@
 import { ref, watch, onMounted, computed, reactive } from 'vue'
 
 import { useRouter } from 'vue-router'
-const router = useRouter()
-
+import { DrawerItems, UserButtonActions } from '@/configuration/LayoutConfiguration'
 import { useAuthStore} from "@/stores/auth";
-const auth = useAuthStore();
-
 import NavigationItem from "@/layout/Navigation/NavigationItem.vue";
 import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
 import Drawer from "@/layout/drawer/Drawer.vue";
 
+const router = useRouter()
 const isOpen = ref(false)
 
-import { DrawerItems, UserButtonActions } from '@/configuration/LayoutConfiguration'
+const auth = useAuthStore();
 
 watch(isOpen, (newVal, oldValue) => {
   document.body.style.removeProperty("overflow")

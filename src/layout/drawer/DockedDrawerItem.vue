@@ -1,14 +1,14 @@
 <script setup>
 import { computed, onMounted } from "vue";
-
 import { useRouter } from 'vue-router'
-const router = useRouter()
-
 import { useAuthStore} from "@/stores/auth";
 import {DrawerWidth} from "@/layout/drawer/DrawerWidth";
+import { useI18n } from "vue-i18n"
+
+const router = useRouter()
+
 const auth = useAuthStore();
 
-import { useI18n } from "vue-i18n"
 const { t } = useI18n()
 
 const props = defineProps(
@@ -96,8 +96,8 @@ const onClick = () => {
     "home": { "md": "Home", "lg": "Home Page", "hint": "Application Home Page"},
     "about": { "md": "About Us", "lg": "About Us", "hint": "Who are we?"},
     "lorem": { "md": "Lorem", "lg": "Lorem Ipsum", "hint": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."},
-    "dogs": { "md": "Dogs", "lg": "Dog Breeds", "hint": ""},
-    "people": { "md": "People", "lg": "People", "hint": ""},
+    "scrollingPagination": { "md": "Scrolling", "lg": "Scrolling Pagination", "hint": ""},
+    "regularPagination": { "md": "Regular", "lg": "Regular Pagination", "hint": ""},
     "user": { "md": "Home", "lg": "My Home Page", "hint": "" },
     "inbox": { "md": "Inbox", "lg": "Inbox", "hint": "" },
     "dashboard": { "md": "Dashboard", "lg": "Dashboard", "hint": "User Dashboard"},
@@ -111,8 +111,8 @@ const onClick = () => {
     "home": { "md": "Ana Sayfa", "lg": "Ana Sayfa", "hint": "Uygulama Ana Sayfası"},
     "about": { "md": "Biz", "lg": "Hakkımızda", "hint": "Biz kimiz"},
     "lorem": { "md": "Lorem", "lg": "Lorem Ipsum", "hint": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."},
-    "dogs": { "md": "Köpekler", "lg": "Köpek Türleri", "hint": ""},
-    "people": { "md": "Üyeler", "lg": "Üyeler", "hint": ""},
+    "scrollingPagination": { "md": "Sürekli", "lg": "Sürekli Sayfalandırma", "hint": ""},
+    "regularPagination": { "md": "Standart", "lg": "Standart Sayfalandırma", "hint": ""},
     "user": { "md": "Sayfam", "lg": "Benim sayfam", "hint": "" },
     "inbox": { "md": "Mesajlar", "lg": "Mesajlarım", "hint": "" },
     "dashboard": { "md": "Panel", "lg": "Kullanıcı paneli", "hint": "Kullanıcı paneli"},

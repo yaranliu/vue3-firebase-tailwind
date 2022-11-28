@@ -1,25 +1,29 @@
 <script setup>
 import { ref, watch, onMounted, computed, reactive } from 'vue'
-
-const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
-
-import { useRouter } from 'vue-router'
-const router = useRouter()
-
 import { useAuthStore} from "@/stores/auth";
-const auth = useAuthStore();
-
-import NavigationItem from "@/layout/Navigation/NavigationItem.vue";
-import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
-import Drawer from "@/layout/drawer/Drawer.vue";
-
-const isOpen = ref(true)
-
+import { useRouter } from 'vue-router'
 import { DrawerItems, UserButtonActions } from '@/configuration/LayoutConfiguration'
 import LayoutHeader from "@/layout/header/LayoutHeader.vue";
 import UserProfileForDrawer from "@/components/app/UserProfileForDrawer.vue";
 import ExampleDrawerFooter from "@/components/app/ExampleDrawerFooter.vue";
 import LayoutFooter from "@/layout/footer/LayoutFooter.vue";
+import Drawer from "@/layout/drawer/Drawer.vue";
+
+
+const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
+
+
+const router = useRouter()
+
+
+const auth = useAuthStore();
+
+// import NavigationItem from "@/layout/Navigation/NavigationItem.vue";
+// import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
+
+const isOpen = ref(true)
+
+
 
 const isActiveRoute = (rName) => {
   return router.currentRoute.value.name === rName

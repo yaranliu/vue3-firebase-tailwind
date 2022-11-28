@@ -13,8 +13,8 @@ const router = createRouter({
         { path: '/', name: DefaultRouteNames.home.public, component: () => import('../views/public/HomeView.vue') },
         { path: '/about', name: 'about', component: () => import('../views/public/AboutView.vue') },
         { path: '/lorem', name: 'lorem', component: () => import('../views/public/LoremIpsum.vue') },
-        { path: '/dogs', name: 'dogs', component: () => import('../views/public/DogsView.vue') },
-        { path: '/sample/people', name: 'people', component: () => import('../views/public/sample/PeopleView.vue') },
+        { path: '/sample/pagination/regular', name: 'regularPagination', component: () => import('../views/public/sample/RegularPaginationView.vue') },
+        { path: '/sample/pagination/scrolling', name: 'scrollingPagination', component: () => import('../views/public/sample/ScrollingPaginationView.vue') },
 
         // Routes requiring authentication
         { path: '/user', name: DefaultRouteNames.home.user, component: () => import('../views/app/UserHomeView.vue'), meta: { requiresAuth: true } },

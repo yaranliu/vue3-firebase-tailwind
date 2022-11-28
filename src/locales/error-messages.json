@@ -6,6 +6,7 @@
         "button": "Kapat"
       },
       "xhr": {
+        "undefined": "Tanımlanamayan hata",
         "Unknown": "Bilinmeyen hata",
         "Success": "İstek başarılı",
         "BadRequest": "Geçersiz istek",
@@ -156,6 +157,7 @@
         "button": "Close"
       },
       "xhr": {
+        "undefined": "Unidentified error",
         "Unknown": "Unknown error",
         "Success": "Request successful",
         "BadRequest": "Bad request",

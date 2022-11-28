@@ -1,17 +1,14 @@
 <script setup>
 import { ref, computed } from 'vue'
-
 import { useRouter } from 'vue-router'
-const router = useRouter()
-
 import { useAuthStore} from "@/stores/auth";
-const auth = useAuthStore();
-
 import { DrawerItems, UserButtonActions } from '../../configuration/LayoutConfiguration'
 import LayoutHeader from "@/layout/header/LayoutHeader.vue";
 import DockedDrawer from "@/layout/drawer/DockedDrawer.vue";
 import { DrawerWidth } from "@/layout/drawer/DrawerWidth.ts";
 
+const auth = useAuthStore();
+const router = useRouter()
 const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
 
 const isOpen = ref(true)

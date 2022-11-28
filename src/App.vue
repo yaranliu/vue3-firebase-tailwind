@@ -2,20 +2,21 @@
 import { onMounted} from "vue";
 
 import { useRouter } from "vue-router";
-const router = useRouter()
-
 import { useAuthStore} from "@/stores/auth";
-const auth = useAuthStore();
-
-import { DefaultRouteNames } from "@/configuration/AppConfiguration";
 
 import { inject } from "vue";
-const $axios = inject("$axios");
-
+import { DefaultRouteNames } from "@/configuration/AppConfiguration";
 import { DefaultActions } from '@/configuration/LayoutConfiguration'
 import DockedLayout from "@/layout/layouts/DockedLayout.vue";
 
 import { useI18n } from "vue-i18n"
+
+const router = useRouter()
+
+const auth = useAuthStore();
+const $axios = inject("$axios");
+
+
 const i18n = useI18n()
 
 onMounted(() => {

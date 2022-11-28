@@ -2,21 +2,18 @@
 
 import { computed } from "vue";
 
-import * as _array from 'lodash/array'
-import * as _math from 'lodash/math'
-
+import flatten from 'lodash/flatten'
+import sumBy from 'lodash/sumBy'
 import { useAuthStore } from "@/stores/auth";
-const auth = useAuthStore();
-
+import { useI18n } from "vue-i18n"
 import { DefaultRouteNames} from "@/configuration/AppConfiguration";
-
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { useRouter} from "vue-router";
 const router = useRouter()
-
-import { useI18n } from "vue-i18n"
+const auth = useAuthStore();
 const { t } = useI18n()
 
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
+
 
 const props = defineProps([ 'actions' ])
 
@@ -24,7 +21,7 @@ const showSignIn = computed(() => {
   return router.currentRoute.value.name !== DefaultRouteNames.signIn && router.currentRoute.value.name !== DefaultRouteNames.signUp
 })
 
-const totalCount = computed(() => { return _math.sumBy(_array.flatten(props.actions), 'count') })
+const totalCount = computed(() => { return sumBy(flatten(props.actions), 'count') })
 
 const emit = defineEmits(['action'])
 

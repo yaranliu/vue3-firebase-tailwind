@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import camelCase from 'lodash/camelCase'
 import { AuthErrorSource } from "./AuthErrorSource";
 
 export class AuthError {
@@ -19,11 +19,11 @@ export class AuthError {
     const prefix = 'error.auth'
     if (this.Source === AuthErrorSource.None) return 'error.auth.none'
     else if (this.Source === AuthErrorSource.Application) {
-      let code = _.camelCase(this.Code)
+      let code = camelCase(this.Code)
       return `${prefix}.application.${code}`
     }
     else {
-      let code = _.camelCase(this.Code.split("/")[1])
+      let code = camelCase(this.Code.split("/")[1])
       return `${prefix}.firebase.${code}`
     }
   }

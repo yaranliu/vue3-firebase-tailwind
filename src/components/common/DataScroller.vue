@@ -1,8 +1,8 @@
 <script setup lang="ts">
+
 import type {ApiResponse} from "@/lib/api/ApiResponse";
 import type { Api } from "@/lib/api/Api";
-// import { Paged } from "@/lib/api/Paged";
-// import {Scrolling} from "@/lib/api/Scrolling";
+
 import { ref } from "vue";
 import type { PropType} from "vue";
 import type {AbstractRegularRequestPagination, AbstractScrollingRequestPagination} from "@/lib/api/Pagination";
@@ -26,6 +26,8 @@ const emit = defineEmits(['loaded', 'failed', 'loading', 'update:serverPaginatio
 const loaded = ref(false)
 const loading = ref(false)
 const failed = ref(false)
+
+const dataSlot = ref(null)
 
 
 const fetch = (controller: AbortController) => new Promise<ApiResponse>((resolve, reject) => {
@@ -67,32 +69,26 @@ const fetchData = (controller: AbortController) => {
   fetch(controller).then(r => emit('loaded', r)).catch(e => { emit('failed', e) })
 }
 
-defineExpose({ fetchData })
+defineExpose({ fetchData, dataSlot })
 
 </script>
 
 <template>
-  <div class="rounded-md  border border-slate-700 flex flex-col justify-between ">
+  <div class="h-full overflow-y-auto w-full rounded-md border border-slate-700 flex flex-col justify-between">
     <!--            Table-->
-    <div>
+    <div class="table">
       <!--              Table Header Row-->
-      <div class="grow table w-full">
-        <div class="table-header-group">
-          <slot name="header"></slot>
-        </div>
-        <!--              Table Data Rows-->
-        <div class="table-row-group overflow-y-auto">
-          <slot name="data"></slot>
-        </div>
-      </div>
-
+      <slot class="table-header-group" name="header"></slot>
+      <!--              Table Data Rows-->
+      <slot ref="dataSlot" class="relative table-row-group h-full overflow-y-scroll" name="data"></slot>
     </div>
-    <div class="grow">
-      <slot name="error"></slot>
-    </div>
+    <!--             Error-->
+    <slot class="grow" name="error"></slot>
     <!--            Table Footer-->
-    <slot name="footer"></slot>
+    <slot class="w-full" name="footer"></slot>
   </div>
+
+
 </template>
 
 

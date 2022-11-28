@@ -1,18 +1,10 @@
 import { PaginationType } from "@/lib/api/PaginationType";
 
-export interface IRegularRequestPagination {
-    PerPage: number
-    Page: number
-    ToServerDefinition() : object
-}
-export interface IScrollingRequestPagination {
-    PerPage: number;
-    LastId: string
-    After: boolean
+export interface IRequestPagination {
     ToServerDefinition() : object
 }
 
-export abstract class AbstractRegularRequestPagination implements IRegularRequestPagination{
+export abstract class AbstractRegularRequestPagination implements IRequestPagination{
     Page: number;
     PerPage: number;
     abstract ToServerDefinition() : object
@@ -22,7 +14,7 @@ export abstract class AbstractRegularRequestPagination implements IRegularReques
     }
 }
 
-export abstract class AbstractScrollingRequestPagination implements IScrollingRequestPagination {
+export abstract class AbstractScrollingRequestPagination implements IRequestPagination {
     PerPage: number;
     After: boolean;
     LastId: string;

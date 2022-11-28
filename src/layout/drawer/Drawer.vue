@@ -1,13 +1,15 @@
 <script setup>
 import { useRouter } from 'vue-router'
-const router = useRouter()
-
-import * as _ from "lodash/array";
+import findIndex from "lodash/findIndex";
 
 import { useAuthStore} from "@/stores/auth";
+import DrawerItem from "@/layout/drawer/DrawerItem.vue";
+const router = useRouter()
+
+
 const auth = useAuthStore();
 
-import DrawerItem from "@/layout/drawer/DrawerItem.vue";
+
 
 const props = defineProps({
   items: { type: Array },
@@ -24,7 +26,7 @@ const isActiveRoute = (rName) => {
 }
 
 const isActiveGroup = (group) => {
-  return _.findIndex(group.routes, (r) => { return r.name === router.currentRoute.value.name }) !== -1
+  return findIndex(group.routes, (r) => { return r.name === router.currentRoute.value.name }) !== -1
 }
 
 </script>

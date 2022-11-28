@@ -2,23 +2,26 @@
 
 import { ref, onMounted, computed } from 'vue'
 
-import * as _ from 'lodash/string'
+import upperFirst from 'lodash/upperFirst'
 
 import SignInCard from "@/components/auth/SignInCard.vue";
 
 import { useRouter } from "vue-router";
 import Loader from "@/components/misc/Loader.vue";
 import SimpleDialog from "@/components/common/SimpleDialog.vue";
-const router = useRouter()
-
 import { useAuthStore } from "@/stores/auth";
 import {AuthErrorSource} from "@/components/auth/AuthErrorSource";
+import { DefaultRouteNames} from "@/configuration/AppConfiguration";
+import { useI18n } from "vue-i18n";
+const router = useRouter()
+
+
 const auth = useAuthStore()
 
-import { useI18n } from "vue-i18n";
+
 const { t } = useI18n()
 
-import { DefaultRouteNames} from "@/configuration/AppConfiguration";
+
 
 const onGotoSignUp = () => {
   // console.log("[SignInVıew] Go to Sign Up")
@@ -96,7 +99,7 @@ onMounted(() => {
         <Loader
             :show="loading"
             :title="t('loader.message')"
-            :desc="t('loader.title', { method: authMethod === 'password' ? t('loader.credentials') : t('loader.account', { provider: _.upperFirst(authProvider)}) })"
+            :desc="t('loader.title', { method: authMethod === 'password' ? t('loader.credentials') : t('loader.account', { provider: upperFirst(authProvider)}) })"
         />
       </div>
     </div>

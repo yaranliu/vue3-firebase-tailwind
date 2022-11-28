@@ -1,11 +1,11 @@
 <script setup>
-import * as _ from "lodash"
+import min from "lodash/min"
 import { ref, computed, onMounted, customRef } from "vue";
 import {useI18n} from "vue-i18n"
 import {Paged} from "@/lib/api/Paged";
-const {t} = useI18n()
-
 import { DefaultIcons } from "@/configuration/AppConfiguration";
+
+const {t} = useI18n()
 
 // Props
 const props = defineProps({
@@ -40,11 +40,11 @@ const toPageCalc = computed({
 })
 
 const computedPageNumberStyle = computed(() => {
-  return 'width: ' + ((props.modelValue.TotalRecords / _.min(props.perPageOptions)).toString().length) * 12 + 'px;'
+  return 'width: ' + ((props.modelValue.TotalRecords / min(props.perPageOptions)).toString().length) * 12 + 'px;'
 })
 
 const computedPageInputStyle = computed(() => {
-  return 'text-align:center; ' + 'width: ' + ((props.modelValue.TotalRecords / _.min(props.perPageOptions)).toString().length) * 14 + 'px;'
+  return 'text-align:center; ' + 'width: ' + ((props.modelValue.TotalRecords / min(props.perPageOptions)).toString().length) * 14 + 'px;'
 })
 
 // Methods

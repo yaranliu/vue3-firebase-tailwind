@@ -2,11 +2,15 @@
 import { reactive, computed } from 'vue'
 
 import { useAuthStore} from "@/stores/auth";
-const auth = useAuthStore();
-
 import SignInWithProviders from "@/components/auth/SignInWithProviders.vue";
 
 import { useI18n } from "vue-i18n";
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, sameAs, minLength } from '@vuelidate/validators'
+import { i18nErrorMessage} from "@/lib/i18nErrorMessage"
+const auth = useAuthStore();
+
+
 const { t } = useI18n()
 
 const user = reactive({
@@ -15,9 +19,7 @@ const user = reactive({
   passwordConfirmation: ''
 })
 
-import { useVuelidate } from '@vuelidate/core'
-import { required, email, sameAs, minLength } from '@vuelidate/validators'
-import { i18nErrorMessage} from "@/lib/i18nErrorMessage"
+
 
 const rules = computed (() => { return {
   email: { required, email },

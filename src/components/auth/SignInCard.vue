@@ -2,17 +2,22 @@
 import {computed, reactive, onMounted } from 'vue'
 
 import { useAuthStore} from "@/stores/auth";
-const auth = useAuthStore();
-
 import { useRouter } from "vue-router";
-const router = useRouter()
-
 import { AuthErrorCodes } from "firebase/auth";
 import SignInWithProviders from "@/components/auth/SignInWithProviders.vue";
 
 import { appAuthProviders } from "/src/components/auth/app-auth-providers.ts"
 
 import { useI18n } from "vue-i18n";
+import { useVuelidate } from '@vuelidate/core'
+import {required, email } from '@vuelidate/validators'
+import { i18nErrorMessage} from "@/lib/i18nErrorMessage"
+const auth = useAuthStore();
+
+
+const router = useRouter()
+
+
 const { t } = useI18n()
 
 const user = reactive({
@@ -24,9 +29,7 @@ onMounted(() => {
   // console.log('[SignInCard] Auth is:', auth.isAuthenticated)
 })
 
-import { useVuelidate } from '@vuelidate/core'
-import {required, email } from '@vuelidate/validators'
-import { i18nErrorMessage} from "@/lib/i18nErrorMessage"
+
 
 const rules = computed (() => { return {
   email: { required, email },
