@@ -1,11 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import concat from "lodash/concat"
 import reverse from "lodash/reverse"
 
-import {ref, onMounted, computed } from "vue";
+import {ref, onMounted, computed} from "vue";
 import { useI18n } from "vue-i18n";
-
-
 
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
@@ -14,7 +12,8 @@ import {Scrolling} from "@/lib/api/Scrolling";
 import {ApiResponse} from "@/lib/api/ApiResponse";
 import { ApiResultCode } from "@/lib/api/ApiResultCode";
 import ScrollingPagination from "@/components/common/ScrollingPagination.vue";
-import DataScroller from "@/components/common/DataScroller.vue";
+import DataTable from "@/components/common/DataTable.vue";
+import type { Person } from "@/models/PersonModel"
 
 const { t } = useI18n()
 
@@ -24,16 +23,16 @@ const filterPanel = ref(false)
 const leftPanel = ref(true)
 
 
-const dataTable = ref(null)
+const dataTable = ref<InstanceType<typeof DataTable> | null>(null)
 const error= ref(new ApiResponse())
 
 // data
-const data = ref([])
+const data = ref<Array<Person>>([])
 const resourceName = ref('infinite')
 const requestPagination = ref(new ScrollingRequestPagination (10, '0029', true))
-const serverPagination = ref(new Scrolling())
+const serverPagination = ref(new Scrolling('', true, true))
 
-const abortController = ref(null)
+const abortController = ref<AbortController>(new AbortController())
 const routeParams = ref(new Map([['id', '001'], ['item', '002340432']]))
 const queryParams = ref({color: 'red', size: ['medium', 'small'] })
 
@@ -42,18 +41,18 @@ const isFailed = ref(false)
 const isLoading = ref(false)
 
 const initial = ref(true)
-const tableHeader = ref(null)
+const tableHeader = ref<HTMLElement | null>(null)
 const tableRows = ref(null)
 
 const firstItem = computed(() => {
-  let v = data.value
+  let v = data.value as Array<Person>
   let c = v.length
   if (v && c > 0) {return v[0].id }
   else { return undefined }
 })
 
 const lastItem = computed(() => {
-  let v = data.value
+  let v = data.value as Array<Person>
   let c = v.length
   if (v && c > 0) {return v[c - 1].id }
   else { return undefined }
@@ -61,44 +60,32 @@ const lastItem = computed(() => {
 
 const triggerTop = ref(false)
 
-const onDataLoaded = (d) => {
+const onDataLoaded = (d: Array<Person>) => {
   if (initial.value) {
     data.value = d
     initial.value = false
-    setTimeout(() => {
-      bottomRow.value.scrollIntoView( { behavior: 'smooth', duration: 100 })
-    }, 50)
+    setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 50)
   }
   else {
     if (serverPagination.value.After) {
-      setTimeout(() => {
-        data.value = concat(data.value, d)
-      }, 50)
-
-      setTimeout(() => {
-        bottomRow.value.scrollIntoView( { behavior: 'smooth', duration: 100 })
-      }, 100)
+      setTimeout(() => { data.value = concat(data.value, d)}, 50)
+      setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 100)
     }
     else {
       triggerTop.value = true
-      setTimeout(() => {
-        topRow.value.scrollIntoView( { behavior: 'smooth', duration: 50 })
-      }, 50)
-
-      setTimeout(() => {
-        data.value = concat(reverse(d), data.value)
-      }, 200)
+      setTimeout(() => { topRow.value?.scrollIntoView( { behavior: 'smooth' })}, 50)
+      setTimeout(() => { data.value = concat(reverse(d), data.value)}, 200)
     }
   }
   isLoaded.value = true
 }
 
-const onFailed = (e) => {
+const onFailed = (e: ApiResponse) => {
   error.value = e
   isFailed.value = true
 }
 
-const onLoading  = (l) => {
+const onLoading  = (l: boolean) => {
   isLoading.value = l
 }
 
@@ -106,35 +93,37 @@ const fetch = () => {
   isLoaded.value = false
   isFailed.value = false
   abortController.value = new AbortController()
-  dataTable.value.fetchData(abortController.value)
+  dataTable.value?.fetchData(abortController.value)
 }
 
 const cancelRequest = () => {
   abortController.value.abort()
 }
 
-const onGetMore = (after) => {
-  requestPagination.value = new ScrollingRequestPagination(10, after ? lastItem.value : firstItem.value, after)
-  setTimeout(() => {
-    fetch()
-  }, 50)
-
+const onGetMore = (after: boolean) => {
+  let lastId = lastItem.value === undefined ? '' : lastItem.value
+  let firstId = firstItem.value === undefined ? '' : firstItem.value
+  requestPagination.value = new ScrollingRequestPagination(10, after ? lastId : firstId, after)
+  setTimeout(() => { fetch() }, 50)
 }
 
-const onScroll = (event) => {
-  if (triggerTop.value && event.target.scrollTop <= tableHeader.value.clientHeight) {
-    event.target.scrollTop = 0
-    triggerTop.value = false
+const onScroll = (event: Event) => {
+  let top = tableHeader.value ? tableHeader.value.clientHeight : 0
+  if (tableHeader) {
+    if (triggerTop.value && (event.target as HTMLElement).scrollTop <= top) {
+      (event.target as HTMLElement).scrollTop = 0
+      triggerTop.value = false
+    }
   }
 }
 
 const dataRowIdPrefix = 'data-row'
 
-const topRow = computed(() => {
+const topRow = computed<HTMLElement | null>(() => {
   return document.getElementById(`${dataRowIdPrefix}-${data.value[0].id}`)
 })
 
-const bottomRow = computed(() => {
+const bottomRow = computed<HTMLElement | null>(() => {
   return document.getElementById(`${dataRowIdPrefix}-${data.value[data.value.length - 1].id}`)
 })
 
@@ -189,7 +178,7 @@ onMounted(() => {
           <div class="bg-white bg-opacity-5 text-white rounded-md transition-all ease-in-out duration-300" :class="{'h-24 mb-2': filterPanel, 'h-0': !filterPanel}"></div>
           <!--          Table View-->
           <div class="overflow-y-auto w-full h-full">
-            <DataScroller
+            <DataTable
                 ref="dataTable"
                 class="rounded-md border border-slate-700 w-full"
                 :api="SampleApi"
@@ -246,9 +235,8 @@ onMounted(() => {
                   <button v-if="isLoading" @click="cancelRequest" class="text-yellow-400"><i class="las la-circle-notch animate-spin" /><span class="hidden md:inline-block ml-2">{{  t('abort') }}</span></button>
                 </div>
               </template>
-            </DataScroller>
+            </DataTable>
           </div>
-
         </div>
       </div>
     </div>

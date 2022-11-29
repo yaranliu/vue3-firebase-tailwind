@@ -5,13 +5,13 @@ import { useI18n } from "vue-i18n";
 
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
-import DataTable from "@/components/common/DataTable.vue";
 import {RegularRequestPagination, SampleApi, ScrollingRequestPagination} from "@/api/SampleApi";
 import {Paged} from "@/lib/api/Paged";
 import {Scrolling} from "@/lib/api/Scrolling";
 import RegularPagination from "@/components/common/RegularPagination.vue";
 import {ApiResponse} from "@/lib/api/ApiResponse";
 import { ApiResultCode } from "@/lib/api/ApiResultCode";
+import DataTable from "@/components/common/DataTable.vue";
 
 const { t } = useI18n()
 

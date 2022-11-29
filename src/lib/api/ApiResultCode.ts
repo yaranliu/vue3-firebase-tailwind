@@ -1,8 +1,10 @@
 import { AxiosError } from "axios";
 
 enum ApiResultCode {
+    None = 'None',
     Unknown = 'Unknown',
     Success = 'Success',
+    // HTTP Response
     BadRequest = 'BadRequest',
     NotAuthenticated = 'NotAuthenticated',
     Forbidden = 'Forbidden',
@@ -39,6 +41,12 @@ enum ApiResultCode {
     BadResponse = 'BadResponse',
     NotSupported = 'NotSupported',
     InvalidUrl = 'InvalidUrl',
+}
+
+enum ApiErrorSource {
+    None,
+    Axios,
+    Response
 }
 
 const errorFromHttpStatusCode = (code: number | undefined) : ApiResultCode => {
@@ -93,5 +101,5 @@ const errorFromAxiosErrorCode = (code: string) : ApiResultCode => {
     return status
 }
 
-export { ApiResultCode, errorFromHttpStatusCode, errorFromAxiosErrorCode }
+export { ApiErrorSource, ApiResultCode, errorFromHttpStatusCode, errorFromAxiosErrorCode }
 
