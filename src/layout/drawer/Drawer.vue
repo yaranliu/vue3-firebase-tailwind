@@ -11,6 +11,7 @@ import type {DrawerItemGroup} from "@/configuration/LayoutConfiguration";
 import type {DraweItemDefinition} from "@/configuration/LayoutConfiguration";
 import type {PropType} from "vue";
 import DrawerItem from "@/layout/drawer/DrawerItem.vue";
+import {B} from "vitest/dist/global-58e8e951";
 
 const auth = useAuthStore();
 const router = useRouter()
@@ -23,7 +24,8 @@ const props = defineProps({
   width: { type: String, default: DrawerWidth.md },
   showGroups : { type: Boolean, default: false },
   showIcons: { type: Boolean, default: true },
-  spaceGroups: { type: Boolean, default: false }
+  spaceGroups: { type: Boolean, default: false },
+  inOverlay: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['navigated', 'action', 'widthChanged'])
@@ -65,7 +67,7 @@ const itemClass = ((item : DraweItemDefinition) => (
                class="tracking-[.3em] text-slate-400 pl-2.5 text-xs mb-1.5"
                :class="{'text-slate-50' : isActiveGroup(itemGroup) }">{{ itemGroup.group }}
           </div>
-          <div class="flex flex-col" v-for="item in itemGroup.items" :key="`route-${item.name}`">
+          <div class="flex flex-col hide-scrollbars" v-for="item in itemGroup.items" :key="`route-${item.name}`">
             <DrawerItem
                 :width="width"
                 :item-name="item.name"

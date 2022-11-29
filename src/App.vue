@@ -7,10 +7,10 @@ import { useAuthStore} from "@/stores/auth";
 import { inject } from "vue";
 import { DefaultRouteNames } from "@/configuration/AppConfiguration";
 import { DefaultActions } from '@/configuration/LayoutConfiguration'
-import Layout from "@/layout/layouts/Layout.vue";
 
 import { useI18n } from "vue-i18n"
 import type {Axios} from "axios";
+import Layout from "@/layout/layouts/Layout.vue";
 
 const router = useRouter()
 
@@ -65,6 +65,7 @@ const signOut = () => {
       @drawer-action="drawerActionsHandler"
       @user-button-action="userButtonActionsHandler"
       class="bg-transparent overscroll-contain"
+      :layout-threshold = 600
   />
 </template>
 
