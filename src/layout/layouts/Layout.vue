@@ -12,7 +12,7 @@ const router = useRouter()
 const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
 
 const isOpen = ref(true)
-const drawerWidth = ref(DrawerWidth.sm) // sm, md,
+const drawerWidth = ref<DrawerWidth>(DrawerWidth.sm) // sm, md,
 
 const onDrawerAction = (action: string) => {
   emit('drawerAction', action)
@@ -32,7 +32,7 @@ const changeWidth = (w: DrawerWidth) => {
 const containerClass = computed(() => ({
   'w-0' : !isOpen.value,
   'w-12' : isOpen.value && drawerWidth.value === DrawerWidth.sm,
-  'w-18' : isOpen.value && drawerWidth.value === DrawerWidth.md,
+  'w-20' : isOpen.value && drawerWidth.value === DrawerWidth.md,
   'w-64' : isOpen.value && drawerWidth.value === DrawerWidth.lg,
 }))
 
@@ -41,7 +41,8 @@ const containerClass = computed(() => ({
   <main>
     <div class="flex flex-row">
       <div class="flex-none h-screen overflow-hidden transition-width ease-in-out duration-150 max-w-64"
-           :class="containerClass">
+           :class="containerClass"
+      >
         <Drawer
             class="text-white bg-blue-100 bg-opacity-20 shadow-2xl overscroll-contain"
             :items="DrawerItems"
