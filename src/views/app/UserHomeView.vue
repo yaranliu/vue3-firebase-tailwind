@@ -1,6 +1,5 @@
-<script setup>
+<script setup lang="ts">
 
-import InputField from "@/components/common/InputField.vue";
 </script>
 
 <template>

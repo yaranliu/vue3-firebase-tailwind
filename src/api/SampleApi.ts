@@ -46,6 +46,9 @@ class RegularRequestPagination extends AbstractRegularRequestPagination {
         this.Page = Page
         this.PerPage = PerPage
     }
+    SetPage(page: number) {
+        this.Page = page
+    }
     ToServerDefinition(): object {
         return {
             page: this.Page,

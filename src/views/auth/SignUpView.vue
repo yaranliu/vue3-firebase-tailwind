@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 
 import SignUpCard from "@/components/auth/SignUpCard.vue";
 

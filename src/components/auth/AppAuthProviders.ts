@@ -1,6 +1,26 @@
-import { AuthenticationProvider } from "./AuthenticationProvider";
+import {AuthenticationProvider} from "./AuthenticationProvider";
 
-const appAuthProviders = [
+class ProviderSvg {
+  box: string = ''
+  path: string = ''
+  constructor(box: string, path: string) {
+    this.box = box
+    this.path = path
+  }
+}
+
+class AppAuthProvider {
+  source: AuthenticationProvider
+  title: string
+  svg: ProviderSvg
+  constructor(source: AuthenticationProvider, title: string, box: string, path:string) {
+    this.source = source
+    this.title = title
+    this.svg = new ProviderSvg(box, path)
+  }
+}
+
+const AppAuthProviders: Array<AppAuthProvider> = [
   {
     source: AuthenticationProvider.Google,
     title: 'Google',
@@ -51,5 +71,5 @@ const appAuthProviders = [
   },
 ]
 
-export { appAuthProviders }
+export { AppAuthProviders, AppAuthProvider, ProviderSvg }
 

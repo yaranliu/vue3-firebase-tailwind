@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore} from "@/stores/auth";
 import { DrawerItems, UserButtonActions } from '../../configuration/LayoutConfiguration'
 import LayoutHeader from "@/layout/header/LayoutHeader.vue";
-import DockedDrawer from "@/layout/drawer/DockedDrawer.vue";
-import { DrawerWidth } from "@/layout/drawer/DrawerWidth.ts";
+import Drawer from "@/layout/drawer/Drawer.vue";
+import { DrawerWidth } from "@/layout/drawer/DrawerWidth";
 
 const auth = useAuthStore();
 const router = useRouter()
@@ -14,18 +14,18 @@ const emit = defineEmits([ 'drawerAction', 'userButtonAction'])
 const isOpen = ref(true)
 const drawerWidth = ref(DrawerWidth.sm) // sm, md,
 
-const onDrawerAction = (action) => {
+const onDrawerAction = (action: string) => {
   emit('drawerAction', action)
 }
 
-const onDrawerNavigation = (route) => {
+const onDrawerNavigation = (route: string) => {
 }
 
-const onUserButtonAction = (action) => {
+const onUserButtonAction = (action: string) => {
   emit('userButtonAction', action)
 }
 
-const changeWidth = (w) => {
+const changeWidth = (w: DrawerWidth) => {
   drawerWidth.value = w
 }
 
@@ -42,7 +42,7 @@ const containerClass = computed(() => ({
     <div class="flex flex-row">
       <div class="flex-none h-screen overflow-hidden transition-width ease-in-out duration-150 max-w-64"
            :class="containerClass">
-        <DockedDrawer
+        <Drawer
             class="text-white bg-blue-100 bg-opacity-20 shadow-2xl overscroll-contain"
             :items="DrawerItems"
             :is-open="isOpen"
@@ -60,7 +60,7 @@ const containerClass = computed(() => ({
           <template #footer>
             <!--            <ExampleDrawerFooter :width="drawerWidth" />-->
           </template>
-        </DockedDrawer>
+        </Drawer>
       </div>
       <div class="flex flex-col w-full h-screen overscroll-contain">
 <!--        Header-->

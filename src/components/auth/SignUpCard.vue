@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { reactive, computed } from 'vue'
 
 import { useAuthStore} from "@/stores/auth";
@@ -40,6 +40,14 @@ const register = () => {
   });
 }
 
+const emitGotoSignIn = () => {
+  emit('gotoSignIn')
+}
+
+const emitSignedUp = () => {
+  emit('signedUp')
+}
+
 </script>
 
 <template>
@@ -64,8 +72,8 @@ const register = () => {
       <span class="lex-shrink text-xs text-center mx-2 whitespace-pre-wrap">{{ t('providersLabel')}}</span>
       <hr class="flex-auto">
     </div>
-    <SignInWithProviders class="mt-2" @signed-in="emit('signedIn')" />
-    <div class="auth-secondary-button mt-8" @click="emit('gotoSignIn')">
+    <SignInWithProviders class="mt-2" @signed-in="emitSignedUp" />
+    <div class="auth-secondary-button mt-8" @click="emitGotoSignIn">
       {{ t('gotoSignIn') }}
     </div>
   </form>

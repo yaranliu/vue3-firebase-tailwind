@@ -1,5 +1,4 @@
-<script setup>
-import { ref, computed, watch } from 'vue'
+<script setup lang="ts">
 
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])

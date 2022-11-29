@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted} from "vue";
 
 import { useRouter } from "vue-router";
@@ -7,34 +7,37 @@ import { useAuthStore} from "@/stores/auth";
 import { inject } from "vue";
 import { DefaultRouteNames } from "@/configuration/AppConfiguration";
 import { DefaultActions } from '@/configuration/LayoutConfiguration'
-import DockedLayout from "@/layout/layouts/DockedLayout.vue";
+import Layout from "@/layout/layouts/Layout.vue";
 
 import { useI18n } from "vue-i18n"
+import type {Axios} from "axios";
 
 const router = useRouter()
 
 const auth = useAuthStore();
-const $axios = inject("$axios");
+const $axios = inject<Axios>("$axios");
 
 
 const i18n = useI18n()
 
 onMounted(() => {
-  $axios.defaults.headers.common["Content-Type"] = "application/json";
-  $axios.defaults.headers.common["Accept"] = "application/json";
+  if ($axios) {
+    $axios.defaults.headers.common["Content-Type"] = "application/json";
+    $axios.defaults.headers.common["Accept"] = "application/json";
+  }
   auth.setup()
 
 })
 
-const drawerActionsHandler = (action) => {
+const drawerActionsHandler = (action: string) => {
   actionHandler('drawer', action)
 }
 
-const userButtonActionsHandler = (action) => {
+const userButtonActionsHandler = (action : string) => {
   actionHandler('button', action)
 }
 
-const actionHandler = (source, action) => {
+const actionHandler = (source: string, action: string) => {
 
   switch (action) {
     case DefaultActions.signOut: signOut(); break;
@@ -58,7 +61,7 @@ const signOut = () => {
 </script>
 
 <template>
-  <DockedLayout
+  <Layout
       @drawer-action="drawerActionsHandler"
       @user-button-action="userButtonActionsHandler"
       class="bg-transparent overscroll-contain"

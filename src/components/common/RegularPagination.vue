@@ -1,19 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import min from "lodash/min"
-import { ref, computed, onMounted, customRef } from "vue";
+import {ref, computed } from "vue";
+import type { PropType } from "vue";
 import {useI18n} from "vue-i18n"
-import {Paged} from "@/lib/api/Paged";
+import type {Paged} from "@/lib/api/Paged";
 import { DefaultIcons } from "@/configuration/AppConfiguration";
 
 const {t} = useI18n()
 
 // Props
 const props = defineProps({
-  modelValue: { type: Paged },
+  modelValue: { type: Object as PropType<Paged> },
   isLoading: { type: Boolean },
   isLoaded: { type: Boolean },
   isFailed: { type: Boolean },
-  perPageOptions: { type: Array, default: [10, 25, 50, 100] }
+  perPageOptions: { type: Array as PropType<Array<number>>, default: [10, 25, 50, 100] }
 })
 
 // Emits
@@ -22,42 +23,57 @@ const emit = defineEmits(['to', 'perPage'])
 // Refs
 const perPage = ref(null)
 const totalPages = ref(null)
-const toPage = ref(null)
+const toPage = ref<number>(1)
 
 // Computed
 const delay = 500
-let timeout
+let timeout = setTimeout(() => {}, 0)
 
 const toPageCalc = computed({
-  get() { return props.modelValue.Page },
+  get() { return props.modelValue?.Page },
   set(val) {
     clearTimeout(timeout)
-    timeout = setTimeout(() => {
-      toPage.value = val
-      gotoPage()
-    }, delay)
+    if (val) {
+      timeout = setTimeout(() => {
+        toPage.value = val
+        gotoPage()
+      }, delay)
+    }
   }
 })
 
 const computedPageNumberStyle = computed(() => {
-  return 'width: ' + ((props.modelValue.TotalRecords / min(props.perPageOptions)).toString().length) * 12 + 'px;'
+  let smallest = min(props.perPageOptions)
+  if (props.modelValue && smallest) {
+    return 'width: ' + ((props.modelValue.TotalRecords / smallest).toString().length) * 12 + 'px;'
+  }
+  else return 'width: 24px;'
 })
 
 const computedPageInputStyle = computed(() => {
-  return 'text-align:center; ' + 'width: ' + ((props.modelValue.TotalRecords / min(props.perPageOptions)).toString().length) * 14 + 'px;'
+  let smallest = min(props.perPageOptions)
+  if (props.modelValue && smallest) {
+    return 'text-align:center; ' + 'width: ' + ((props.modelValue.TotalRecords / smallest).toString().length) * 14 + 'px;'
+  }
+  else return 'text-align:center; ' + 'width: 24px;'
 })
 
 // Methods
-const to = (page) => { emit('to', page)}
-
-const gotoPage = () => {
-  if (toPage.value < 1) toPage.value = 1
-  if (toPage.value > props.modelValue.TotalPages) toPage.value = props.modelValue.TotalPages
-  to(toPage.value)
+const to = (page: number | undefined) => {
+  if (page) emit('to', page)
+  else console.log('Page is undefined')
 }
 
-const updatePerPage = (event) => {
-  emit('perPage', event.target.value)
+const gotoPage = () => {
+  if (props.modelValue) {
+    if (toPage.value < 1) toPage.value = 1
+    if (toPage.value > props.modelValue.TotalPages) toPage.value = props.modelValue.TotalPages
+    to(toPage.value)
+  }
+}
+
+const updatePerPage = (event: Event) => {
+  emit('perPage', (event.target as HTMLInputElement).value)
 }
 
 </script>
@@ -67,13 +83,13 @@ const updatePerPage = (event) => {
     <div class="flex-row space-x-1 text-sm">
       <i :class="DefaultIcons.pagination.page"></i>
 <!--      <span class="text-center hidden sm:inline-block ">{{ t('page') }} </span>-->
-      <span class="text-right inline-block " :style="computedPageNumberStyle">{{ modelValue.Page }}</span>
+      <span class="text-right inline-block " :style="computedPageNumberStyle">{{ modelValue?.Page }}</span>
       <span class="inline-block  px-1.5">{{  t('of') }}</span>
-      <span ref="totalPages" class="text-left inline-block " :style="computedPageNumberStyle">{{ modelValue.TotalPages }}</span>
+      <span ref="totalPages" class="text-left inline-block " :style="computedPageNumberStyle">{{ modelValue?.TotalPages }}</span>
     </div>
     <div class="flex-row items-center space-x-0.5">
-      <button class="pagination-button" :disabled="modelValue.Page === 1 || isLoading || isFailed" @click="to(1)"><i :class="DefaultIcons.pagination.first" /></button>
-      <button class="pagination-button" :disabled="modelValue.Page <= 1 || isLoading || isFailed" @click="to(modelValue.Page - 1)"><i :class="DefaultIcons.pagination.previous" /></button>
+      <button class="pagination-button" :disabled="modelValue && (modelValue.Page === 1 || isLoading || isFailed)" @click="to(1)"><i :class="DefaultIcons.pagination.first" /></button>
+      <button class="pagination-button" :disabled="modelValue && (modelValue?.Page <= 1 || isLoading || isFailed)" @click="to(modelValue ? modelValue.Page - 1 : undefined)"><i :class="DefaultIcons.pagination.previous" /></button>
       <div class="inline-block">
       <input
           v-model="toPageCalc"
@@ -82,8 +98,8 @@ const updatePerPage = (event) => {
           :style="computedPageInputStyle"
       />
       </div>
-      <button class="pagination-button" :disabled="modelValue.Page >= modelValue.TotalPages || isLoading || isFailed" @click="to(modelValue.Page + 1)" ><i :class="DefaultIcons.pagination.next" /></button>
-      <button class="pagination-button" :disabled="modelValue.Page === modelValue.TotalPages || isLoading || isFailed" @click="to(modelValue.TotalPages)"><i :class="DefaultIcons.pagination.last" /></button>
+      <button class="pagination-button" :disabled="modelValue && (modelValue.Page >= modelValue.TotalPages || isLoading || isFailed)" @click="to(modelValue ? modelValue.Page + 1 : undefined)" ><i :class="DefaultIcons.pagination.next" /></button>
+      <button class="pagination-button" :disabled="modelValue && (modelValue.Page === modelValue.TotalPages || isLoading || isFailed)" @click="to(modelValue ? modelValue.TotalPages : undefined)"><i :class="DefaultIcons.pagination.last" /></button>
     </div>
     <div class="flex-row items-center space-x-2 text-sm">
       <label class="hidden md:inline-block">{{ t('showing') }}</label>

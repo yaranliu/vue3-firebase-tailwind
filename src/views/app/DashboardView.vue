@@ -1,8 +1,6 @@
-<script setup>
-import { inject } from "vue";
-const $axios = inject("$axios");
-
+<script setup lang="ts">
 </script>
+
 <template>
   <main class="h-full p-4">
     <div class="overflow-y-auto h-full">

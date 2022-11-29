@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
 
-import { DefaultIcons } from "@/configuration/AppConfiguration.ts";
+import { DefaultIcons } from "@/configuration/AppConfiguration";
 
 import { ref, computed, useSlots, onMounted } from "vue";
 // import { uniqueGen } from "@/lib/uuid-generator";
@@ -20,7 +20,7 @@ const props = defineProps({
   type: {type: String, default: 'text'},
   inputClass: {type: String},
   inputStyle: {type: Object},
-  autoComplete: { type: Boolean, default: false },
+  autoComplete: { type: String, default: '' },
   min: { type:String },
   max: { type:String },
   step: { type:Number, default: 1 },
@@ -32,8 +32,8 @@ const emit = defineEmits(['update:modelValue', 'leftClick', 'rightClick'])
 
 const container = ref(null)
 const inputField = ref(null)
-const inputId = ref(null)
-const inputName = ref(null)
+const inputId = ref<string|undefined>(undefined)
+const inputName = ref<string|undefined>(undefined)
 
 const value = computed({
   get() {
@@ -47,8 +47,11 @@ const value = computed({
 onMounted(() => {
   let val = container.value
   let unique = uniqueNameAndIdGenerator(container.value, 'input')
-  inputId.value = (val.getAttribute('id') === null) ? unique.Id : `${val.getAttribute('id')}-input`
-  inputName.value = (val.getAttribute('name') === null) ? unique.Name : `${val.getAttribute('name')}-input`
+  if (val) {
+    inputId.value = ((val as HTMLElement).getAttribute('id') === null) ? unique.Id : `${(val as HTMLElement).getAttribute('id')}-input`
+    inputName.value = ((val as HTMLElement).getAttribute('name') === null) ? unique.Name : `${(val as HTMLElement).getAttribute('name')}-input`
+  }
+
 
   // let { id, name } = uniqueGen(container.value, 'input')
   // inputId.value = (container.value.getAttribute('id') === null) ? id : `${container.value.getAttribute('id')}-input`

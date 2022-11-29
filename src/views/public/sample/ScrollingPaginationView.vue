@@ -7,7 +7,7 @@ import { useI18n } from "vue-i18n";
 
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
-import {SampleApi, ScrollingRequestPagination} from "@/api/SampleApi";
+import { SampleApi, ScrollingRequestPagination} from "@/api/SampleApi";
 import {Scrolling} from "@/lib/api/Scrolling";
 import {ApiResponse} from "@/lib/api/ApiResponse";
 import { ApiResultCode } from "@/lib/api/ApiResultCode";
@@ -19,7 +19,7 @@ const { t } = useI18n()
 
 const search = ref('')
 
-const filterPanel = ref(false)
+const filterPanel = ref(true)
 const leftPanel = ref(true)
 
 
@@ -29,8 +29,9 @@ const error= ref(new ApiResponse())
 // data
 const data = ref<Array<Person>>([])
 const resourceName = ref('infinite')
-const requestPagination = ref(new ScrollingRequestPagination (10, '0029', true))
-const serverPagination = ref(new Scrolling('', true, true))
+const isRegularPagination = ref(true)
+const requestPagination = ref<ScrollingRequestPagination>(new ScrollingRequestPagination(10, '0', true))
+const serverPagination = ref(new Scrolling('0', true, true))
 
 const abortController = ref<AbortController>(new AbortController())
 const routeParams = ref(new Map([['id', '001'], ['item', '002340432']]))
@@ -67,15 +68,18 @@ const onDataLoaded = (d: Array<Person>) => {
     setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 50)
   }
   else {
-    if (serverPagination.value.After) {
-      setTimeout(() => { data.value = concat(data.value, d)}, 50)
-      setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 100)
+    if (serverPagination.value instanceof Scrolling) {
+      if (serverPagination.value.After) {
+        setTimeout(() => { data.value = concat(data.value, d)}, 50)
+        setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 100)
+      }
+      else {
+        triggerTop.value = true
+        setTimeout(() => { topRow.value?.scrollIntoView( { behavior: 'smooth' })}, 50)
+        setTimeout(() => { data.value = concat(reverse(d), data.value)}, 200)
+      }
     }
-    else {
-      triggerTop.value = true
-      setTimeout(() => { topRow.value?.scrollIntoView( { behavior: 'smooth' })}, 50)
-      setTimeout(() => { data.value = concat(reverse(d), data.value)}, 200)
-    }
+
   }
   isLoaded.value = true
 }
@@ -175,7 +179,8 @@ onMounted(() => {
             </InputField>
           </div>
           <!--          Filter Panel-->
-          <div class="bg-white bg-opacity-5 text-white rounded-md transition-all ease-in-out duration-300" :class="{'h-24 mb-2': filterPanel, 'h-0': !filterPanel}"></div>
+          <div class="bg-white bg-opacity-5 text-white rounded-md transition-all ease-in-out duration-300 p-4" :class="{'h-24 mb-2': filterPanel, 'h-0': !filterPanel}">
+          </div>
           <!--          Table View-->
           <div class="overflow-y-auto w-full h-full">
             <DataTable

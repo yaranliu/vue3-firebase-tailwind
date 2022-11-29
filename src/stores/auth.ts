@@ -21,6 +21,7 @@ import {AuthErrorSource} from "@/components/auth/AuthErrorSource";
 import {ApplicationAuthError, getApplicationAuthErrorMessage} from "@/components/auth/ApplicationAuthErrors";
 
 import {useRouter} from "vue-router";
+import type {Axios} from "axios";
 
 interface IAuthState {
     provider: AuthenticationProvider,
@@ -167,9 +168,8 @@ export const useAuthStore = defineStore({
         },
 
         setup () {
-
             const router = useRouter()
-            const $axios = inject("$axios")
+            const $axios = inject<Axios>("$axios")
             this.inProgress = true
             onAuthStateChanged(getAuth(), (user) => {
                 const urlSearchParams = new URLSearchParams(window.location.search);

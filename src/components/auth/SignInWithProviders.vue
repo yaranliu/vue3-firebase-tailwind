@@ -1,6 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import { useAuthStore} from "@/stores/auth";
 import { AuthenticationProvider } from "@/components/auth/AuthenticationProvider";
+import type {AppAuthProvider} from "@/components/auth/AppAuthProviders";
+import type {PropType} from "vue";
 
 const auth = useAuthStore();
 
@@ -16,7 +18,7 @@ defineProps({
     default: false
   },
   providers: {
-    type: Object,
+    type: Array as PropType<Array<AppAuthProvider>>,
     default: () => {
       return [
         {
@@ -72,15 +74,15 @@ defineProps({
   }
 })
 
-const signIn = (provider) => {
+const signIn = (provider: AuthenticationProvider) => {
   emit('signInStarted', provider)
   auth.signInWithProvider(provider).then(user => {
     emit('signedIn', user)
+    emit('signInEnded', provider)
   }).catch(error => {
     emit('errorEncountered', error)
-  }).finally(() => {
     emit('signInEnded', provider)
-  });
+  })
 }
 
 </script>

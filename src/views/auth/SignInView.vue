@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 
 import { ref, onMounted, computed } from 'vue'
 
@@ -28,7 +28,7 @@ const onGotoSignUp = () => {
   router.push({ name: 'signUp'})
 }
 
-const onSignedIn = (args) => {
+const onSignedIn = (args: any) => {
   // console.log("[SignInVıew] Signed In")
   // console.log("[SignInVıew] Redirect is:", args)
   if (args.redirect) router.push({ name: args.redirect})
@@ -38,12 +38,12 @@ const onSignedIn = (args) => {
 const loading = ref(false)
 const showErrorDialog = ref(false)
 
-const showLoader = computed(() => { return showLoader.value || !auth.stateChecked})
+const showLoader = computed(() : boolean => { return showLoader.value || !auth.stateChecked})
 
 const authMethod = ref('')
 const authProvider = ref('')
 
-const onSignInStarted = (args) => {
+const onSignInStarted = (args: any) => {
   // console.log("[SignInVıew] Load Started:", args)
   authMethod.value = args.method
   authProvider.value = args.provider
@@ -53,12 +53,12 @@ const onSignInStarted = (args) => {
 
 const provider = ref('')
 
-const onSignInEnded = (authProvider) => {
+const onSignInEnded = (authProvider: string) => {
   // console.log("[SignInVıew] Load Ended:", authProvider)
   loading.value = false
 }
 
-const onError = (authError) => {
+const onError = (authError: string) => {
   showErrorDialog.value = true
 }
 
@@ -91,7 +91,7 @@ onMounted(() => {
               :description="t(auth.error.toLocaleString())"
               :button-label="t('error.dialog.button')"
               :is-open="showErrorDialog"
-              @ok-clicked="showErrorDialog.value = false"
+              @ok-clicked="showErrorDialog = false"
           />
         </div>
       </div>

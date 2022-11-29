@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -7,11 +7,11 @@ import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
 import {RegularRequestPagination, SampleApi, ScrollingRequestPagination} from "@/api/SampleApi";
 import {Paged} from "@/lib/api/Paged";
-import {Scrolling} from "@/lib/api/Scrolling";
 import RegularPagination from "@/components/common/RegularPagination.vue";
 import {ApiResponse} from "@/lib/api/ApiResponse";
 import { ApiResultCode } from "@/lib/api/ApiResultCode";
 import DataTable from "@/components/common/DataTable.vue";
+import type {Person} from "@/models/PersonModel";
 
 const { t } = useI18n()
 
@@ -21,18 +21,18 @@ const filterPanel = ref(false)
 const leftPanel = ref(false)
 
 
-const dataTable = ref(null)
+const dataTable = ref<InstanceType<typeof DataTable> | null>(null)
 const error= ref(new ApiResponse())
 
 // data
-const data = ref([])
+const data = ref<Array<Person>>([])
 const resourceName = ref('paged')
 const requestPagination = ref(new RegularRequestPagination(1, 10))
 // const requestPagination = ref(new ScrollingRequestPagination (50, '0029', true))
 const serverPagination = ref( new Paged(1, 1, 1, 1))
 // const serverPagination = ref(new Scrolling())
 
-const abortController = ref(null)
+const abortController = ref<AbortController>(new AbortController())
 const routeParams = ref(new Map([['id', '001'], ['item', '002340432']]))
 const queryParams = ref({color: 'red', size: ['medium', 'small'] })
 
@@ -40,17 +40,17 @@ const isLoaded = ref(false)
 const isFailed = ref(false)
 const isLoading = ref(false)
 
-const onDataLoaded = (d) => {
+const onDataLoaded = (d: Array<Person>) => {
   data.value = d
   isLoaded.value = true
 }
 
-const onFailed = (e) => {
+const onFailed = (e: ApiResponse) => {
   error.value = e
   isFailed.value = true
 }
 
-const onLoading  = (l) => {
+const onLoading  = (l: boolean) => {
   isLoading.value = l
 }
 
@@ -58,17 +58,17 @@ const fetch = () => {
   isLoaded.value = false
   isFailed.value = false
   abortController.value = new AbortController()
-  dataTable.value.fetchData(abortController.value)
+  dataTable.value?.fetchData(abortController.value)
 }
 
-const showPage = (page) => {
+const showPage = (page: number) => {
   if (page !== requestPagination.value.Page) {
     requestPagination.value.Page = page
     fetch()
   }
 }
 
-const updatePerPage = (perPage) => {
+const updatePerPage = (perPage: number) => {
   requestPagination.value.Page = 1
   requestPagination.value.PerPage = perPage
   fetch()

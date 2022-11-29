@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import UserDropDown from "@/layout/user-drop-down/UserDropDown.vue";
 import { useRouter } from 'vue-router'
 
@@ -7,7 +7,7 @@ const router = useRouter()
 const emit = defineEmits(['userAction', 'menuClicked'])
 const props = defineProps(['userButtonActions'])
 
-const onUserAction = (action ) => {
+const onUserAction = (action: string) => {
   emit('userAction', action)
 }
 

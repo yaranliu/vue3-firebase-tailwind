@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {computed, reactive, onMounted } from 'vue'
 
 import { useAuthStore} from "@/stores/auth";
@@ -6,7 +6,7 @@ import { useRouter } from "vue-router";
 import { AuthErrorCodes } from "firebase/auth";
 import SignInWithProviders from "@/components/auth/SignInWithProviders.vue";
 
-import { appAuthProviders } from "/src/components/auth/app-auth-providers.ts"
+import { AppAuthProviders } from "@/components/auth/AppAuthProviders";
 
 import { useI18n } from "vue-i18n";
 import { useVuelidate } from '@vuelidate/core'
@@ -51,34 +51,34 @@ const signInWithPassword = () => {
     // console.log('[SignInCard] signed in with password, User:', user.uid)
     // emitSignedIn({ redirect : redirect.value })
     emit('signedIn', { redirect: redirect.value, user: user })
+    emitEnded('password')
   }).catch(error => {
     emitError(error)
     if (error.code === AuthErrorCodes.USER_DELETED) {
       // console.log('[SignInCard] User not found')
     }
-  }).finally(() => {
     emitEnded('password')
-  });
+  })
 }
 
-const signedInWithProvider = (event) => {
+const signedInWithProvider = (event: Event) => {
   // console.log('[SignInCard] Signed In with provider', auth.user.uid)
   emitSignedIn({ redirect: redirect.value } )
 }
 
-const emitSignedIn = (event) => {
+const emitSignedIn = (event: Object) => {
   // console.log(('[SignInCard] emitting signed in:', event))
   if (event)  emit('signedIn', event)
   else emit('signedIn', '')
 }
-const emitStarted = (args) => {
+const emitStarted = (args: Object) => {
   // console.log(('[SignInCard] emitting sign in start:', args))
   emit('signInStarted', args)
 }
-const emitEnded = (event) => {
+const emitEnded = (event: Object) => {
   emit('signInEnded', event)
 }
-const emitError = (event) => {
+const emitError = (event: Event) => {
   emit('errorEncountered', event)
 }
 
@@ -106,7 +106,7 @@ const emitError = (event) => {
     </div>
     <SignInWithProviders
         class="mt-2"
-        :providers="appAuthProviders"
+        :providers="AppAuthProviders"
         @signed-in="signedInWithProvider"
         @sign-in-started="emitStarted({ method: 'provider', provider: $event })"
         @sign-in-ended="emitEnded($event)"
