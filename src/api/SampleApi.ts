@@ -24,7 +24,7 @@ class SampleApiClass extends Api {
             return new ApiSuccessResult(payload.payload, pagination)
         }
         else if (paginationType === PaginationType.Scrolling) {
-            let pagination = new Scrolling(p.lastItemId, p.after, p.more)
+            let pagination = new Scrolling(p.identifierField, p.after)
             return new ApiSuccessResult(payload.payload, pagination)
         }
         return new ApiSuccessResult(payload.payload)
@@ -67,8 +67,8 @@ class ScrollingRequestPagination extends AbstractScrollingRequestPagination {
 
     ToServerDefinition(): object {
         return {
-            perPage: this.PerPage,
-            lastId: this.LastId,
+            take: this.PerPage,
+            identifierValue: this.LastId,
             after: this.After
         }
     }

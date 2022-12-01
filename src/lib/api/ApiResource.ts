@@ -8,13 +8,18 @@ export class ApiResource {
     Url: string
     Auth: ApiAuth
     PaginationType: PaginationType
+    Identifier?: string
     controller: AbortController = new AbortController()
-    constructor(method: ApiMethod, baseUrl: string, url: string, auth: ApiAuth, pagination: PaginationType) {
+    constructor(method: ApiMethod, baseUrl: string, url: string, auth: ApiAuth, pagination: PaginationType, identifier?: string) {
         this.Method = method
         this.BaseUrl = baseUrl
         this.Url = url
         this.Auth = auth
         this.PaginationType = pagination
+        this.Identifier = identifier
+    }
+    SetIdentifier(identifier: string) {
+        this.Identifier = identifier
     }
 }
 

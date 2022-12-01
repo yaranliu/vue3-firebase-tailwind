@@ -22,7 +22,8 @@ module.exports = {
     extend: {
       colors: themeColors,
       transitionProperty: {
-        'width' : 'width'
+        'width' : 'width',
+        'height' : 'height'
       },
       scale: {
         '102': '1.02',

@@ -1,85 +1,93 @@
 <script setup lang="ts">
+
+// Imports
 import concat from "lodash/concat"
 import reverse from "lodash/reverse"
-
 import {ref, onMounted, computed} from "vue";
 import { useI18n } from "vue-i18n";
-
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
 import { SampleApi, ScrollingRequestPagination} from "@/api/SampleApi";
 import {Scrolling} from "@/lib/api/Scrolling";
 import {ApiResponse} from "@/lib/api/ApiResponse";
 import { ApiResultCode } from "@/lib/api/ApiResultCode";
-import ScrollingPagination from "@/components/common/ScrollingPagination.vue";
 import DataTable from "@/components/common/DataTable.vue";
 import type { Person } from "@/models/PersonModel"
+import { useInfiniteScroll } from "@vueuse/core";
+import { FirstItemIdentifier, LastItemIdentifier} from "@/lib/misc";
+import ScrollingPagination from "@/components/common/ScrollingPagination.vue";
 
+// Constants
+const dataRowIdPrefix = 'data-row'
+const initialRowCount = 50
+const fetchRowCount = 12
+
+// Data
 const { t } = useI18n()
-
-const search = ref('')
 
 const filterPanel = ref(true)
 const leftPanel = ref(true)
-
-
 const dataTable = ref<InstanceType<typeof DataTable> | null>(null)
-const error= ref(new ApiResponse())
+const moreAvailableBefore = ref(true)
+const moreAvailableAfter = ref(true)
+const triggerTop = ref(false)
 
-// data
-const data = ref<Array<Person>>([])
+
 const resourceName = ref('infinite')
-const isRegularPagination = ref(true)
-const requestPagination = ref<ScrollingRequestPagination>(new ScrollingRequestPagination(10, '0', true))
-const serverPagination = ref(new Scrolling('0', true, true))
-
+const data = ref<Array<Person>>([])
+const error = ref(new ApiResponse())
+const requestPagination = ref<ScrollingRequestPagination>(new ScrollingRequestPagination(initialRowCount, '0130', true))
+const serverPagination = ref(new Scrolling('id', true))
 const abortController = ref<AbortController>(new AbortController())
-const routeParams = ref(new Map([['id', '001'], ['item', '002340432']]))
-const queryParams = ref({color: 'red', size: ['medium', 'small'] })
-
+const queryParams = ref({})
 const isLoaded = ref(false)
 const isFailed = ref(false)
 const isLoading = ref(false)
-
 const initial = ref(true)
+const search = ref('')
+
 const tableHeader = ref<HTMLElement | null>(null)
 const tableRows = ref(null)
+const triggerScroll = ref(false)
+const scrollDown = ref(true)
+const savedScrollTop = ref(0)
 
-const firstItem = computed(() => {
-  let v = data.value as Array<Person>
-  let c = v.length
-  if (v && c > 0) {return v[0].id }
-  else { return undefined }
-})
+// Config
+useInfiniteScroll(dataTable, () => { onGetMore(true) }, { distance: 10, direction:  "bottom" })
+useInfiniteScroll(dataTable, () => { onGetMore(false) }, { distance: 10, direction:  "top" })
 
-const lastItem = computed(() => {
-  let v = data.value as Array<Person>
-  let c = v.length
-  if (v && c > 0) {return v[c - 1].id }
-  else { return undefined }
-})
+// Computed
+const firstItemIdentifier = computed(() => { return FirstItemIdentifier<Person>(data.value, serverPagination.value.IdentifierField)})
+const lastItemIdentifier = computed(() => { return LastItemIdentifier<Person>(data.value, serverPagination.value.IdentifierField)})
 
-const triggerTop = ref(false)
+const topRow = computed<HTMLElement | null>(() => { return document.getElementById(`${dataRowIdPrefix}-${data.value[0].id}`) })
+const bottomRow = computed<HTMLElement | null>(() => { return document.getElementById(`${dataRowIdPrefix}-${data.value[data.value.length - 1].id}`) })
 
+// Event Listeners
 const onDataLoaded = (d: Array<Person>) => {
   if (initial.value) {
     data.value = d
     initial.value = false
-    setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 50)
+    setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 200)
+    moreAvailableAfter.value = d.length >= initialRowCount
+    console.log('more available: ', moreAvailableAfter.value)
   }
   else {
-    if (serverPagination.value instanceof Scrolling) {
-      if (serverPagination.value.After) {
-        setTimeout(() => { data.value = concat(data.value, d)}, 50)
-        setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 100)
-      }
-      else {
-        triggerTop.value = true
-        setTimeout(() => { topRow.value?.scrollIntoView( { behavior: 'smooth' })}, 50)
-        setTimeout(() => { data.value = concat(reverse(d), data.value)}, 200)
-      }
+    if (serverPagination.value.After) {
+      data.value = concat(data.value, d)
+      setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 200)
+      moreAvailableAfter.value = d.length >= fetchRowCount
+      console.log('Fetched append')
+      console.log('more available: ', moreAvailableAfter.value)
     }
-
+    else {
+      triggerTop.value = true
+      data.value = concat(reverse(d), data.value)
+      setTimeout(() => { topRow.value?.scrollIntoView( { behavior: 'smooth' })}, 200)
+      moreAvailableBefore.value = d.length >= fetchRowCount
+      console.log('Fetched prepend')
+      console.log('more available: ', moreAvailableAfter.value)
+    }
   }
   isLoaded.value = true
 }
@@ -93,6 +101,37 @@ const onLoading  = (l: boolean) => {
   isLoading.value = l
 }
 
+const onGetMore = (after: boolean) => {
+  // if (after) bottomRow.value?.scrollIntoView( { behavior: 'smooth' })
+  // else topRow.value?.scrollIntoView( { behavior: 'smooth' })
+  console.log(moreAvailableBefore.value, after && moreAvailableAfter.value  )
+  if (triggerScroll.value && ((after && moreAvailableAfter.value) || (!after && moreAvailableBefore.value))) {
+    triggerScroll.value = false
+    let lastId = lastItemIdentifier.value === undefined ? '' : lastItemIdentifier.value.toString()
+    let firstId = firstItemIdentifier.value === undefined ? '' : firstItemIdentifier.value.toString()
+    requestPagination.value = new ScrollingRequestPagination(fetchRowCount, after ? lastId : firstId, after)
+    setTimeout(() => { fetch() }, 50)
+  }
+}
+
+const onScroll = (event: Event) => {
+  let el = (event.target as HTMLElement)
+  scrollDown.value = el.scrollTop > savedScrollTop.value
+  savedScrollTop.value = el.scrollTop
+  triggerScroll.value = (scrollDown.value && (el.scrollTop + el.offsetHeight) > el.scrollHeight)
+      || (!scrollDown.value && (el.scrollTop  < 20 ))
+  console.log('scrolling ', scrollDown.value ? 'down' : 'up', 'and trigger is ', triggerScroll.value ? 'on' : 'off')
+  let top = tableHeader.value ? tableHeader.value.clientHeight : 0
+  if (tableHeader) {
+    if (triggerTop.value && (event.target as HTMLElement).scrollTop <= top) {
+      (event.target as HTMLElement).scrollTop = 0
+      triggerTop.value = false
+    }
+  }
+}
+
+// Methods
+
 const fetch = () => {
   isLoaded.value = false
   isFailed.value = false
@@ -104,37 +143,10 @@ const cancelRequest = () => {
   abortController.value.abort()
 }
 
-const onGetMore = (after: boolean) => {
-  let lastId = lastItem.value === undefined ? '' : lastItem.value
-  let firstId = firstItem.value === undefined ? '' : firstItem.value
-  requestPagination.value = new ScrollingRequestPagination(10, after ? lastId : firstId, after)
-  setTimeout(() => { fetch() }, 50)
-}
-
-const onScroll = (event: Event) => {
-  let top = tableHeader.value ? tableHeader.value.clientHeight : 0
-  if (tableHeader) {
-    if (triggerTop.value && (event.target as HTMLElement).scrollTop <= top) {
-      (event.target as HTMLElement).scrollTop = 0
-      triggerTop.value = false
-    }
-  }
-}
-
-const dataRowIdPrefix = 'data-row'
-
-const topRow = computed<HTMLElement | null>(() => {
-  return document.getElementById(`${dataRowIdPrefix}-${data.value[0].id}`)
-})
-
-const bottomRow = computed<HTMLElement | null>(() => {
-  return document.getElementById(`${dataRowIdPrefix}-${data.value[data.value.length - 1].id}`)
-})
-
+// Hooks
 onMounted(() => {
   fetch()
 })
-
 
 </script>
 
@@ -185,10 +197,10 @@ onMounted(() => {
           <div class="overflow-y-auto w-full h-full">
             <DataTable
                 ref="dataTable"
+                show-as-table
                 class="rounded-md border border-slate-700 w-full"
                 :api="SampleApi"
                 :resource-name="resourceName"
-                :route-params="routeParams"
                 :query-params="queryParams"
                 @loaded="onDataLoaded"
                 @failed="onFailed"
@@ -230,18 +242,14 @@ onMounted(() => {
               <template #footer>
                 <div class="h-10 flex flex-row justify-between items-center w-full px-2 py-1 text-white sticky bottom-0 px-4 opaque-bg border-t border-slate-700">
                   <ScrollingPagination
-                      v-if = "isLoaded || isLoading"
-                      v-model="serverPagination"
-                      :is-loading="isLoading"
-                      :is-loaded="isLoaded"
-                      :is-failed="isFailed"
-                      @get-more="onGetMore"
+                    @get-more="onGetMore"
                   />
                   <button v-if="isLoading" @click="cancelRequest" class="text-yellow-400"><i class="las la-circle-notch animate-spin" /><span class="hidden md:inline-block ml-2">{{  t('abort') }}</span></button>
                 </div>
               </template>
             </DataTable>
           </div>
+          <div class="bg-white bg-opacity-5 text-white rounded-md p-4 mt-2">Another Pane here</div>
         </div>
       </div>
     </div>
@@ -262,5 +270,7 @@ onMounted(() => {
 }
 </i18n>
 <style scoped>
-
+.auto-hide-footer {
+  transform: translateY(30px);
+}
 </style>

@@ -20,8 +20,8 @@ abstract class Api {
         this.Auth = Auth
     }
 
-    AddResource (Key: string, Method: ApiMethod, Url: string, Pagination: PaginationType) {
-        this.Resources.set(Key, new ApiResource(Method, this.BaseUrl, Url, this.Auth, Pagination ))
+    AddResource (Key: string, Method: ApiMethod, Url: string, Pagination: PaginationType, Identifier?: string) {
+        this.Resources.set(Key, new ApiResource(Method, this.BaseUrl, Url, this.Auth, Pagination, Identifier ))
         return this
     }
 

@@ -1,11 +1,9 @@
 
 export class Scrolling {
-    Last: string
+    IdentifierField: string
     After: boolean
-    More: boolean
-    constructor(Last: string,After:boolean, More: boolean ) {
-        this.Last = Last
+    constructor(IdentifierField: string,After:boolean ) {
+        this.IdentifierField = IdentifierField
         this.After = After
-        this.More = More
     }
 }
