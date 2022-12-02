@@ -73,12 +73,12 @@ defineExpose({ fetchData, dataSlot })
 <template>
   <div class="h-full overflow-y-auto w-full rounded-md border border-slate-700 flex flex-col justify-between">
     <!--            Table-->
-    <div class="table">
+    <table class="table">
       <!--              Table Header Row-->
       <slot class="table-header-group" name="header"></slot>
       <!--              Table Data Rows-->
       <slot ref="dataSlot" class="relative table-row-group h-full overflow-y-scroll" name="data"></slot>
-    </div>
+    </table>
     <!--             Error-->
     <slot class="grow" name="error"></slot>
     <!--            Table Footer-->

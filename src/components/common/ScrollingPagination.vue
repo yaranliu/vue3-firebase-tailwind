@@ -23,7 +23,7 @@ const emit = defineEmits(['getMore'])
 
 // Methods
 const getMoreClicked = (after: boolean) => {
-  emit('getMore', after)
+  emit('getMore', { after: after, auto: false } )
 }
 
 </script>

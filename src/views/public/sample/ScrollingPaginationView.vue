@@ -3,7 +3,7 @@
 // Imports
 import concat from "lodash/concat"
 import reverse from "lodash/reverse"
-import {ref, onMounted, computed} from "vue";
+import {ref, onMounted, computed, nextTick} from "vue";
 import { useI18n } from "vue-i18n";
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
@@ -13,14 +13,15 @@ import {ApiResponse} from "@/lib/api/ApiResponse";
 import { ApiResultCode } from "@/lib/api/ApiResultCode";
 import DataTable from "@/components/common/DataTable.vue";
 import type { Person } from "@/models/PersonModel"
-import { useInfiniteScroll } from "@vueuse/core";
+import { useInfiniteScroll, useScroll } from "@vueuse/core";
 import { FirstItemIdentifier, LastItemIdentifier} from "@/lib/misc";
 import ScrollingPagination from "@/components/common/ScrollingPagination.vue";
 
 // Constants
 const dataRowIdPrefix = 'data-row'
-const initialRowCount = 50
-const fetchRowCount = 12
+const initialRowCount = 10
+const fetchRowCount = 10
+const scrollTimeOut = 500
 
 // Data
 const { t } = useI18n()
@@ -36,7 +37,7 @@ const triggerTop = ref(false)
 const resourceName = ref('infinite')
 const data = ref<Array<Person>>([])
 const error = ref(new ApiResponse())
-const requestPagination = ref<ScrollingRequestPagination>(new ScrollingRequestPagination(initialRowCount, '0130', true))
+const requestPagination = ref<ScrollingRequestPagination>(new ScrollingRequestPagination(initialRowCount, '0150', true))
 const serverPagination = ref(new Scrolling('id', true))
 const abortController = ref<AbortController>(new AbortController())
 const queryParams = ref({})
@@ -48,45 +49,61 @@ const search = ref('')
 
 const tableHeader = ref<HTMLElement | null>(null)
 const tableRows = ref(null)
-const triggerScroll = ref(false)
-const scrollDown = ref(true)
-const savedScrollTop = ref(0)
 
-// Config
-useInfiniteScroll(dataTable, () => { onGetMore(true) }, { distance: 10, direction:  "bottom" })
-useInfiniteScroll(dataTable, () => { onGetMore(false) }, { distance: 10, direction:  "top" })
+
 
 // Computed
 const firstItemIdentifier = computed(() => { return FirstItemIdentifier<Person>(data.value, serverPagination.value.IdentifierField)})
 const lastItemIdentifier = computed(() => { return LastItemIdentifier<Person>(data.value, serverPagination.value.IdentifierField)})
 
-const topRow = computed<HTMLElement | null>(() => { return document.getElementById(`${dataRowIdPrefix}-${data.value[0].id}`) })
-const bottomRow = computed<HTMLElement | null>(() => { return document.getElementById(`${dataRowIdPrefix}-${data.value[data.value.length - 1].id}`) })
+const scrollAreaTop = ref<HTMLElement | null>(null)
+const scrollAreaBottom = ref<HTMLElement | null>(null)
+
+const lastItem = computed(() => {
+  return document.getElementById( `${dataRowIdPrefix}-${lastItemIdentifier.value}`)
+})
+
+// Scrolling
+
+useInfiniteScroll(dataTable, () => { onGetMore({ after: true, auto: false } ) }, { distance: 10, direction:  "bottom" })
+useInfiniteScroll(dataTable, () => { onGetMore({ after: false, auto: false }) }, { distance: 10, direction:  "top" })
+const { directions, x, y } = useScroll(dataTable)
 
 // Event Listeners
-const onDataLoaded = (d: Array<Person>) => {
+const onDataLoaded = async (d: Array<Person>) => {
   if (initial.value) {
     data.value = d
     initial.value = false
-    setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 200)
     moreAvailableAfter.value = d.length >= initialRowCount
-    console.log('more available: ', moreAvailableAfter.value)
+    await nextTick(() => {
+      setTimeout(() => {
+        // scrollAreaBottom.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+        lastItem.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+      }, scrollTimeOut)
+    })
+
+
   }
   else {
     if (serverPagination.value.After) {
       data.value = concat(data.value, d)
-      setTimeout(() => { bottomRow.value?.scrollIntoView( { behavior: 'smooth' })}, 200)
       moreAvailableAfter.value = d.length >= fetchRowCount
-      console.log('Fetched append')
-      console.log('more available: ', moreAvailableAfter.value)
+      await nextTick(() => {
+        setTimeout(() => {
+          lastItem.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+          // scrollAreaBottom.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+        }, scrollTimeOut)
+      })
     }
     else {
       triggerTop.value = true
       data.value = concat(reverse(d), data.value)
-      setTimeout(() => { topRow.value?.scrollIntoView( { behavior: 'smooth' })}, 200)
       moreAvailableBefore.value = d.length >= fetchRowCount
-      console.log('Fetched prepend')
-      console.log('more available: ', moreAvailableAfter.value)
+      await nextTick(() => {
+        setTimeout(() => {
+          scrollAreaTop.value?.scrollIntoView( { behavior: 'smooth', block:'start', inline:'start' })
+        }, scrollTimeOut)
+      })
     }
   }
   isLoaded.value = true
@@ -101,33 +118,40 @@ const onLoading  = (l: boolean) => {
   isLoading.value = l
 }
 
-const onGetMore = (after: boolean) => {
-  // if (after) bottomRow.value?.scrollIntoView( { behavior: 'smooth' })
-  // else topRow.value?.scrollIntoView( { behavior: 'smooth' })
-  console.log(moreAvailableBefore.value, after && moreAvailableAfter.value  )
-  if (triggerScroll.value && ((after && moreAvailableAfter.value) || (!after && moreAvailableBefore.value))) {
-    triggerScroll.value = false
-    let lastId = lastItemIdentifier.value === undefined ? '' : lastItemIdentifier.value.toString()
-    let firstId = firstItemIdentifier.value === undefined ? '' : firstItemIdentifier.value.toString()
-    requestPagination.value = new ScrollingRequestPagination(fetchRowCount, after ? lastId : firstId, after)
-    setTimeout(() => { fetch() }, 50)
+
+const getMoreOrAbort = (args: any) => {
+  if (isLoading.value) {
+    cancelRequest()
+    if (args.after) {
+      setTimeout(() => {
+        scrollAreaBottom.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+      }, scrollTimeOut)
+    } else {
+      setTimeout(() => {
+        scrollAreaTop.value?.scrollIntoView( { behavior: 'smooth', block:'start', inline:'start' })
+      }, scrollTimeOut)
+    }
+  }
+  else onGetMore(args)
+}
+
+const onGetMore = (args: any) => {
+  if (!isLoading.value) {
+    if (args.force || (args.after && moreAvailableAfter.value) || (!args.after && moreAvailableBefore.value)) {
+      let lastId = lastItemIdentifier.value === undefined ? '' : lastItemIdentifier.value.toString()
+      let firstId = firstItemIdentifier.value === undefined ? '' : firstItemIdentifier.value.toString()
+      requestPagination.value = new ScrollingRequestPagination(fetchRowCount, args.after ? lastId : firstId, args.after)
+      setTimeout(() => { fetch() }, 50)
+    }
+  } else {
+    if (args.after) scrollAreaBottom.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+    else scrollAreaTop.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+
   }
 }
 
 const onScroll = (event: Event) => {
-  let el = (event.target as HTMLElement)
-  scrollDown.value = el.scrollTop > savedScrollTop.value
-  savedScrollTop.value = el.scrollTop
-  triggerScroll.value = (scrollDown.value && (el.scrollTop + el.offsetHeight) > el.scrollHeight)
-      || (!scrollDown.value && (el.scrollTop  < 20 ))
-  console.log('scrolling ', scrollDown.value ? 'down' : 'up', 'and trigger is ', triggerScroll.value ? 'on' : 'off')
-  let top = tableHeader.value ? tableHeader.value.clientHeight : 0
-  if (tableHeader) {
-    if (triggerTop.value && (event.target as HTMLElement).scrollTop <= top) {
-      (event.target as HTMLElement).scrollTop = 0
-      triggerTop.value = false
-    }
-  }
+  //
 }
 
 // Methods
@@ -211,22 +235,69 @@ onMounted(() => {
                 @scroll="onScroll"
             >
               <template #header>
-                <div ref="tableHeader" class="table-row opaque-bg text-yellow-500 bg-opacity-100 sticky top-0 z-10">
-                  <div class="table-cell text-center p-2">#</div>
-                  <div class="table-cell text-left p-2">First Name</div>
-                  <div class="table-cell text-left p-2">Last Name</div>
-                  <div class="table-cell text-left p-2">Posts</div>
-                </div>
+                <tr class="opaque-bg text-yellow-500 bg-opacity-100 sticky top-0 z-10 h-14">
+                  <th class="text-center p-2 font-normal">#</th>
+                  <th class="text-left p-2 font-normal">First Name</th>
+                  <th class="text-left p-2 font-normal">Last Name</th>
+                  <th class="text-left p-2 font-normal">Posts</th>
+                </tr>
+
               </template>
               <template #data ref="tableRows">
-                <div v-for="v in data" :key="v.id" :id="`${dataRowIdPrefix}-${v.id}`"
-                     class="table-row text-slate-400 text-sm odd:bg-white odd:bg-opacity-5 hover:text-slate-100 transition-all ease-in-out duration-100 animate-flash"
+                <tr ref="scrollAreaTop" id="scrollAreaTop" class="h-14 odd:bg-white odd:bg-opacity-5 ">
+                  <td colspan="4" class="text-center">
+                    <div class="flex items-center justify-center">
+                      <div class="text-center p-2 transition-all ease-out duration-300">
+                        <div class="h-8 w-80 flex justify-between pr-1 pl-3 items-center rounded-full space-x-2 bg-white bg-opacity-10 text-slate-300 text-sm">
+                          <div class="inline-block text-xs">
+                            <span v-if="isLoading" class="animate-pulse">{{ t('loading')}}</span>
+                            <div v-if="!isLoading" class="inline" >
+                              <span v-if="!moreAvailableBefore">{{ t('noMore')}}</span>
+                              <span v-else>{{ t('getMoreTop')}}</span>
+                            </div>
+                          </div>
+                          <div @click="getMoreOrAbort({ after: false, force: true })" class="hover:cursor-pointer group flex flex-row items-center">
+                            <div class="text-xs group-hover:text-yellow-300" v-if="!moreAvailableBefore">{{ t('fetchAnyway')}}</div>
+                            <div class="inline-block ml-2 rounded-full bg-white bg-opacity-10 group-hover:text-yellow-300 group-hover:bg-white group-hover:bg-opacity-10" >
+                              <i class="las la-sync object-center rounded-full p-1" :class="{'animate-spin' : isLoading}"></i>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                 <tr v-for="v in data" :key="v.id" :id="`${dataRowIdPrefix}-${v.id}`"
+                     class="h-24 table-row text-slate-400 text-sm odd:bg-white odd:bg-opacity-5 hover:text-slate-100 transition-all ease-in-out duration-100 animate-flash"
                 >
-                  <div class="table-cell text-center p-2">{{ v.id }}</div>
-                  <div class="table-cell p-2">{{ v.firstName }}</div>
-                  <div class="table-cell p-2">{{ v.lastName }}</div>
-                  <div class="table-cell p-2">{{ v.posts }}</div>
-                </div>
+                  <td class="table-cell text-center p-2">{{ v.id }}</td>
+                  <td class="table-cell p-2">{{ v.firstName }}</td>
+                  <td class="table-cell p-2">{{ v.lastName }}</td>
+                  <td class="table-cell p-2">{{ v.posts }}</td>
+                </tr>
+                <tr ref="scrollAreaBottom" id="scrollAreaBottom" class="h-14 odd:bg-white odd:bg-opacity-5 ">
+                  <td colspan="4" class="text-center">
+                    <div class="flex items-center justify-center">
+                      <div class="text-center p-2 transition-all ease-out duration-300">
+                        <div class="h-8 w-80 flex justify-between pr-1 pl-3 items-center rounded-full space-x-2 bg-white bg-opacity-10 text-slate-300 text-sm">
+                          <div class="inline-block text-xs">
+                            <span v-if="isLoading" class="animate-pulse">{{ t('loading')}}</span>
+                            <div v-if="!isLoading" class="inline" >
+                              <span v-if="!moreAvailableAfter">{{ t('noMore')}}</span>
+                              <span v-else>{{ t('getMoreTop')}}</span>
+                            </div>
+                          </div>
+                          <div @click="getMoreOrAbort({ after: true, force: true })" class="hover:cursor-pointer group flex flex-row items-center">
+                            <div class="text-xs group-hover:text-yellow-300" v-if="!moreAvailableAfter">{{ t('fetchAnyway')}}</div>
+                            <div class="inline-block ml-2 rounded-full bg-white bg-opacity-10 group-hover:text-yellow-300 group-hover:bg-white group-hover:bg-opacity-10" >
+                              <i class="las la-sync object-center rounded-full p-1" :class="{'animate-spin' : isLoading}"></i>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
               </template>
               <template #error>
                 <div v-if="!isLoading && isFailed" class="w-full h-full text-white grid place-content-center">
@@ -239,14 +310,14 @@ onMounted(() => {
                   </button>
                 </div>
               </template>
-              <template #footer>
-                <div class="h-10 flex flex-row justify-between items-center w-full px-2 py-1 text-white sticky bottom-0 px-4 opaque-bg border-t border-slate-700">
-                  <ScrollingPagination
-                    @get-more="onGetMore"
-                  />
-                  <button v-if="isLoading" @click="cancelRequest" class="text-yellow-400"><i class="las la-circle-notch animate-spin" /><span class="hidden md:inline-block ml-2">{{  t('abort') }}</span></button>
-                </div>
-              </template>
+<!--              <template #footer>-->
+<!--                <div class="h-24 flex flex-row justify-between items-center w-full px-2 py-1 text-white sticky bottom-0 px-4 opaque-bg border-t border-slate-700">-->
+<!--                  <ScrollingPagination-->
+<!--                      @get-more="onGetMore"-->
+<!--                  />-->
+<!--                  <button v-if="isLoading" @click="cancelRequest" class="text-yellow-400"><i class="las la-circle-notch animate-spin" /><span class="hidden md:inline-block ml-2">{{  t('abort') }}</span></button>-->
+<!--                </div>-->
+<!--              </template>-->
             </DataTable>
           </div>
           <div class="bg-white bg-opacity-5 text-white rounded-md p-4 mt-2">Another Pane here</div>
@@ -260,7 +331,11 @@ onMounted(() => {
 {
   "tr": {
     "abort" : "İptal et",
-    "retry" : "Yeniden dene"
+    "retry" : "Yeniden dene",
+    "loading": "Yükleniyor...",
+    "fetchAnyway": "Kontrol et",
+    "noMore": "Başka kayıt yok",
+    "getMoreTop": "Daha fazlası için aşağı çekin"
   },
 
   "en": {
