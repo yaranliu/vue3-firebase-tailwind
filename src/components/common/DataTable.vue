@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type {ApiResponse} from "@/lib/api/ApiResponse";
 import type { Api } from "@/lib/api/Api";
-import { ref, useSlots } from "vue";
+import {onMounted, ref, useSlots} from "vue";
 import type { PropType} from "vue";
 import type {AbstractRegularRequestPagination, AbstractScrollingRequestPagination} from "@/lib/api/Pagination";
 const slots = useSlots()
@@ -22,7 +22,7 @@ const props = defineProps(
       }
     })
 
-const emit = defineEmits(['loaded', 'failed', 'loading', 'update:serverPagination'])
+const emit = defineEmits(['mounted', 'loaded', 'failed', 'loading', 'update:serverPagination'])
 
 const loaded = ref(false)
 const loading = ref(false)
@@ -69,7 +69,53 @@ const fetchData = (controller: AbortController) => {
   fetch(controller).then(r => emit('loaded', r)).catch(e => { emit('failed', e) })
 }
 
-defineExpose({ fetchData, dataSlot, hasSlot })
+const fetchAsync = async (controller: AbortController) => {
+  let api = props.api ?  props.api as Api : null
+  if (api && props.resourceName) {
+    loaded.value = false
+    failed.value = false
+    loading.value = true
+    emit('loading', true)
+    let config = api.GetConfig(props.resourceName, props.timeout, controller)
+
+    if (config) {
+      config = config
+          .SetRouteParams(props.routeParams)
+          .SetQueryParams(props.queryParams)
+      if (props.requestPagination) config.SetPagination(props.requestPagination.ToServerDefinition())
+      try {
+        let r = await config.ExecuteAsync(api.GetResource(props.resourceName), api.TransformResponse)
+        loaded.value = true
+        loading.value = false
+        emit('loading', false)
+        emit('update:serverPagination', r?.Pagination)
+        return r?.Data
+      } catch (e) {
+        failed.value = true
+        loading.value = false
+        emit('loading', false)
+        return e
+      }
+    }
+  } else {
+    console.log ('DataTable configuration error. Api or Resource is not defined')
+  }
+}
+
+const fetchDataAsync = async (controller: AbortController) => {
+  try {
+    let r = await fetchAsync(controller)
+    emit('loaded', r)
+  } catch (e) {
+    emit('failed', e)
+  }
+}
+
+onMounted(() => {
+  emit('mounted')
+})
+
+defineExpose({ fetchData, fetchDataAsync, dataSlot, hasSlot })
 
 </script>
 

@@ -60,6 +60,19 @@ export class AxiosConfig {
         return this
     }
 
+    private ProcessError(e: AxiosError): ApiResponse {
+        let error = new ApiResponse()
+        if (e.response) {
+            error.GenerateError(e.response.status, e.response?.data)
+        } else if (e.code) {
+            error.GenerateAxiosError(e.code, e.message)
+        } else {
+            error.Status = ApiResultCode.Unknown
+        }
+        if (axios.isCancel(e)) { error.Status = ApiResultCode.Cancelled }
+        return error
+    }
+
     Execute(resource: ApiResource | undefined, responseHandler: ResponseHandler) {
         if (resource) {
             return new Promise<ApiResponse> ((resolve, reject) => {
@@ -69,18 +82,22 @@ export class AxiosConfig {
                         response.Transform(r.data ? r.data : null, responseHandler, resource.PaginationType)
                         resolve(response)
                     }).catch((e: AxiosError) => {
-                    let error = new ApiResponse()
-                    if (e.response) {
-                        error.GenerateError(e.response.status, e.response?.data)
-                    } else if (e.code) {
-                        error.GenerateAxiosError(e.code, e.message)
-                    } else {
-                        error.Status = ApiResultCode.Unknown
-                    }
-                    if (axios.isCancel(e)) { error.Status = ApiResultCode.Cancelled }
-                    reject(error)
+                    reject(this.ProcessError(e))
                 })
             })
+        }
+    }
+
+    async ExecuteAsync(resource: ApiResource | undefined, responseHandler: ResponseHandler) {
+        if (resource) {
+            try {
+                let r = await axios(this)
+                let response = new ApiResponse()
+                response.Transform(r.data ? r.data : null, responseHandler, resource.PaginationType)
+                return response
+            } catch (e: any) {
+                return this.ProcessError(e as AxiosError)
+            }
         }
     }
 }
