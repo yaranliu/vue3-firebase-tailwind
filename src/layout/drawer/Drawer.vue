@@ -11,7 +11,6 @@ import type {DrawerItemGroup} from "@/configuration/LayoutConfiguration";
 import type {DraweItemDefinition} from "@/configuration/LayoutConfiguration";
 import type {PropType} from "vue";
 import DrawerItem from "@/layout/drawer/DrawerItem.vue";
-import {B} from "vitest/dist/global-58e8e951";
 
 const auth = useAuthStore();
 const router = useRouter()

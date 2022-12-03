@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type {ApiResponse} from "@/lib/api/ApiResponse";
 import type { Api } from "@/lib/api/Api";
-import { ref } from "vue";
+import { ref, useSlots } from "vue";
 import type { PropType} from "vue";
 import type {AbstractRegularRequestPagination, AbstractScrollingRequestPagination} from "@/lib/api/Pagination";
-
+const slots = useSlots()
+const hasSlot = (name:string) => {
+  return !!slots[name];
+}
 const props = defineProps(
     {
       api: { required:true },
@@ -66,7 +69,7 @@ const fetchData = (controller: AbortController) => {
   fetch(controller).then(r => emit('loaded', r)).catch(e => { emit('failed', e) })
 }
 
-defineExpose({ fetchData, dataSlot })
+defineExpose({ fetchData, dataSlot, hasSlot })
 
 </script>
 
@@ -83,6 +86,7 @@ defineExpose({ fetchData, dataSlot })
     <slot class="grow" name="error"></slot>
     <!--            Table Footer-->
     <slot class="w-full" name="footer"></slot>
+    <slot class="w-full" name="empty"></slot>
   </div>
 
 

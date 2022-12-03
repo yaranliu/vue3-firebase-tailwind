@@ -3,7 +3,7 @@
 // Imports
 import concat from "lodash/concat"
 import reverse from "lodash/reverse"
-import {ref, onMounted, computed, nextTick} from "vue";
+import {ref, onMounted, computed, nextTick, useSlots} from "vue";
 import { useI18n } from "vue-i18n";
 import InputField from "@/components/common/InputField.vue";
 import {DefaultIcons} from "@/configuration/AppConfiguration";
@@ -13,9 +13,12 @@ import {ApiResponse} from "@/lib/api/ApiResponse";
 import { ApiResultCode } from "@/lib/api/ApiResultCode";
 import DataTable from "@/components/common/DataTable.vue";
 import type { Person } from "@/models/PersonModel"
-import { useInfiniteScroll, useScroll } from "@vueuse/core";
+import { useInfiniteScroll } from "@vueuse/core";
 import { FirstItemIdentifier, LastItemIdentifier} from "@/lib/misc";
 import ScrollingPagination from "@/components/common/ScrollingPagination.vue";
+
+// Locale
+const { t } = useI18n()
 
 // Constants
 const dataRowIdPrefix = 'data-row'
@@ -23,21 +26,22 @@ const initialRowCount = 10
 const fetchRowCount = 10
 const scrollTimeOut = 500
 
-// Data
-const { t } = useI18n()
 
+// Views
 const filterPanel = ref(true)
 const leftPanel = ref(true)
 const dataTable = ref<InstanceType<typeof DataTable> | null>(null)
 const moreAvailableBefore = ref(true)
 const moreAvailableAfter = ref(true)
-const triggerTop = ref(false)
 
+// Request params
+const lastId = '0050'
 
+// Api
 const resourceName = ref('infinite')
 const data = ref<Array<Person>>([])
 const error = ref(new ApiResponse())
-const requestPagination = ref<ScrollingRequestPagination>(new ScrollingRequestPagination(initialRowCount, '0150', true))
+const requestPagination = ref<ScrollingRequestPagination>(new ScrollingRequestPagination(initialRowCount, lastId, true))
 const serverPagination = ref(new Scrolling('id', true))
 const abortController = ref<AbortController>(new AbortController())
 const queryParams = ref({})
@@ -47,63 +51,45 @@ const isLoading = ref(false)
 const initial = ref(true)
 const search = ref('')
 
-const tableHeader = ref<HTMLElement | null>(null)
-const tableRows = ref(null)
+// Api Methods
+const getMoreOrAbort = (args: any) => {
+  if (isLoading.value) {
+    cancelRequest()
+    if (args.after) { scrollToBottom() }
+    else { scrollToTop() }
+  }
+  else onGetMore(args)
+}
 
+const fetch = () => {
+  isLoaded.value = false
+  isFailed.value = false
+  abortController.value = new AbortController()
+  dataTable.value?.fetchData(abortController.value)
+}
 
+const cancelRequest = () => {
+  abortController.value.abort()
+}
 
-// Computed
-const firstItemIdentifier = computed(() => { return FirstItemIdentifier<Person>(data.value, serverPagination.value.IdentifierField)})
-const lastItemIdentifier = computed(() => { return LastItemIdentifier<Person>(data.value, serverPagination.value.IdentifierField)})
-
-const scrollAreaTop = ref<HTMLElement | null>(null)
-const scrollAreaBottom = ref<HTMLElement | null>(null)
-
-const lastItem = computed(() => {
-  return document.getElementById( `${dataRowIdPrefix}-${lastItemIdentifier.value}`)
-})
-
-// Scrolling
-
-useInfiniteScroll(dataTable, () => { onGetMore({ after: true, auto: false } ) }, { distance: 10, direction:  "bottom" })
-useInfiniteScroll(dataTable, () => { onGetMore({ after: false, auto: false }) }, { distance: 10, direction:  "top" })
-const { directions, x, y } = useScroll(dataTable)
-
-// Event Listeners
+// Api Events
 const onDataLoaded = async (d: Array<Person>) => {
   if (initial.value) {
     data.value = d
     initial.value = false
     moreAvailableAfter.value = d.length >= initialRowCount
-    await nextTick(() => {
-      setTimeout(() => {
-        // scrollAreaBottom.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
-        lastItem.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
-      }, scrollTimeOut)
-    })
-
-
+    await nextTick(() => { scrollToBottom() })
   }
   else {
     if (serverPagination.value.After) {
       data.value = concat(data.value, d)
       moreAvailableAfter.value = d.length >= fetchRowCount
-      await nextTick(() => {
-        setTimeout(() => {
-          lastItem.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
-          // scrollAreaBottom.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
-        }, scrollTimeOut)
-      })
+      await nextTick(() => { scrollToBottom() })
     }
     else {
-      triggerTop.value = true
       data.value = concat(reverse(d), data.value)
       moreAvailableBefore.value = d.length >= fetchRowCount
-      await nextTick(() => {
-        setTimeout(() => {
-          scrollAreaTop.value?.scrollIntoView( { behavior: 'smooth', block:'start', inline:'start' })
-        }, scrollTimeOut)
-      })
+      await nextTick(() => { scrollToTop() })
     }
   }
   isLoaded.value = true
@@ -116,23 +102,6 @@ const onFailed = (e: ApiResponse) => {
 
 const onLoading  = (l: boolean) => {
   isLoading.value = l
-}
-
-
-const getMoreOrAbort = (args: any) => {
-  if (isLoading.value) {
-    cancelRequest()
-    if (args.after) {
-      setTimeout(() => {
-        scrollAreaBottom.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
-      }, scrollTimeOut)
-    } else {
-      setTimeout(() => {
-        scrollAreaTop.value?.scrollIntoView( { behavior: 'smooth', block:'start', inline:'start' })
-      }, scrollTimeOut)
-    }
-  }
-  else onGetMore(args)
 }
 
 const onGetMore = (args: any) => {
@@ -150,22 +119,35 @@ const onGetMore = (args: any) => {
   }
 }
 
-const onScroll = (event: Event) => {
-  //
+// Scrolling
+const firstItemIdentifier = computed(() => { return FirstItemIdentifier<Person>(data.value, serverPagination.value.IdentifierField)})
+const lastItemIdentifier = computed(() => { return LastItemIdentifier<Person>(data.value, serverPagination.value.IdentifierField)})
+
+const scrollAreaTop = ref<HTMLElement | null>(null)
+const scrollAreaBottom = ref<HTMLElement | null>(null)
+
+const lastItem = computed(() => {
+  return document.getElementById( `${dataRowIdPrefix}-${lastItemIdentifier.value}`)
+})
+
+const scrollToBottom = () => {
+  setTimeout(() => {
+    if (dataTable.value?.hasSlot('footer')) {
+      scrollAreaBottom.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+    } else {
+      lastItem.value?.scrollIntoView( { behavior: 'smooth', block:'end', inline:'start' })
+    }
+  }, scrollTimeOut)
 }
 
-// Methods
-
-const fetch = () => {
-  isLoaded.value = false
-  isFailed.value = false
-  abortController.value = new AbortController()
-  dataTable.value?.fetchData(abortController.value)
+const scrollToTop = () => {
+  setTimeout(() => {
+    scrollAreaTop.value?.scrollIntoView( { behavior: 'smooth', block:'start', inline:'start' })
+  }, scrollTimeOut)
 }
 
-const cancelRequest = () => {
-  abortController.value.abort()
-}
+useInfiniteScroll(dataTable.value?.$el, () => { onGetMore({ after: true, auto: false } ) }, { distance: 10, direction:  "bottom" })
+useInfiniteScroll(dataTable.value?.$el, () => { onGetMore({ after: false, auto: false }) }, { distance: 10, direction:  "top" })
 
 // Hooks
 onMounted(() => {
@@ -217,7 +199,7 @@ onMounted(() => {
           <!--          Filter Panel-->
           <div class="bg-white bg-opacity-5 text-white rounded-md transition-all ease-in-out duration-300 p-4" :class="{'h-24 mb-2': filterPanel, 'h-0': !filterPanel}">
           </div>
-          <!--          Table View-->
+          <!--         Infinite Scrolling View-->
           <div class="overflow-y-auto w-full h-full">
             <DataTable
                 ref="dataTable"
@@ -232,19 +214,20 @@ onMounted(() => {
                 :timeout="0"
                 :request-pagination="requestPagination"
                 v-model:server-pagination = "serverPagination"
-                @scroll="onScroll"
             >
+<!--              Table Header-->
               <template #header>
-                <tr class="opaque-bg text-yellow-500 bg-opacity-100 sticky top-0 z-10 h-14">
+                <tr v-if="data?.length > 0 && !isFailed" class="opaque-bg text-yellow-500 bg-opacity-100 sticky top-0 z-10 h-14">
                   <th class="text-center p-2 font-normal">#</th>
                   <th class="text-left p-2 font-normal">First Name</th>
                   <th class="text-left p-2 font-normal">Last Name</th>
                   <th class="text-left p-2 font-normal">Posts</th>
                 </tr>
-
               </template>
-              <template #data ref="tableRows">
-                <tr ref="scrollAreaTop" id="scrollAreaTop" class="h-14 odd:bg-white odd:bg-opacity-5 ">
+<!--              Table Rows-->
+              <template #data>
+<!--                Top Loading Indicator-->
+                <tr v-if="!isFailed && data?.length > 0" ref="scrollAreaTop" id="scrollAreaTop" class="h-14 odd:bg-white odd:bg-opacity-5 ">
                   <td colspan="4" class="text-center">
                     <div class="flex items-center justify-center">
                       <div class="text-center p-2 transition-all ease-out duration-300">
@@ -267,15 +250,17 @@ onMounted(() => {
                     </div>
                   </td>
                 </tr>
-                 <tr v-for="v in data" :key="v.id" :id="`${dataRowIdPrefix}-${v.id}`"
-                     class="h-24 table-row text-slate-400 text-sm odd:bg-white odd:bg-opacity-5 hover:text-slate-100 transition-all ease-in-out duration-100 animate-flash"
+<!--                Data Rows-->
+                <tr v-for="v in data" :key="v.id" :id="`${dataRowIdPrefix}-${v.id}`"
+                    class="h-24 table-row text-slate-400 text-sm odd:bg-white odd:bg-opacity-5 hover:text-slate-100 transition-all ease-in-out duration-100 animate-flash"
                 >
                   <td class="table-cell text-center p-2">{{ v.id }}</td>
                   <td class="table-cell p-2">{{ v.firstName }}</td>
                   <td class="table-cell p-2">{{ v.lastName }}</td>
                   <td class="table-cell p-2">{{ v.posts }}</td>
                 </tr>
-                <tr ref="scrollAreaBottom" id="scrollAreaBottom" class="h-14 odd:bg-white odd:bg-opacity-5 ">
+<!--                Bottom Loading Indicator-->
+                <tr v-if="!isFailed && data?.length > 0" ref="scrollAreaBottom" id="scrollAreaBottom" class="h-14 odd:bg-white odd:bg-opacity-5 ">
                   <td colspan="4" class="text-center">
                     <div class="flex items-center justify-center">
                       <div class="text-center p-2 transition-all ease-out duration-300">
@@ -299,6 +284,7 @@ onMounted(() => {
                   </td>
                 </tr>
               </template>
+<!--              Error Panel-->
               <template #error>
                 <div v-if="!isLoading && isFailed" class="w-full h-full text-white grid place-content-center">
                   <span class="text-alert-300 text-2xl">{{ t(`error.xhr.${error.Status}`) }}</span>
@@ -310,17 +296,17 @@ onMounted(() => {
                   </button>
                 </div>
               </template>
-<!--              <template #footer>-->
-<!--                <div class="h-24 flex flex-row justify-between items-center w-full px-2 py-1 text-white sticky bottom-0 px-4 opaque-bg border-t border-slate-700">-->
-<!--                  <ScrollingPagination-->
-<!--                      @get-more="onGetMore"-->
-<!--                  />-->
-<!--                  <button v-if="isLoading" @click="cancelRequest" class="text-yellow-400"><i class="las la-circle-notch animate-spin" /><span class="hidden md:inline-block ml-2">{{  t('abort') }}</span></button>-->
-<!--                </div>-->
-<!--              </template>-->
+<!--              No Data Panel-->
+              <template #empty>
+                <div v-if="data?.length === 0 && !isFailed" class="w-full h-full text-white grid place-content-center">
+                  <div v-if="isLoading" class="text-3xl"><span class="mr-4"><i class="las la-circle-notch animate-spin"></i></span> Loading</div>
+                  <div v-else>No Data</div>
+                </div>
+              </template>
             </DataTable>
           </div>
-          <div class="bg-white bg-opacity-5 text-white rounded-md p-4 mt-2">Another Pane here</div>
+
+          <div class="bg-white bg-opacity-5 text-white rounded-md p-4 mt-2">Yet another pane here</div>
         </div>
       </div>
     </div>
@@ -340,7 +326,11 @@ onMounted(() => {
 
   "en": {
     "abort" : "Abort",
-    "retry" : "Retry"
+    "retry" : "Retry",
+    "loading": "Loading",
+    "fetchAnyway": "Fetch anyway",
+    "noMore": "No more rows",
+    "getMoreTop": "Swipe to get more"
   }
 }
 </i18n>
