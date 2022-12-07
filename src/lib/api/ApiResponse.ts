@@ -1,9 +1,4 @@
-import {
-    ApiErrorSource,
-    ApiResultCode,
-    errorFromAxiosErrorCode,
-    errorFromHttpStatusCode
-} from "@/lib/api/ApiResultCode";
+import {ApiErrorSource, ApiResultCode, errorFromAxiosErrorCode, errorFromHttpStatusCode} from "@/lib/api/ApiResultCode";
 import type {Paged} from "@/lib/api/Paged";
 import type {ResponseHandler} from "@/lib/api/ResponseHandler";
 import type {Scrolling} from "@/lib/api/Scrolling";
@@ -38,4 +33,9 @@ export class ApiResponse {
         this.ErrorSource = ApiErrorSource.Axios
         this.Error = Error
     }
+
+    Succeeded() { return this.Status === ApiResultCode.Success }
+    Failed() { return this.Status !== ApiResultCode.Success && this.Status !== ApiResultCode.None && this.Status !== ApiResultCode.Cancelled && this.Status !== ApiResultCode.Timeout }
+    Canceled() { return this.Status === ApiResultCode.Cancelled }
+    TimedOut() { return this.Status === ApiResultCode.Timeout }
 }

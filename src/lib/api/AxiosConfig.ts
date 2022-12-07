@@ -96,7 +96,8 @@ export class AxiosConfig {
                 response.Transform(r.data ? r.data : null, responseHandler, resource.PaginationType)
                 return response
             } catch (e: any) {
-                return this.ProcessError(e as AxiosError)
+                let error = this.ProcessError(e as AxiosError)
+                return error
             }
         }
     }

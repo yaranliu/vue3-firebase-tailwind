@@ -39,10 +39,14 @@ const value = computed({
   get() {
     return props.modelValue
   },
-  set(value) {
-    emit('update:modelValue', value)
+  set(val) {
+    emit('update:modelValue', val ? val : '')
   }
 })
+
+const clear = () => {
+  value.value = null
+}
 
 onMounted(() => {
   let val = container.value
@@ -99,7 +103,7 @@ onMounted(() => {
     </div>
 
     <div v-if="clearable && modelValue" class="flex-none h-full grid place-content-center" >
-      <button @click="value = ''" class="group rounded-full text-slate-500 focus:outline-none focus:bg-white focus:bg-opacity-30" :class="clearButtonClass" >
+      <button @click="clear" class="group rounded-full text-slate-500 focus:outline-none focus:bg-white focus:bg-opacity-30" :class="clearButtonClass" >
         <i class="group-focus:text-slate-200" :class="DefaultIcons.clear" />
       </button>
     </div>

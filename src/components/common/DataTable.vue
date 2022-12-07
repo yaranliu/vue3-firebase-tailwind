@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type {ApiResponse} from "@/lib/api/ApiResponse";
-import type { Api } from "@/lib/api/Api";
+import type {Api} from "@/lib/api/Api";
+import type {PropType} from "vue";
 import {onMounted, ref, useSlots} from "vue";
-import type { PropType} from "vue";
 import type {AbstractRegularRequestPagination, AbstractScrollingRequestPagination} from "@/lib/api/Pagination";
+import {ApiResultCode} from "@/lib/api/ApiResultCode";
+import {ApiCallStatus} from "@/lib/api/ApiCallStatus";
+
 const slots = useSlots()
 const hasSlot = (name:string) => {
   return !!slots[name];
@@ -19,10 +22,12 @@ const props = defineProps(
       requestPagination : {
         type: Object as  PropType<AbstractRegularRequestPagination> | PropType<AbstractScrollingRequestPagination>,
         default: undefined
-      }
+      },
+      status: { type: String as PropType<ApiCallStatus>, default: undefined },
+      response: { type: Object as PropType<ApiResponse>, default: undefined }
     })
 
-const emit = defineEmits(['mounted', 'loaded', 'failed', 'loading', 'update:serverPagination'])
+const emit = defineEmits(['mounted', 'loaded', 'update:serverPagination', 'update:status', 'update:response'])
 
 const loaded = ref(false)
 const loading = ref(false)
@@ -37,7 +42,6 @@ const fetch = (controller: AbortController) => new Promise<ApiResponse>((resolve
     loaded.value = false
     failed.value = false
     loading.value = true
-    emit('loading', true)
     let config = api.GetConfig(props.resourceName, props.timeout, controller)
 
     if (config) {
@@ -48,14 +52,12 @@ const fetch = (controller: AbortController) => new Promise<ApiResponse>((resolve
       config.Execute(api.GetResource(props.resourceName), api.TransformResponse)?.then(r => {
         loaded.value = true
         loading.value = false
-        emit('loading', false)
         emit('update:serverPagination', r.Pagination)
         resolve(r.Data)
       }).catch(
           e => {
             failed.value = true
             loading.value = false
-            emit('loading', false)
             reject(e)
           }
       )
@@ -66,7 +68,7 @@ const fetch = (controller: AbortController) => new Promise<ApiResponse>((resolve
 })
 
 const fetchData = (controller: AbortController) => {
-  fetch(controller).then(r => emit('loaded', r)).catch(e => { emit('failed', e) })
+  fetch(controller).then(r => emit('loaded', r)).catch(e => { })
 }
 
 const fetchAsync = async (controller: AbortController) => {
@@ -75,25 +77,45 @@ const fetchAsync = async (controller: AbortController) => {
     loaded.value = false
     failed.value = false
     loading.value = true
-    emit('loading', true)
+    emit('update:status', ApiCallStatus.Loading)
     let config = api.GetConfig(props.resourceName, props.timeout, controller)
-
     if (config) {
       config = config
           .SetRouteParams(props.routeParams)
           .SetQueryParams(props.queryParams)
-      if (props.requestPagination) config.SetPagination(props.requestPagination.ToServerDefinition())
+      if (props.requestPagination) {
+        let pagination = props.requestPagination.ToServerDefinition()
+        config.SetPagination(pagination)
+      }
       try {
         let r = await config.ExecuteAsync(api.GetResource(props.resourceName), api.TransformResponse)
-        loaded.value = true
-        loading.value = false
-        emit('loading', false)
-        emit('update:serverPagination', r?.Pagination)
-        return r?.Data
+        if (r) {
+          loaded.value = true
+          loading.value = false
+          emit('update:serverPagination', r.Pagination)
+          //
+          emit('update:response', r)
+          if (r.Succeeded()) {
+            emit('update:status', ApiCallStatus.DataLoaded)
+          } else if (r.Canceled()) {
+            emit('update:status', ApiCallStatus.Canceled)
+          } else if (r.Failed()) {
+            emit('update:status', ApiCallStatus.Failed)
+          } else if (r.TimedOut()) {
+            emit('update:status', ApiCallStatus.TimedOut)
+          }
+          //
+          if (r.Status === ApiResultCode.Success) {
+            emit('loaded', r.Data)
+          }
+          else {
+          }
+        }
+
       } catch (e) {
+        console.log('Error:', e)
         failed.value = true
         loading.value = false
-        emit('loading', false)
         return e
       }
     }
@@ -102,20 +124,11 @@ const fetchAsync = async (controller: AbortController) => {
   }
 }
 
-const fetchDataAsync = async (controller: AbortController) => {
-  try {
-    let r = await fetchAsync(controller)
-    emit('loaded', r)
-  } catch (e) {
-    emit('failed', e)
-  }
-}
-
 onMounted(() => {
   emit('mounted')
 })
 
-defineExpose({ fetchData, fetchDataAsync, dataSlot, hasSlot })
+defineExpose({ fetchData, fetchAsync, dataSlot, hasSlot })
 
 </script>
 
@@ -128,6 +141,8 @@ defineExpose({ fetchData, fetchDataAsync, dataSlot, hasSlot })
       <!--              Table Data Rows-->
       <slot ref="dataSlot" class="relative table-row-group h-full overflow-y-scroll" name="data"></slot>
     </table>
+      <!--              Loading-->
+    <slot class="grow" name="loading"></slot>
     <!--             Error-->
     <slot class="grow" name="error"></slot>
     <!--            Table Footer-->
